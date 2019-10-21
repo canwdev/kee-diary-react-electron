@@ -10,8 +10,9 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import {makeStyles} from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import PropTypes from 'prop-types';
 
 function Copyright() {
   return (
@@ -34,7 +35,7 @@ function forgotPassword() {
   alert('如果你忘记了密码，可能永远也找不回了。')
 }
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   '@global': {
     body: {
       backgroundColor: theme.palette.common.white,
@@ -67,88 +68,113 @@ const useStyles = makeStyles(theme => ({
     flex: 1,
     marginRight: theme.spacing(1)
   }
-}));
+})
 
-export default function SignIn() {
-  const classes = useStyles();
+class SignIn extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      password: '1111',
+      isSaveKeyPath: false
+    }
+  }
 
-  return (
-    <Container component="main" maxWidth="xs">
-      {/*<CssBaseline />*/}
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon/>
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          打开数据库
-        </Typography>
-        <form className={classes.form}>
-          <Box className={classes.lrBox}>
+  render() {
+    const {classes} = this.props;
+
+    return (
+      <Container component="main" maxWidth="xs">
+        {/*<CssBaseline />*/}
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon/>
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            打开数据库
+          </Typography>
+          <form className={classes.form}>
+            <Box className={classes.lrBox}>
+              <TextField
+                variant="outlined"
+                label="数据库文件 *"
+                InputProps={{
+                  readOnly: true,
+                }}
+                className={classes.inputFlex1}
+              />
+              <Button variant="outlined">选择文件</Button>
+            </Box>
+
             <TextField
+              error
               variant="outlined"
-              label="数据库文件 *"
-              InputProps={{
-                readOnly: true,
-              }}
-              className={classes.inputFlex1}
+              required
+              fullWidth
+              label="密码"
+              type="text"
+              value={this.state.password}
+              onChange={this.inputPasswordChange}
+              autoComplete="current-password"
             />
-            <Button variant="outlined">选择文件</Button>
-          </Box>
 
-          <TextField
-            error
-            variant="outlined"
-            required
-            fullWidth
-            label="密码"
-            type="password"
-            autoComplete="current-password"
-          />
+            <Box className={classes.lrBox}>
+              <TextField
+                variant="outlined"
+                label="密钥文件（可选）"
+                InputProps={{
+                  readOnly: true,
+                }}
+                className={classes.inputFlex1}
+              />
+              <Button variant="outlined">选择文件</Button>
+            </Box>
 
-          <Box className={classes.lrBox}>
-            <TextField
-              variant="outlined"
-              label="密钥文件（可选）"
-              InputProps={{
-                readOnly: true,
-              }}
-              className={classes.inputFlex1}
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary"/>}
+              label="记住密钥位置"
             />
-            <Button variant="outlined">选择文件</Button>
-          </Box>
+            <Button
+              type="button"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={handleDecryptDB}
+            >
+              解密
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link href="###" onClick={forgotPassword}
+                      variant="body2">
+                  忘记密码
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="https://keepass.info/" variant="body2">
+                  {"没有数据库? 创建一个"}
+                </Link>
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+        <Box mt={8}>
+          <Copyright/>
+        </Box>
+      </Container>
+    )
+  }
 
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary"/>}
-            label="记住密钥位置"
-          />
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick={handleDecryptDB}
-          >
-            解密
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="https://www.google.com/search?q=keepass+忘记密码" target={'_blank'} onClick={forgotPassword}
-                    variant="body2">
-                忘记密码
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="https://keepass.info/" variant="body2">
-                {"没有数据库? 创建一个"}
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-      <Box mt={8}>
-        <Copyright/>
-      </Box>
-    </Container>
-  );
+  inputPasswordChange = (e) => {
+    this.setState({
+      password: e.target.value
+    })
+  }
 }
+
+// https://material-ui.com/zh/styles/basics/#higher-order-component-api
+SignIn.propTypes = {
+  classes: PropTypes.object.isRequired,
+}
+
+export default withStyles(styles)(SignIn);

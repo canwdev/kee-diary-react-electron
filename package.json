@@ -7,13 +7,15 @@
   "homepage": "./",
   "scripts": {
     "electron": "cross-env ELECTRON_START_URL=http://localhost:5000 electron .",
-    "dev" : "nf start",
+    "dev": "nf start",
     "start": "react-scripts start",
     "build:react": "react-scripts build",
     "build:electron": "electron-builder --dir",
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@material-ui/core": "^4.5.1",
+    "@material-ui/icons": "^4.5.1",
     "cross-env": "^6.0.3",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",

@@ -1,6 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import App from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <React.Fragment>
+    <CssBaseline/>
+    <App/>
+  </React.Fragment>
+  , document.getElementById('root')
+);

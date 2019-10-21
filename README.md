@@ -19,7 +19,7 @@ npm run dev
 npm -i -g electron-builder
 
 # 首先构建 React
-npm run build:react"
+npm run build:react
 
 # 构建 electron 可执行文件
 npm run build:electron

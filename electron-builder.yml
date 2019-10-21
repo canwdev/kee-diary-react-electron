@@ -1,0 +1,7 @@
+files:
+  - filter:
+      - ./build/**/*
+      - ./src/electron/**/*
+      - ./src/electron-starter.js
+extraMetadata:
+  main: ./src/electron-starter.js

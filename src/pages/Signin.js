@@ -3,7 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -12,23 +12,20 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
 import useForm from 'react-hook-form';
+import {lsUtil} from '../utils'
+import kdbxweb from 'kdbxweb'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" component="button">
         KeepassDiary
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
   );
-}
-
-
-function forgotPassword() {
-  alert('如果你忘记了密码，可能永远也找不回了。')
 }
 
 const useStyles = makeStyles(theme => ({
@@ -38,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(5),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -57,8 +54,7 @@ const useStyles = makeStyles(theme => ({
   lrBox: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(1)
+    margin: theme.spacing(1.5, 0),
   },
   inputFlex1: {
     flex: 1,
@@ -66,12 +62,58 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+function forgotPassword() {
+  alert('如果你忘记了密码，可能永远也找不回了。')
+}
+
+const signInDefaultConfig = lsUtil.getItem('CONFIG_DB') || {}
+console.log('加载默认设置', signInDefaultConfig)
+
 export default function SignIn() {
   const classes = useStyles();
-  const {handleSubmit, register, errors} = useForm();
+
+  const {handleSubmit, register, errors, setValue} = useForm({
+    defaultValues: signInDefaultConfig
+  });
+
   const onSubmit = values => {
-    console.log(values);
+    console.log('表单验证通过', values);
+
+    const fs = window.api.fs
+    const dbArrayBuffer = new Uint8Array(fs.readFileSync(values.dbPath)).buffer
+
+    let keyFileArrayBuffer
+    if (values.keyPath) {
+      keyFileArrayBuffer = new Uint8Array(fs.readFileSync(values.keyPath)).buffer
+    }
+
+    let credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(values.password), keyFileArrayBuffer);
+    kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
+      console.log(db)
+    })
+
+    if (values.isSavePath) {
+      const save = JSON.parse(JSON.stringify(values))
+      delete save.password
+      lsUtil.setItem('CONFIG_DB', save)
+    } else {
+      lsUtil.removeItem('CONFIG_DB')
+    }
   };
+
+
+  /**
+   * 选择文件
+   * name：对应表单name
+   * filters：文件过滤器，[{name: 'KeePass KDBX 文件', extensions: ['kdbx']}]
+   **/
+  const handleChooseFile = (name, filters) => {
+    const results = window.api.openFileChooser(filters)
+    // console.log(results)
+    if (results && results[0]) {
+      setValue(name, results[0])
+    }
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -94,15 +136,16 @@ export default function SignIn() {
               helperText={
                 errors.dbPath ? errors.dbPath.message : null
               }
-              value="‪C:\Users\CAN\Documents\Password\workdb.kdbx"
               variant="outlined"
               label="数据库文件 *"
-              InputProps={{
-                readOnly: true,
-              }}
+              InputLabelProps={{shrink: true}}
               className={classes.inputFlex1}
             />
-            <Button variant="outlined">选择文件</Button>
+            <Button
+              onClick={() => {
+                handleChooseFile('dbPath', [{name: 'KeePass KDBX 文件', extensions: ['kdbx']}])
+              }}
+              variant="outlined">选择文件</Button>
           </Box>
 
           <TextField
@@ -122,19 +165,29 @@ export default function SignIn() {
               inputRef={register}
               variant="outlined"
               label="密钥文件（可选）"
-              InputProps={{
-                readOnly: true,
-              }}
+              InputLabelProps={{shrink: true}}
+              // InputProps={{
+              //   readOnly: true,
+              // }}
               className={classes.inputFlex1}
             />
-            <Button variant="outlined">选择文件</Button>
+            <Button
+              onClick={() => {
+                handleChooseFile('keyPath', [
+                  {name: '所有文件', extensions: ['*']},
+                  {name: '密钥文件', extensions: ['key']},
+                ])
+              }}
+              variant="outlined"
+            >选择文件</Button>
           </Box>
-
           <FormControlLabel
-            name="isSaveKeyPath"
-            inputRef={register}
-            control={<Checkbox color="primary"/>}
-            label="记住密钥位置"
+
+            control={
+              /*<Checkbox name="isSavePath" inputRef={register} />*/
+              <input type="checkbox" name="isSavePath" ref={register}/>
+            }
+            label="记住数据库和密钥位置"
           />
           <Button
             type="submit"
@@ -161,7 +214,9 @@ export default function SignIn() {
                 component="button"
                 type="button"
                 variant="body2"
-                onClick={() => {window.api.openExternal('https://keepass.info/')}}
+                onClick={() => {
+                  window.api.openExternal('https://keepass.info/')
+                }}
               >
                 {"没有数据库? 创建一个"}
               </Link>
@@ -169,7 +224,7 @@ export default function SignIn() {
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
+      <Box mt={5}>
         <Copyright/>
       </Box>
     </Container>

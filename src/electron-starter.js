@@ -3,22 +3,26 @@ const {app, BrowserWindow} = require('electron')
 const path = require('path')
 const url = require('url')
 
+const isDev = process.mainModule.filename.indexOf('app.asar') === -1;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
-function createWindow () {
+function createWindow() {
 
-  require('./electron/menu')
+  // 自定义菜单
+  // require('./electron/menu')
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 1024,
     height: 600,
     webPreferences: {
       nodeIntegration: false,
-      preload: path.join(__dirname, 'electron','preload.js')
+      preload: path.join(__dirname, 'electron', 'preload.js')
     }
   })
 
@@ -42,6 +46,18 @@ function createWindow () {
     mainWindow = null
   })
 
+  // React 开发者工具
+  if (isDev) {
+    const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer')
+
+    installExtension(REACT_DEVELOPER_TOOLS).then(name => {
+      console.log('Added extension', name)
+    }).catch(e => {
+      console.log(e)
+    })
+  }
+
+
 }
 
 // This method will be called when Electron has finished
@@ -64,3 +80,4 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+

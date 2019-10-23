@@ -17,7 +17,23 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // fs
-    this.fs=fs
+    this.readFileSyncAsArrayBuffer = function (path) {
+      let res
+      try {
+        const file = fs.readFileSync(path)
+        res = new Uint8Array(file).buffer
+      } catch (e) {
+        alert(e)
+        console.log(e)
+        throw new Error(e)
+      }
+
+      return res
+    }
+
+    this.showErrorBox = function (title, content) {
+      remote.dialog.showErrorBox(title, content)
+    }
   }
 
   window.api = new API()

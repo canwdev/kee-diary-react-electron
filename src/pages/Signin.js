@@ -79,18 +79,30 @@ export default function SignIn() {
   const onSubmit = values => {
     console.log('表单验证通过', values);
 
-    const fs = window.api.fs
-    const dbArrayBuffer = new Uint8Array(fs.readFileSync(values.dbPath)).buffer
 
-    let keyFileArrayBuffer
-    if (values.keyPath) {
-      keyFileArrayBuffer = new Uint8Array(fs.readFileSync(values.keyPath)).buffer
+    try {
+      const dbArrayBuffer = window.api.readFileSyncAsArrayBuffer(values.dbPath)
+
+      let keyFileArrayBuffer
+      if (values.keyPath) {
+        keyFileArrayBuffer = window.api.readFileSyncAsArrayBuffer(values.keyPath)
+      }
+
+      let credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(values.password), keyFileArrayBuffer);
+
+      kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
+        console.log(db)
+      }).catch(e => {
+        console.error(e)
+        window.api.showErrorBox(e.name, e.message)
+      })
+
+
+    } catch (e) {
+      console.error(e)
+      window.api.showErrorBox(e, '')
     }
 
-    let credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(values.password), keyFileArrayBuffer);
-    kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
-      console.log(db)
-    })
 
     if (values.isSavePath) {
       const save = JSON.parse(JSON.stringify(values))

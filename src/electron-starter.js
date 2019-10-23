@@ -3,7 +3,18 @@ const {app, BrowserWindow} = require('electron')
 const path = require('path')
 const url = require('url')
 
-const isDev = process.mainModule.filename.indexOf('app.asar') === -1;
+function judgementElectronIsDev() {
+  const electron = require('electron');
+
+  const app = electron.app || electron.remote.app;
+
+  const isEnvSet = 'ELECTRON_IS_DEV' in process.env;
+  const getFromEnv = parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
+
+  return isEnvSet ? getFromEnv : !app.isPackaged;
+}
+
+const isDev = judgementElectronIsDev()
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -23,7 +34,8 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       preload: path.join(__dirname, 'electron', 'preload.js')
-    }
+    },
+    icon: __dirname + '/../build/favicon.ico'
   })
 
   // and load the index.html of the app.
@@ -35,8 +47,6 @@ function createWindow() {
   });
   mainWindow.loadURL(startUrl);
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -48,6 +58,10 @@ function createWindow() {
 
   // React 开发者工具
   if (isDev) {
+
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools()
+
     const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer')
 
     installExtension(REACT_DEVELOPER_TOOLS).then(name => {
@@ -55,6 +69,7 @@ function createWindow() {
     }).catch(e => {
       console.log(e)
     })
+
   }
 
 

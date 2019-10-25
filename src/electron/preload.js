@@ -10,7 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
     this.openExternal = shell.openExternal
     // 打开文件选择器
     this.openFileChooser = function (filters=[]) {
-      return remote.dialog.showOpenDialogSync({
+      return remote.dialog.showOpenDialogSync(remote.getCurrentWindow(), {
         properties: ['openFile'],
         filters: filters
       })
@@ -31,8 +31,18 @@ window.addEventListener('DOMContentLoaded', () => {
       return res
     }
 
-    this.showErrorBox = function (title, content) {
-      remote.dialog.showErrorBox(title, content)
+    this.showErrorBox = function (title, message) {
+      remote.dialog.showMessageBoxSync(remote.getCurrentWindow(), {
+        type: 'error',
+        title, message
+      })
+    }
+
+    this.alert = function (message) {
+      remote.dialog.showMessageBoxSync(remote.getCurrentWindow(), {
+        type: 'warning',
+        message
+      })
     }
   }
 

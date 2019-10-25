@@ -1,4 +1,4 @@
-# KeePass Diary App
+# KeeDiary · KeePass Diary App
 
 > 技术栈：Electron + React (create-react-app)
 

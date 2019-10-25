@@ -20,7 +20,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" component="button">
-        KeepassDiary
+        KeeDiary
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function forgotPassword() {
-  alert('如果你忘记了密码，可能永远也找不回了。')
+  window.api.alert('如果你忘记了密码，可能永远也找不回了。')
 }
 
 const signInDefaultConfig = lsUtil.getItem('CONFIG_DB') || {}

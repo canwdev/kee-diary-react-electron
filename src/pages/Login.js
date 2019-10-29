@@ -7,7 +7,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
@@ -42,7 +41,8 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    width: 88,
+    height: 88,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -67,9 +67,9 @@ function forgotPassword() {
 }
 
 const signInDefaultConfig = lsUtil.getItem('CONFIG_DB') || {}
-console.log('加载默认设置', signInDefaultConfig)
+// console.log('加载默认设置', signInDefaultConfig)
 
-export default function SignIn() {
+export default function Login() {
   const classes = useStyles();
 
   const {handleSubmit, register, errors, setValue} = useForm({
@@ -77,8 +77,7 @@ export default function SignIn() {
   });
 
   const onSubmit = values => {
-    console.log('表单验证通过', values);
-
+    // console.log('表单验证通过', values);
 
     try {
       const dbArrayBuffer = window.api.readFileSyncAsArrayBuffer(values.dbPath)
@@ -94,7 +93,9 @@ export default function SignIn() {
         console.log(db)
       }).catch(e => {
         console.error(e)
-        window.api.showErrorBox(e.name, e.message)
+        let message = e.message
+        if (e.code === 'InvalidKey') message = '密码或密钥错误'
+        window.api.showErrorBox(e.name + ': ' + e.code, message)
       })
 
 
@@ -131,9 +132,7 @@ export default function SignIn() {
     <Container component="main" maxWidth="xs">
       {/*<CssBaseline />*/}
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon/>
-        </Avatar>
+        <Avatar className={classes.avatar} src='/favicon.png'></Avatar>
         <Typography component="h1" variant="h5">
           打开数据库
         </Typography>

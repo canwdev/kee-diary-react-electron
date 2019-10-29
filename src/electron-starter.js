@@ -30,7 +30,7 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1024,
-    height: 600,
+    height: 768,
     webPreferences: {
       nodeIntegration: false,
       preload: path.join(__dirname, 'electron', 'preload.js')

@@ -16,7 +16,7 @@ function App() {
 
   return (
     <Router>
-      {!unlocked ? <Redirect to="/login"/> : <Redirect to="/tool"/>}
+      {!unlocked ? <Redirect to="/login"/> : <Redirect to="/detail"/>}
       <AppContainer router={router} match>
         <div className="page-content">
           {

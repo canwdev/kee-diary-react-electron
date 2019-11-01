@@ -20,6 +20,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import Button from "@material-ui/core/Button"
 import {Link as RouterLink} from "react-router-dom"
 import useReactRouter from "use-react-router"
+import {globalVars} from "../store"
 
 const drawerWidth = 240;
 const CONFIG_DRAWER_OPEN = 'CONFIG_DRAWER_OPEN'
@@ -48,6 +49,9 @@ const useStyles = makeStyles(theme => ({
   },
   hide: {
     display: 'none',
+  },
+  Toolbar: {
+    justifyContent: 'space-between'
   },
   drawer: {
     width: drawerWidth,
@@ -85,7 +89,7 @@ export default function AppContainer(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(initOpenState);
-  const { location } = useReactRouter();
+  const {location} = useReactRouter();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -97,6 +101,8 @@ export default function AppContainer(props) {
     localStorage.setItem(CONFIG_DRAWER_OPEN, false)
   };
 
+  const isDetailPage = location.pathname === '/detail'
+
   return (
     <div className={classes.root}>
       <CssBaseline/>
@@ -106,30 +112,26 @@ export default function AppContainer(props) {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon/>
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            KeeDiary
-          </Typography>
-          {
-            props.router.map((item, index) => {
-              return (
-                <Button
-                  key={index}
-                  color="inherit"
-                  component={React.forwardRef((props, ref) => <RouterLink to={item.path} innerRef={ref} {...props} />)}
-                >{item.title}</Button>
-              )
-            })
-          }
+        <Toolbar className={classes.Toolbar}>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
+              <MenuIcon/>
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              KeeDiary
+            </Typography>
+          </div>
+          <div>
+            <Button color="inherit" onClick={() => {
+              console.log(globalVars.db)
+            }}>打印数据库</Button>
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -164,12 +166,21 @@ export default function AppContainer(props) {
         </List>
         <Divider/>
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}</ListItemIcon>
-              <ListItemText primary={text}/>
-            </ListItem>
-          ))}
+          {
+            isDetailPage &&
+            <>
+              <ListItem button selected>
+                <ListItemIcon><InboxIcon/></ListItemIcon>
+                <ListItemText primary="普通视图"/>
+              </ListItem>
+              <ListItem button>
+                <ListItemIcon><InboxIcon/></ListItemIcon>
+                <ListItemText primary="日历视图"/>
+              </ListItem>
+            </>
+
+          }
+
         </List>
       </Drawer>
       <main

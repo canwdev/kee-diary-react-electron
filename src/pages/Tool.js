@@ -14,23 +14,27 @@ export default function (props) {
 
   return (
     <Container>
-      <h1>List page</h1>
+      <h1>调试工具</h1>
 
-      <Button
-        variant="contained"
-        onClick={toggle}
-      >Toggle</Button>
+      <div>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={toggle}
+        >切换 unlocked</Button>
 
-      <Button
-        variant="contained"
-        onClick={()=>{
-          console.log(globalVars.db)
-        }}
-      >Get DB</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={()=>{
+            console.log(globalVars.db)
+          }}
+        >打印 db 实例</Button>
 
-      <Button onClick={() => {
-        props.history.push('/login')
-      }}>Go Login</Button>
+        <Button onClick={() => {
+          props.history.push('/login')
+        }}>跳转 Login 页面</Button>
+      </div>
 
       <p>{JSON.stringify(state)}</p>
     </Container>

@@ -9,12 +9,13 @@ import {
 import AppBar from './components/AppBar'
 
 import router from './router'
+import {useSelector} from "react-redux"
 
 function App() {
-  let loggedIn = false;
+  let unlocked = useSelector(state => state.unlocked);
   return (
     <Router>
-      {!loggedIn ? <Redirect to="/login"/> : <Redirect to="/list"/>}
+      {!unlocked ? <Redirect to="/login"/> : <Redirect to="/list"/>}
       <AppBar router={router}/>
       <div className="page-content">
         {

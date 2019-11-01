@@ -10,9 +10,15 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
+
+import kdbxweb from 'kdbxweb'
 import useForm from 'react-hook-form';
 import {lsUtil} from '../utils'
-import kdbxweb from 'kdbxweb'
+import {useDispatch} from "react-redux"
+import {SET_UNLOCKED} from "../store"
+const CONFIG_DB = 'CONFIG_DB'
+
+
 
 function Copyright() {
   return (
@@ -62,23 +68,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function forgotPassword() {
-  window.api.alert('如果你忘记了密码，可能永远也找不回了。')
-}
-
-const signInDefaultConfig = lsUtil.getItem('CONFIG_DB') || {}
+const signInDefaultConfig = lsUtil.getItem(CONFIG_DB) || {}
 // console.log('加载默认设置', signInDefaultConfig)
 
 export default function Login() {
   const classes = useStyles();
-
   const {handleSubmit, register, errors, setValue} = useForm({
     defaultValues: signInDefaultConfig
   });
+  const dispatch = useDispatch()
 
+  function forgotPassword() {
+    window.api.alert('如果你忘记了密码，可能永远也找不回了。')
+
+  }
   const onSubmit = values => {
-    // console.log('表单验证通过', values);
-
     try {
       const dbArrayBuffer = window.api.readFileSyncAsArrayBuffer(values.dbPath)
 
@@ -90,7 +94,8 @@ export default function Login() {
       let credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(values.password), keyFileArrayBuffer);
 
       kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
-        console.log(db)
+        console.log('数据库已解锁！', db)
+        dispatch({type: SET_UNLOCKED, value: true})
       }).catch(e => {
         console.error(e)
         let message = e.message
@@ -108,9 +113,9 @@ export default function Login() {
     if (values.isSavePath) {
       const save = JSON.parse(JSON.stringify(values))
       delete save.password
-      lsUtil.setItem('CONFIG_DB', save)
+      lsUtil.setItem(CONFIG_DB, save)
     } else {
-      lsUtil.removeItem('CONFIG_DB')
+      lsUtil.removeItem(CONFIG_DB)
     }
   };
 
@@ -132,7 +137,7 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       {/*<CssBaseline />*/}
       <div className={classes.paper}>
-        <Avatar className={classes.avatar} src='/favicon.png'></Avatar>
+        <Avatar className={classes.avatar} src='/favicon.png' />
         <Typography component="h1" variant="h5">
           打开数据库
         </Typography>

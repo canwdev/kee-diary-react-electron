@@ -1,16 +1,17 @@
 import {SET_UNLOCKED} from "./index"
 
-const defaultState = {
+const initialState = {
   unlocked: false
 }
 
-export default (state = defaultState, action) => {
-  const newState = JSON.parse(JSON.stringify(state))
+export default (state = initialState, action) => {
 
   switch (action.type) {
     case SET_UNLOCKED:
-      newState.unlocked = action.value
-      return newState
+      return {
+        ...state,
+        unlocked: action.value
+      }
     default:
       return state
   }

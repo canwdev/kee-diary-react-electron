@@ -2,7 +2,7 @@ import React from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import {Container} from "@material-ui/core"
 import Button from '@material-ui/core/Button'
-import {SET_UNLOCKED} from "../store"
+import {globalVars, SET_UNLOCKED} from "../store"
 
 export default function (props) {
   const state = useSelector(state => state)
@@ -20,6 +20,13 @@ export default function (props) {
         variant="contained"
         onClick={toggle}
       >Toggle</Button>
+
+      <Button
+        variant="contained"
+        onClick={()=>{
+          console.log(globalVars.db)
+        }}
+      >Get DB</Button>
 
       <Button onClick={() => {
         props.history.push('/login')

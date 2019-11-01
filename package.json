@@ -16,6 +16,7 @@
   "dependencies": {
     "@material-ui/core": "^4.5.1",
     "@material-ui/icons": "^4.5.1",
+    "clsx": "^1.0.4",
     "cross-env": "^6.0.3",
     "kdbxweb": "file:kdbxweb-1.5.5.tgz",
     "react": "^16.10.2",
@@ -24,7 +25,8 @@
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
-    "redux": "^4.0.4"
+    "redux": "^4.0.4",
+    "use-react-router": "^1.0.7"
   },
   "devDependencies": {
     "electron": "^6.0.11",

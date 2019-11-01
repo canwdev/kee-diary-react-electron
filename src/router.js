@@ -1,9 +1,9 @@
 import Login from "./pages/Login"
-import List from './pages/List'
+import Tool from './pages/Tool'
 
 const router = [
   {path: '/login', exact: true, title: '打开数据库', component: Login},
-  {path: '/list', exact: true, title: '数据列表', component: List},
+  {path: '/tool', exact: true, title: '调试工具', component: Tool},
 ]
 
 export default router

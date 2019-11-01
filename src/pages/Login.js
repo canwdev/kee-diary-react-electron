@@ -15,7 +15,7 @@ import kdbxweb from 'kdbxweb'
 import useForm from 'react-hook-form';
 import {lsUtil} from '../utils'
 import {useDispatch} from "react-redux"
-import {SET_UNLOCKED} from "../store"
+import {globalVars, SET_UNLOCKED} from "../store"
 const CONFIG_DB = 'CONFIG_DB'
 
 
@@ -95,6 +95,7 @@ export default function Login() {
 
       kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
         console.log('数据库已解锁！', db)
+        globalVars.db = db
         dispatch({type: SET_UNLOCKED, value: true})
       }).catch(e => {
         console.error(e)
@@ -112,7 +113,7 @@ export default function Login() {
 
     if (values.isSavePath) {
       const save = JSON.parse(JSON.stringify(values))
-      delete save.password
+      // delete save.password
       lsUtil.setItem(CONFIG_DB, save)
     } else {
       lsUtil.removeItem(CONFIG_DB)

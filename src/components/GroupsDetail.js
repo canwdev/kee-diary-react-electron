@@ -6,6 +6,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import {useSelector} from "react-redux"
 
 const useStyles = makeStyles({
   root: {
@@ -30,10 +31,13 @@ const rows = [
 ];
 
 export default function SimpleTable() {
+  const currentGroupUuid = useSelector(state => state.currentGroupUuid);
+
   const classes = useStyles();
 
   return (
     <Paper className={classes.root}>
+      {currentGroupUuid}
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>

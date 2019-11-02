@@ -18,12 +18,12 @@ export default function () {
   return (
     <Container maxWidth={"xl"}>
       <Grid container spacing={1}>
-        <Grid item md={2} xs={12}>
+        <Grid item md={3} xs={12}>
           <Paper className={classes.paper}>
             <GroupsList/>
           </Paper>
         </Grid>
-        <Grid item md={10} xs={12}>
+        <Grid item md={9} xs={12}>
             <GroupsDetail/>
         </Grid>
       </Grid>

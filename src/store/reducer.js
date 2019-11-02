@@ -1,7 +1,8 @@
-import {SET_UNLOCKED} from "./index"
+import {SET_CURRENT_GROUP_UUID, SET_UNLOCKED} from "./index"
 
 const initialState = {
-  unlocked: false
+  unlocked: false,
+  currentGroupUuid: null
 }
 
 export default (state = initialState, action) => {
@@ -11,6 +12,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         unlocked: action.value
+      }
+    case SET_CURRENT_GROUP_UUID:
+      return {
+        ...state,
+        currentGroupUuid: action.value
       }
     default:
       return state

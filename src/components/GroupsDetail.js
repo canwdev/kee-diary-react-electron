@@ -7,8 +7,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {useSelector} from "react-redux"
-import {globalVars} from "../store"
 import {iconMap} from "../utils/icon-map"
+import {getGlobalDB} from "../store/getters"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 export default function SimpleTable() {
   const classes = useStyles();
   const uuid = useSelector(state => state.currentGroupUuid);
-  const db = globalVars.db
+  const db = getGlobalDB()
 
   const entries = []
   if (db && uuid && uuid.id) {

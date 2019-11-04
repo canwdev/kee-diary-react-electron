@@ -9,7 +9,8 @@ import GroupsDetail from "../components/GroupsDetail"
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(0),
+    overflowX: 'auto'
   },
 }));
 

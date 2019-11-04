@@ -9,14 +9,15 @@ import Collapse from '@material-ui/core/Collapse';
 // import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 // import StarBorder from '@material-ui/icons/StarBorder';
-import {globalVars} from "../store"
 import {useDispatch, useSelector} from "react-redux"
 import {iconMap} from "../utils/icon-map"
 import {setCurrentGroupUUID} from "../store/setters"
+import {getGlobalDB} from "../store/getters"
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
+    minWidth:'300px',
     backgroundColor: theme.palette.background.paper,
   },
   nested: {
@@ -58,7 +59,7 @@ export default function NestedList() {
   }
 
   // TODO: 重复渲染时的性能问题
-  const db = globalVars.db
+  const db = getGlobalDB()
   // console.log(db)
   const list = db && deepWalkGroup(db.groups)
   // console.log('result:', list)

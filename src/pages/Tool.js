@@ -2,8 +2,8 @@ import React from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import {Container} from "@material-ui/core"
 import Button from '@material-ui/core/Button'
-import {globalVars} from "../store"
 import {setUnlocked} from "../store/setters"
+import {getGlobalDB} from "../store/getters"
 
 export default function (props) {
   const state = useSelector(state => state)
@@ -28,7 +28,7 @@ export default function (props) {
           variant="contained"
           color="primary"
           onClick={() => {
-            console.log(globalVars.db)
+            console.log(getGlobalDB())
           }}
         >打印 db 实例</Button>
 

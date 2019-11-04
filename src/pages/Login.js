@@ -15,8 +15,7 @@ import kdbxweb from 'kdbxweb'
 import useForm from 'react-hook-form';
 import {localStorageUtil} from '../utils'
 import {useDispatch} from "react-redux"
-import {globalVars} from "../store"
-import {setUnlocked} from "../store/setters"
+import {setGlobalDB, setUnlocked} from "../store/setters"
 const CONFIG_DB = 'CONFIG_DB'
 
 
@@ -96,7 +95,7 @@ export default function Login() {
 
       kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
         console.log('数据库已解锁！', db)
-        globalVars.db = db
+        setGlobalDB(db)
         setUnlocked(dispatch, true)
       }).catch(e => {
         console.error(e)

@@ -1,5 +1,6 @@
-import {globalVars, initialState} from "./index"
+import {initialState} from "./index"
 import {SET_CURRENT_GROUP_UUID, SET_UNLOCKED} from "./actionTypes"
+import {setGlobalDB} from "./setters"
 
 export default (state = initialState, action) => {
 
@@ -10,7 +11,7 @@ export default (state = initialState, action) => {
         unlocked: action.value
       }
       if (!action.value) { // 为 false 时清除内存数据
-        console.log(globalVars.db)
+        setGlobalDB(null) // 销毁实例
         newState.currentGroupUuid = null
       }
       return newState

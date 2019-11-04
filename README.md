@@ -6,7 +6,7 @@
 
 ```sh
 # 安装依赖
-npm install
+yarn install
 
 # 开发模式 
 npm run dev

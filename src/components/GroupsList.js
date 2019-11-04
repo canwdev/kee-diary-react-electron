@@ -6,12 +6,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
 import {globalVars, SET_CURRENT_GROUP_UUID} from "../store"
 import {useDispatch, useSelector} from "react-redux"
+import {iconMap} from "../utils/icon-map"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,10 +19,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   nested: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(2),
   },
   iconWrap: {
-    minWidth: '36px'
+    minWidth: '32px',
+    fontSize: '18px'
   }
 }));
 
@@ -48,7 +49,8 @@ export default function NestedList() {
       const children = item.groups
 
       list.push({
-        uuid: item.uuid.id,
+        icon: iconMap[item.icon],
+        uuid: item.uuid,
         name: item.name,
         children: deepWalkGroup(children)
       })
@@ -56,7 +58,12 @@ export default function NestedList() {
     return list
   }
 
-  // TODO: 性能问题
+  function handleItemClick(item) {
+    // console.log('点击群组项', item)
+    dispatch({type: SET_CURRENT_GROUP_UUID, value: item.uuid})
+  }
+
+  // TODO: 重复渲染时的性能问题
   const db = globalVars.db
   // console.log(db)
   const list = db && deepWalkGroup(db.groups)
@@ -75,18 +82,20 @@ export default function NestedList() {
           key={item.uuid}
           component="div"
           disablePadding
-          className={counter > 1 ? classes.nested : null}
+          className={counter > 0 ? classes.nested : null}
         >
           <ListItem
             button
             selected={currentGroupUuid === item.uuid}
             onClick={() => {
-              handleItemClick(item.uuid)
+              handleItemClick(item)
             }}
           >
             <ListItemIcon
               className={classes.iconWrap}
-            ><InboxIcon/></ListItemIcon>
+            >
+              <i className={`fa fa-${item.icon}`}/>
+            </ListItemIcon>
             <ListItemText primary={item.name}/>
             {hasChildren && <ExpandMore/>}
           </ListItem>
@@ -100,17 +109,12 @@ export default function NestedList() {
     return VDOM
   }
 
-  function handleItemClick(uuid) {
-    // console.log(uuid)
-    dispatch({type: SET_CURRENT_GROUP_UUID, value: uuid})
-  }
-
   return (
     <List
       component="nav"
       subheader={
         <ListSubheader component="div" id="nested-list-subheader">
-          Nested List Items
+          群组列表
         </ListSubheader>
       }
       className={classes.root}

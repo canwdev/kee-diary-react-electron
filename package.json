@@ -18,6 +18,7 @@
     "@material-ui/icons": "^4.5.1",
     "clsx": "^1.0.4",
     "cross-env": "^6.0.3",
+    "font-awesome": "^4.7.0",
     "kdbxweb": "file:kdbxweb-1.5.5.tgz",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",

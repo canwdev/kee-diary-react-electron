@@ -7,61 +7,73 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {useSelector} from "react-redux"
+import {globalVars} from "../store"
+import {iconMap} from "../utils/icon-map"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
     overflowX: 'auto',
   },
-  table: {
-    minWidth: 650,
-  },
-});
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
+  empty: {
+    textAlign: 'center',
+    padding: theme.spacing(10)
+  }
+}));
 
 export default function SimpleTable() {
-  const currentGroupUuid = useSelector(state => state.currentGroupUuid);
-
   const classes = useStyles();
+  const uuid = useSelector(state => state.currentGroupUuid);
+  const db = globalVars.db
+
+  const entries = []
+  if (db && uuid && uuid.id) {
+    const group = db.getGroup(uuid)
+    console.log('获取详情', group)
+
+    group.entries.forEach((item, index) => {
+      entries.push({
+        uuid: item.uuid,
+        icon: iconMap[item.icon],
+        title: item.fields.Title,
+        notes: item.fields.Notes,
+        creationTime: item.times.creationTime,
+        lastModTimelastModTime: item.times.lastModTime,
+      })
+    })
+  }
 
   return (
     <Paper className={classes.root}>
-      {currentGroupUuid}
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
+            <TableCell>图标</TableCell>
+            <TableCell>标题</TableCell>
+            <TableCell>内容</TableCell>
+            <TableCell>创建日期</TableCell>
+            <TableCell align="right">修改日期</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.name}>
+          {entries.map(row => (
+            <TableRow key={row.uuid.id}>
+              <TableCell><i style={{fontSize: 20}} className={`fa fa-${row.icon}`}/></TableCell>
               <TableCell component="th" scope="row">
-                {row.name}
+                {row.title}
               </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+              <TableCell>{row.notes}</TableCell>
+              <TableCell>{row.creationTime.toString()}</TableCell>
+              <TableCell align="right">{row.creationTime.toString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      {
+        entries.length === 0 && (
+          <div className={classes.empty}>没有条目</div>
+        )
+      }
     </Paper>
   );
 }

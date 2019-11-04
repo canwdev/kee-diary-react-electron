@@ -2,14 +2,15 @@ import React from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import {Container} from "@material-ui/core"
 import Button from '@material-ui/core/Button'
-import {globalVars, SET_UNLOCKED} from "../store"
+import {globalVars} from "../store"
+import {setUnlocked} from "../store/setters"
 
 export default function (props) {
   const state = useSelector(state => state)
   const dispatch = useDispatch()
 
   function toggle() {
-    dispatch({type: SET_UNLOCKED, value: !state.unlocked})
+    setUnlocked(dispatch, !state.unlocked)
   }
 
   return (
@@ -26,7 +27,7 @@ export default function (props) {
         <Button
           variant="contained"
           color="primary"
-          onClick={()=>{
+          onClick={() => {
             console.log(globalVars.db)
           }}
         >打印 db 实例</Button>

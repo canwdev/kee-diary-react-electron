@@ -1,4 +1,4 @@
-export const lsUtil = {
+export const localStorageUtil = {
   setItem(key, value) {
     return window.localStorage.setItem(key, JSON.stringify(value))
   },

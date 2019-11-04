@@ -14,12 +14,21 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+
+import BugReportIcon from '@material-ui/icons/BugReport';
+import LockIcon from '@material-ui/icons/Lock';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
+import EventNoteIcon from '@material-ui/icons/EventNote';
+
 import Button from "@material-ui/core/Button"
 import {Link as RouterLink} from "react-router-dom"
 import useReactRouter from "use-react-router"
-import {globalVars} from "../store"
+
+import {useDispatch} from "react-redux"
+import store from "../store"
+import {getUnlocked} from "../store/getters"
+import {setUnlocked} from "../store/setters"
 
 const drawerWidth = 240;
 const CONFIG_DRAWER_OPEN = 'CONFIG_DRAWER_OPEN'
@@ -86,9 +95,20 @@ const useStyles = makeStyles(theme => ({
 
 export default function AppContainer(props) {
   const classes = useStyles();
+  const getIcon = (index) => {
+    const icons = [
+      <LockIcon/>,
+      <VisibilityIcon/>,
+      <BugReportIcon/>
+    ]
+    return icons[index]
+  }
   const theme = useTheme();
-  const [open, setOpen] = React.useState(initOpenState);
   const {location} = useReactRouter();
+
+  const [open, setOpen] = React.useState(initOpenState);
+  const unlocked = getUnlocked(store)
+  const dispatch = useDispatch()
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -100,7 +120,9 @@ export default function AppContainer(props) {
     localStorage.setItem(CONFIG_DRAWER_OPEN, false)
   };
 
-  const isDetailPage = location.pathname === '/detail'
+  const handleCloseDB = () => {
+    setUnlocked(dispatch)
+  }
 
   return (
     <div className={classes.root}>
@@ -125,11 +147,13 @@ export default function AppContainer(props) {
               KeeDiary
             </Typography>
           </div>
-          <div>
-            <Button color="inherit" onClick={() => {
-              console.log(globalVars.db)
-            }}>打印数据库</Button>
-          </div>
+          {
+            unlocked && (
+              <div>
+                <Button color="inherit" onClick={handleCloseDB}>关闭数据库</Button>
+              </div>
+            )
+          }
         </Toolbar>
       </AppBar>
       <Drawer
@@ -156,30 +180,29 @@ export default function AppContainer(props) {
                 key={index}
                 component={React.forwardRef((props, ref) => <RouterLink to={item.path} innerRef={ref} {...props} />)}
               >
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}</ListItemIcon>
+                <ListItemIcon>{getIcon(index)}</ListItemIcon>
                 <ListItemText primary={item.title}/>
               </ListItem>
             )
           })}
         </List>
-        <Divider/>
-        <List>
-          {
-            isDetailPage &&
-            <>
+
+        {
+          location.pathname === '/detail' &&
+          <>
+            <Divider/>
+            <List>
               <ListItem button selected>
-                <ListItemIcon><InboxIcon/></ListItemIcon>
+                <ListItemIcon><ViewQuiltIcon/></ListItemIcon>
                 <ListItemText primary="普通视图"/>
               </ListItem>
               <ListItem button>
-                <ListItemIcon><InboxIcon/></ListItemIcon>
-                <ListItemText primary="日历视图"/>
+                <ListItemIcon><EventNoteIcon/></ListItemIcon>
+                <ListItemText primary="日历视图(未实现)"/>
               </ListItem>
-            </>
-
-          }
-
-        </List>
+            </List>
+          </>
+        }
       </Drawer>
       <main
         className={clsx(classes.content, {

@@ -13,9 +13,10 @@ import {makeStyles} from '@material-ui/core/styles';
 
 import kdbxweb from 'kdbxweb'
 import useForm from 'react-hook-form';
-import {lsUtil} from '../utils'
+import {localStorageUtil} from '../utils'
 import {useDispatch} from "react-redux"
-import {globalVars, SET_UNLOCKED} from "../store"
+import {globalVars} from "../store"
+import {setUnlocked} from "../store/setters"
 const CONFIG_DB = 'CONFIG_DB'
 
 
@@ -68,7 +69,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const signInDefaultConfig = lsUtil.getItem(CONFIG_DB) || {}
+const signInDefaultConfig = localStorageUtil.getItem(CONFIG_DB) || {}
 // console.log('加载默认设置', signInDefaultConfig)
 
 export default function Login() {
@@ -96,7 +97,7 @@ export default function Login() {
       kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
         console.log('数据库已解锁！', db)
         globalVars.db = db
-        dispatch({type: SET_UNLOCKED, value: true})
+        setUnlocked(dispatch, true)
       }).catch(e => {
         console.error(e)
         let message = e.message
@@ -114,9 +115,9 @@ export default function Login() {
     if (values.isSavePath) {
       const save = JSON.parse(JSON.stringify(values))
       // delete save.password
-      lsUtil.setItem(CONFIG_DB, save)
+      localStorageUtil.setItem(CONFIG_DB, save)
     } else {
-      lsUtil.removeItem(CONFIG_DB)
+      localStorageUtil.removeItem(CONFIG_DB)
     }
   };
 

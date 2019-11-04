@@ -6,12 +6,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
+// import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
-import {globalVars, SET_CURRENT_GROUP_UUID} from "../store"
+// import StarBorder from '@material-ui/icons/StarBorder';
+import {globalVars} from "../store"
 import {useDispatch, useSelector} from "react-redux"
 import {iconMap} from "../utils/icon-map"
+import {setCurrentGroupUUID} from "../store/setters"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,15 +31,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function NestedList() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
   const dispatch = useDispatch()
   const currentGroupUuid = useSelector(state => state.currentGroupUuid);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
-  let groups = []
 
   // 递归遍历数据库 groups
   function deepWalkGroup(node) {
@@ -60,7 +54,7 @@ export default function NestedList() {
 
   function handleItemClick(item) {
     // console.log('点击群组项', item)
-    dispatch({type: SET_CURRENT_GROUP_UUID, value: item.uuid})
+    setCurrentGroupUUID(dispatch, item.uuid)
   }
 
   // TODO: 重复渲染时的性能问题

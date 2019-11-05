@@ -12,7 +12,7 @@ import MenuItem from "@material-ui/core/MenuItem"
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import swal from 'sweetalert';
 import {iconMap} from "../utils/icon-map"
-import {setCurrentGroupUUID, setDbHasUnsavedChange} from "../store/setters"
+import {setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
 import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
 import {useSelector} from "react-redux"
 // import StarBorder from '@material-ui/icons/StarBorder';
@@ -48,7 +48,7 @@ function deepWalkGroup(node, counter = 0) {
       name: item.name,
       index: counter,
       children: deepWalkGroup(children, counter + 1),
-      original: item
+      _ref: item
     })
   })
   return list
@@ -95,13 +95,14 @@ export default function NestedList() {
 
   function handleItemClick(item) {
     // console.log('点击群组项', item)
-    setCurrentGroupUUID(item.uuid)
+    setCurrentGroupUuid(item.uuid)
   }
 
   useEffect(() => {
     if (groupsFiltered && groupsFiltered[0]) { // 自动选择第一个群组
-      setCurrentGroupUUID(groupsFiltered[0].uuid)
+      setCurrentGroupUuid(groupsFiltered[0].uuid)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function handleEdit(item) {
@@ -118,9 +119,9 @@ export default function NestedList() {
     })
       .then((value) => {
         if (value && value !== item.name) {
-          item.original.name = value
+          item._ref.name = value
           setDbHasUnsavedChange()
-          setCurrentGroupUUID(item.uuid)
+          setCurrentGroupUuid(item.uuid)
         }
       });
     // console.log('handleEdit', item)
@@ -141,7 +142,7 @@ export default function NestedList() {
       if (result) {
         db.remove(db.getGroup(item.uuid))
         setDbHasUnsavedChange()
-        setCurrentGroupUUID(item.uuid)
+        setCurrentGroupUuid(item.uuid)
       }
     });
 
@@ -201,9 +202,13 @@ export default function NestedList() {
         component="nav"
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
-            群组列表 <button onClick={() => {
-            setOn(!on)
-          }}>触发更新{JSON.stringify(on)}</button>
+            群组列表
+            <button
+              title="点击测试组件更新"
+              onClick={() => {
+                setOn(!on)
+              }}
+            >{JSON.stringify(on)}</button>
           </ListSubheader>
         }
         className={classes.root}

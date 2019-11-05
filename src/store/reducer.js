@@ -1,4 +1,5 @@
 import {
+  SET_CURRENT_ENTRY_UUID,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
   SET_SETTINGS,
@@ -16,7 +17,8 @@ const initialState = {
   },
   unlocked: false,
   dbHasUnsavedChange: false,
-  currentGroupUuid: null
+  currentGroupUuid: null,
+  currentEntry: null,
 }
 export default (state = initialState, action) => {
   const type = action.type
@@ -31,8 +33,9 @@ export default (state = initialState, action) => {
       unlocked: action.value
     }
     if (!action.value) { // 关闭数据库
-      newState.currentGroupUuid = null
       newState.dbHasUnsavedChange = false
+      newState.currentGroupUuid = null
+      newState.currentEntry = null
     }
     return newState
   }
@@ -48,6 +51,13 @@ export default (state = initialState, action) => {
     return {
       ...state,
       currentGroupUuid: action.value
+    }
+  }
+
+  if (type === SET_CURRENT_ENTRY_UUID) {
+    return {
+      ...state,
+      currentEntry: action.value
     }
   }
 

@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
 import LogoImg from '../assets/img/favicon.png'
+import AutoRedirectLogin from "../components/AutoRedirectLogin"
 
 import useForm from 'react-hook-form';
 import {loadKdbxDB, setGlobalDB, setSettings, setUnlocked} from "../store/setters"
@@ -116,7 +117,7 @@ export default function Login() {
 
   return (
     <Container component="main" maxWidth="xs">
-      {/*<CssBaseline />*/}
+      <AutoRedirectLogin/>
       <div className={classes.paper}>
         <Avatar className={classes.avatar} src={LogoImg} />
         <Typography component="h1" variant="h5">

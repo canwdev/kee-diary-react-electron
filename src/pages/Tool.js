@@ -31,12 +31,19 @@ export default function (props) {
           }}
         >打印 db 实例</Button>
 
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            console.log(state)
+          }}
+        >打印 redux state</Button>
+
         <Button onClick={() => {
           props.history.push('/login')
         }}>跳转 Login 页面</Button>
       </div>
 
-      <p>{JSON.stringify(state)}</p>
     </Container>
   )
 }

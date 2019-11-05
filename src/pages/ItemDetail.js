@@ -1,8 +1,14 @@
 import React, {useState} from 'react';
+import {Redirect} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles"
 import {Box, Container, Input, Paper, TextareaAutosize} from "@material-ui/core"
 import clsx from "clsx"
 import {formatDate} from "../utils"
+import {useSelector} from "react-redux"
+import {selectorCurrentEntry} from "../store/getters"
+import {setDbHasUnsavedChange} from "../store/setters"
+import AutoRedirectLogin from "../components/AutoRedirectLogin"
+
 
 const fontFamily = `"Open Sans", "Source Han Sans SC", "PingFang SC", Arial, "Microsoft YaHei", "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif`
 const useStyles = makeStyles(theme => ({
@@ -35,21 +41,55 @@ const useStyles = makeStyles(theme => ({
 
 export default function () {
   const classes = useStyles()
+  const unlocked = useSelector(state => state.unlocked);
 
-  const [title, setTitle] = useState('')
-  const [noteText, setNoteText] = useState('')
-  const creationTime = formatDate(new Date())
-  const lastModTime = formatDate(new Date())
+  let entry = useSelector(selectorCurrentEntry)
+  entry = (entry && entry._ref) || {
+    fields: {
+      Title: '没有打开数据库',
+      Notes: '你的修改不会被保存',
+    },
+    times: {
+      creationTime: new Date(),
+      lastModTime: new Date()
+    }
+  }
+
+  const [title, setTitle] = useState(entry.fields.Title)
+  const [noteText, setNoteText] = useState(entry.fields.Notes)
+  const creationTime = formatDate(entry.times.creationTime)
+  const lastModTime = formatDate(entry.times.lastModTime)
+
+  function updateEntry(key, value) {
+    key = value
+    // TODO: 潜在的性能问题
+    entry.times.lastModTime = new Date()
+    setDbHasUnsavedChange()
+  }
+
+  function handleTitleChange(e) {
+    const value = e.target.value
+
+    updateEntry(entry.fields.Title, value)
+    setTitle(value)
+  }
+
+  function handleNoteTextChange(e) {
+    const value = e.target.value
+    updateEntry(entry.fields.Notes, value)
+    setNoteText(value)
+  }
 
   return (
     <Container maxWidth="md">
+      {!unlocked ? <Redirect to="/login"/> : null}
       <Paper className={classes.root}>
 
         <Box className={classes.box}>
           <Input
             placeholder="标题"
-            defaultValue={title}
-            onChange={setTitle}
+            value={title}
+            onChange={handleTitleChange}
             className={classes.titleInput}
           />
         </Box>
@@ -62,7 +102,7 @@ export default function () {
         <Box className={classes.box}>
           <TextareaAutosize
             value={noteText}
-            onChange={(e)=>{setNoteText(e.target.value)}}
+            onChange={handleNoteTextChange}
             className={classes.NoteTextArea}
             rows={15}
             placeholder="开始写作..."

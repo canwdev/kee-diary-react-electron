@@ -1,4 +1,5 @@
 import {
+  SET_CURRENT_ENTRY_UUID,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
   SET_SETTINGS,
@@ -16,9 +17,14 @@ export function setSettings(settings) {
   store.dispatch({type: SET_SETTINGS, value: settings})
 }
 
-export function setCurrentGroupUUID(uuid) {
+export function setCurrentGroupUuid(uuid) {
   store.dispatch({type: SET_CURRENT_GROUP_UUID, value: uuid})
 }
+
+export function setCurrentEntry(value) {
+  store.dispatch({type: SET_CURRENT_ENTRY_UUID, value: value})
+}
+
 
 export function setUnlocked(stat = false) {
   if (!stat) { // 关闭数据库

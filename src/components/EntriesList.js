@@ -11,6 +11,7 @@ import {iconMap} from "../utils/icon-map"
 import {selectorCurrentGroupUuid, getGlobalDB} from "../store/getters"
 import {formatDate} from "../utils"
 import useReactRouter from "use-react-router"
+import {setCurrentEntry} from "../store/setters"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,8 +50,14 @@ export default function (props) {
         url: item.fields.URL,
         creationTime: item.times.creationTime,
         lastModTime: item.times.lastModTime,
+        _ref: item
       })
     })
+  }
+
+  function handleEntryItemClick(item) {
+    setCurrentEntry(item)
+    history.push('/item-detail')
   }
 
   return (
@@ -71,7 +78,7 @@ export default function (props) {
               key={row.uuid.id}
               className={classes.tableRow}
               onClick={() => {
-                history.push('/item-detail')
+                handleEntryItemClick(row)
               }}
             >
               <TableCell><i style={{fontSize: 20}} className={`fa fa-${row.icon}`}/></TableCell>

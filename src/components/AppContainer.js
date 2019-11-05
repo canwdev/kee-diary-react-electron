@@ -20,6 +20,8 @@ import LockIcon from '@material-ui/icons/Lock';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
 import EventNoteIcon from '@material-ui/icons/EventNote';
+import NotesIcon from '@material-ui/icons/Notes';
+import HelpIcon from '@material-ui/icons/Help';
 
 import Button from "@material-ui/core/Button"
 import {Link as RouterLink} from "react-router-dom"
@@ -99,10 +101,12 @@ const useStyles = makeStyles(theme => ({
 export default function AppContainer(props) {
   const classes = useStyles();
   const getIcon = (index) => {
+    // 抽屉条目图标列表
     const icons = [
       <LockIcon/>,
       <VisibilityIcon/>,
-      <BugReportIcon/>
+      <NotesIcon/>,
+      <BugReportIcon/>,
     ]
     return icons[index]
   }
@@ -203,7 +207,7 @@ export default function AppContainer(props) {
                 key={index}
                 component={React.forwardRef((props, ref) => <RouterLink to={item.path} innerRef={ref} {...props} />)}
               >
-                <ListItemIcon>{getIcon(index)}</ListItemIcon>
+                <ListItemIcon>{getIcon(index) || <HelpIcon/>}</ListItemIcon>
                 <ListItemText primary={item.title}/>
               </ListItem>
             )
@@ -211,7 +215,7 @@ export default function AppContainer(props) {
         </List>
 
         {
-          location.pathname === '/detail' &&
+          location.pathname === '/view-list' &&
           <>
             <Divider/>
             <List>

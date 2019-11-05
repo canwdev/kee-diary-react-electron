@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Redirect, Route,} from "react-router-dom";
+import {HashRouter as Router, Redirect, Route,} from "react-router-dom";
 
 import AppContainer from "./components/AppContainer"
 
@@ -11,7 +11,7 @@ function App() {
 
   return (
     <Router>
-      {!unlocked ? <Redirect to="/login"/> : <Redirect to="/detail"/>}
+      {!unlocked ? <Redirect to="/login"/> : <Redirect to="/view-list"/>}
       <AppContainer router={router} match>
         <div className="page-content">
           {

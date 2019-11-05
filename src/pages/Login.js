@@ -10,6 +10,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
+import LogoImg from '../assets/img/favicon.png'
 
 import useForm from 'react-hook-form';
 import {loadKdbxDB, setGlobalDB, setSettings, setUnlocked} from "../store/setters"
@@ -78,7 +79,7 @@ export default function Login() {
 
   const onSubmit = values => {
     loadKdbxDB(values.dbPath, values.password, values.keyPath).then(db => {
-      console.log('数据库已解锁！', db)
+      // console.log('数据库已解锁！', db)
       setGlobalDB(db)
       setUnlocked(true)
 
@@ -117,7 +118,7 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       {/*<CssBaseline />*/}
       <div className={classes.paper}>
-        <Avatar className={classes.avatar} src='/favicon.png'/>
+        <Avatar className={classes.avatar} src={LogoImg} />
         <Typography component="h1" variant="h5">
           打开数据库
         </Typography>

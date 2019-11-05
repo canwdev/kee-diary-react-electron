@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
@@ -13,7 +13,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import swal from 'sweetalert';
 import {iconMap} from "../utils/icon-map"
 import {setCurrentGroupUUID, setDbHasUnsavedChange} from "../store/setters"
-import {selectorCurrentGroupUuid, getGlobalDB} from "../store/getters"
+import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
 import {useSelector} from "react-redux"
 // import StarBorder from '@material-ui/icons/StarBorder';
 
@@ -97,6 +97,12 @@ export default function NestedList() {
     // console.log('点击群组项', item)
     setCurrentGroupUUID(item.uuid)
   }
+
+  useEffect(() => {
+    if (groupsFiltered && groupsFiltered[0]) { // 自动选择第一个群组
+      setCurrentGroupUUID(groupsFiltered[0].uuid)
+    }
+  }, [])
 
   function handleEdit(item) {
     swal({
@@ -202,7 +208,7 @@ export default function NestedList() {
         }
         className={classes.root}
       >
-        {generateVDOM(groupsFiltered) }
+        {generateVDOM(groupsFiltered)}
       </List>
 
       {

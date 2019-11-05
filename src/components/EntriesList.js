@@ -10,11 +10,18 @@ import {useSelector} from "react-redux"
 import {iconMap} from "../utils/icon-map"
 import {selectorCurrentGroupUuid, getGlobalDB} from "../store/getters"
 import {formatDate} from "../utils"
+import useReactRouter from "use-react-router"
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
     overflowX: 'auto',
+  },
+  tableRow: {
+    cursor: 'pointer',
+    "&:hover": {
+      backgroundColor: theme.palette.grey["300"]
+    }
   },
   empty: {
     textAlign: 'center',
@@ -22,8 +29,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SimpleTable() {
+export default function (props) {
   const classes = useStyles();
+
+  const {history} = useReactRouter();
   const uuid = useSelector(selectorCurrentGroupUuid);
   const db = getGlobalDB()
 
@@ -52,13 +61,19 @@ export default function SimpleTable() {
             <TableCell>图标</TableCell>
             <TableCell>标题</TableCell>
             <TableCell>URL</TableCell>
-            <TableCell>创建日期</TableCell>
-            <TableCell align="left">修改日期</TableCell>
+            <TableCell>创建时间</TableCell>
+            <TableCell align="left">修改时间</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {entries.map(row => (
-            <TableRow key={row.uuid.id}>
+            <TableRow
+              key={row.uuid.id}
+              className={classes.tableRow}
+              onClick={() => {
+                history.push('/item-detail')
+              }}
+            >
               <TableCell><i style={{fontSize: 20}} className={`fa fa-${row.icon}`}/></TableCell>
               <TableCell component="th" scope="row">
                 {row.title}

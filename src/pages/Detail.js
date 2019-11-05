@@ -25,7 +25,7 @@ export default function () {
           </Paper>
         </Grid>
         <Grid item md={9} xs={12}>
-            <GroupsDetail/>
+          <GroupsDetail/>
         </Grid>
       </Grid>
     </Container>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,7 +8,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {useSelector} from "react-redux"
 import {iconMap} from "../utils/icon-map"
-import {getGlobalDB} from "../store/getters"
+import {selectorCurrentGroupUuid, getGlobalDB} from "../store/getters"
+import {formatDate} from "../utils"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,22 +24,22 @@ const useStyles = makeStyles(theme => ({
 
 export default function SimpleTable() {
   const classes = useStyles();
-  const uuid = useSelector(state => state.currentGroupUuid);
+  const uuid = useSelector(selectorCurrentGroupUuid);
   const db = getGlobalDB()
 
   const entries = []
   if (db && uuid && uuid.id) {
     const group = db.getGroup(uuid)
-    console.log('获取详情', group)
+    // console.log('获取详情', group)
 
-    group.entries.forEach((item, index) => {
+    group && group.entries.forEach((item, index) => {
       entries.push({
         uuid: item.uuid,
         icon: iconMap[item.icon],
         title: item.fields.Title,
-        notes: item.fields.Notes,
+        url: item.fields.URL,
         creationTime: item.times.creationTime,
-        lastModTimelastModTime: item.times.lastModTime,
+        lastModTime: item.times.lastModTime,
       })
     })
   }
@@ -50,9 +51,9 @@ export default function SimpleTable() {
           <TableRow>
             <TableCell>图标</TableCell>
             <TableCell>标题</TableCell>
-            <TableCell>内容</TableCell>
+            <TableCell>URL</TableCell>
             <TableCell>创建日期</TableCell>
-            <TableCell align="right">修改日期</TableCell>
+            <TableCell align="left">修改日期</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -62,9 +63,9 @@ export default function SimpleTable() {
               <TableCell component="th" scope="row">
                 {row.title}
               </TableCell>
-              <TableCell>{row.notes}</TableCell>
-              <TableCell>{row.creationTime.toString()}</TableCell>
-              <TableCell align="right">{row.creationTime.toString()}</TableCell>
+              <TableCell>{row.url}</TableCell>
+              <TableCell>{formatDate(row.creationTime)}</TableCell>
+              <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

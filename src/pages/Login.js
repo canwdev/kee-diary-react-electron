@@ -11,14 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
 
-import kdbxweb from 'kdbxweb'
 import useForm from 'react-hook-form';
-import {localStorageUtil} from '../utils'
-import {useDispatch} from "react-redux"
-import {setGlobalDB, setUnlocked} from "../store/setters"
-const CONFIG_DB = 'CONFIG_DB'
-
-
+import {loadKdbxDB, setGlobalDB, setSettings, setUnlocked} from "../store/setters"
+import {selectorSettings} from "../store/getters"
+import {useSelector} from "react-redux"
 
 function Copyright() {
   return (
@@ -67,57 +63,40 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1)
   }
 }));
-
-const signInDefaultConfig = localStorageUtil.getItem(CONFIG_DB) || {}
 // console.log('加载默认设置', signInDefaultConfig)
 
 export default function Login() {
   const classes = useStyles();
+  const settings = useSelector(selectorSettings)
   const {handleSubmit, register, errors, setValue} = useForm({
-    defaultValues: signInDefaultConfig
+    defaultValues: settings
   });
-  const dispatch = useDispatch()
 
   function forgotPassword() {
     window.api.alert('如果你忘记了密码，可能永远也找不回了。')
-
   }
-  const onSubmit = values => {
-    try {
-      const dbArrayBuffer = window.api.readFileSyncAsArrayBuffer(values.dbPath)
 
-      let keyFileArrayBuffer
-      if (values.keyPath) {
-        keyFileArrayBuffer = window.api.readFileSyncAsArrayBuffer(values.keyPath)
+  const onSubmit = values => {
+    loadKdbxDB(values.dbPath, values.password, values.keyPath).then(db => {
+      console.log('数据库已解锁！', db)
+      setGlobalDB(db)
+      setUnlocked(true)
+
+      const settings = JSON.parse(JSON.stringify(values))
+      if (!values.rememberPathChecked) {
+
+        delete settings.keyPath
+        delete settings.password
       }
 
-      let credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(values.password), keyFileArrayBuffer);
-
-      kdbxweb.Kdbx.load(dbArrayBuffer, credentials).then(db => {
-        console.log('数据库已解锁！', db)
-        setGlobalDB(db)
-        setUnlocked(dispatch, true)
-      }).catch(e => {
-        console.error(e)
-        let message = e.message
-        if (e.code === 'InvalidKey') message = '密码或密钥错误'
-        window.api.showErrorBox(e.name + ': ' + e.code, message)
-      })
-
-
-    } catch (e) {
+      setSettings(settings)
+    }).catch(e => {
       console.error(e)
-      window.api.showErrorBox(e, '')
-    }
+      let message = e.message
+      if (e.code === 'InvalidKey') message = '密码或密钥错误'
+      window.api.showErrorBox(e.name + ': ' + e.code, message)
+    })
 
-
-    if (values.isSavePath) {
-      const save = JSON.parse(JSON.stringify(values))
-      // delete save.password
-      localStorageUtil.setItem(CONFIG_DB, save)
-    } else {
-      localStorageUtil.removeItem(CONFIG_DB)
-    }
   };
 
 
@@ -138,7 +117,7 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       {/*<CssBaseline />*/}
       <div className={classes.paper}>
-        <Avatar className={classes.avatar} src='/favicon.png' />
+        <Avatar className={classes.avatar} src='/favicon.png'/>
         <Typography component="h1" variant="h5">
           打开数据库
         </Typography>
@@ -172,7 +151,7 @@ export default function Login() {
             // required
             fullWidth
             label="密码"
-            type="text"
+            type="password"
             autoComplete="current-password"
           />
 
@@ -201,8 +180,8 @@ export default function Login() {
           <FormControlLabel
 
             control={
-              /*<Checkbox name="isSavePath" inputRef={register} />*/
-              <input type="checkbox" name="isSavePath" ref={register}/>
+              /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
+              <input type="checkbox" name="rememberPathChecked" ref={register}/>
             }
             label="记住数据库和密钥位置"
           />

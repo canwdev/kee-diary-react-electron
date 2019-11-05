@@ -1,11 +1,6 @@
 import {createStore} from "redux"
 import reducer from './reducer'
 
-export const initialState = {
-  unlocked: false,
-  currentGroupUuid: null
-}
-
 const store = createStore(reducer)
 export default store
 

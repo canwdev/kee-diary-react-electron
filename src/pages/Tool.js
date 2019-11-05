@@ -1,5 +1,5 @@
 import React from 'react';
-import {useSelector, useDispatch} from 'react-redux'
+import {useSelector} from 'react-redux'
 import {Container} from "@material-ui/core"
 import Button from '@material-ui/core/Button'
 import {setUnlocked} from "../store/setters"
@@ -7,10 +7,9 @@ import {getGlobalDB} from "../store/getters"
 
 export default function (props) {
   const state = useSelector(state => state)
-  const dispatch = useDispatch()
 
   function toggle() {
-    setUnlocked(dispatch, !state.unlocked)
+    setUnlocked(!state.unlocked)
   }
 
   return (

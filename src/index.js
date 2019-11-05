@@ -5,6 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import App from './App';
 import {Provider} from 'react-redux'
 import store from "./store"
+
 if (module.hot) {
   module.hot.accept();
 }

@@ -1,15 +1,15 @@
-const { shell , remote } = require('electron');
+const {shell, remote} = require('electron');
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener('DOMContentLoaded', () => {
-  var API = function() {
+  var API = function () {
     const fs = remote.require('fs')
 
     // 外部浏览器打开链接
     this.openExternal = shell.openExternal
     // 打开文件选择器
-    this.openFileChooser = function (filters=[]) {
+    this.openFileChooser = function (filters = []) {
       return remote.dialog.showOpenDialogSync(remote.getCurrentWindow(), {
         properties: ['openFile'],
         filters: filters
@@ -24,10 +24,22 @@ window.addEventListener('DOMContentLoaded', () => {
         res = new Uint8Array(file).buffer
       } catch (e) {
         alert(e)
-        console.log(e)
+        console.error(e)
         throw new Error(e)
       }
 
+      return res
+    }
+
+    this.saveFileSyncAsArrayBuffer = function (path, arrayBuffer) {
+      let res
+      try {
+        res = fs.writeFileSync(path, Buffer.from(arrayBuffer))
+      } catch (e) {
+        // alert(e)
+        console.error(e)
+        throw new Error(e)
+      }
       return res
     }
 

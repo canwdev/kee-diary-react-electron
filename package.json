@@ -27,6 +27,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "redux": "^4.0.4",
+    "sweetalert": "^2.1.2",
     "use-react-router": "^1.0.7"
   },
   "devDependencies": {

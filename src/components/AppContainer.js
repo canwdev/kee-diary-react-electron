@@ -25,14 +25,13 @@ import Button from "@material-ui/core/Button"
 import {Link as RouterLink} from "react-router-dom"
 import useReactRouter from "use-react-router"
 
-import {useDispatch} from "react-redux"
-import store from "../store"
-import {getUnlocked} from "../store/getters"
-import {setUnlocked} from "../store/setters"
+import {getGlobalDB, getSettings, selectorDbHasUnsavedChange, selectorUnlocked} from "../store/getters"
+import {saveKdbxDB, setUnlocked} from "../store/setters"
+import {useSelector} from "react-redux"
 
 const drawerWidth = 240;
-const CONFIG_DRAWER_OPEN = 'CONFIG_DRAWER_OPEN'
-const initOpenState = JSON.parse(localStorage.getItem(CONFIG_DRAWER_OPEN)) || false
+const SETTINGS_DRAWER_OPEN = 'SETTINGS_DRAWER_OPEN'
+const initOpenState = JSON.parse(localStorage.getItem(SETTINGS_DRAWER_OPEN)) || false
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -43,6 +42,7 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    userSelect: 'none'
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
@@ -60,6 +60,9 @@ const useStyles = makeStyles(theme => ({
   },
   Toolbar: {
     justifyContent: 'space-between'
+  },
+  actionButtons: {
+    marginLeft: theme.spacing(1)
   },
   drawer: {
     width: drawerWidth,
@@ -107,21 +110,31 @@ export default function AppContainer(props) {
   const {location} = useReactRouter();
 
   const [open, setOpen] = React.useState(initOpenState);
-  const unlocked = getUnlocked(store)
-  const dispatch = useDispatch()
+  const unlocked = useSelector(selectorUnlocked)
+  const dbUnsaved = useSelector(selectorDbHasUnsavedChange)
+  const db = getGlobalDB()
+  let appTitle = 'KeeDiary'
+  if (db) {
+    appTitle += ` - ${db.groups[0].name}`
+  }
+
 
   const handleDrawerOpen = () => {
     setOpen(true);
-    localStorage.setItem(CONFIG_DRAWER_OPEN, true)
+    localStorage.setItem(SETTINGS_DRAWER_OPEN, true)
   };
 
   const handleDrawerClose = () => {
     setOpen(false);
-    localStorage.setItem(CONFIG_DRAWER_OPEN, false)
+    localStorage.setItem(SETTINGS_DRAWER_OPEN, false)
   };
 
   const handleCloseDB = () => {
-    setUnlocked(dispatch)
+    setUnlocked()
+  }
+  const handleSaveDB = () => {
+    const settings = getSettings()
+    saveKdbxDB(settings.dbPath)
   }
 
   return (
@@ -144,16 +157,26 @@ export default function AppContainer(props) {
               <MenuIcon/>
             </IconButton>
             <Typography variant="h6" noWrap>
-              KeeDiary
+              {appTitle}
             </Typography>
           </div>
-          {
-            unlocked && (
-              <div>
-                <Button color="inherit" onClick={handleCloseDB}>关闭数据库</Button>
-              </div>
-            )
-          }
+          <div>
+            {
+              unlocked && [
+                {title: '保存更改', action: handleSaveDB, disabled: !dbUnsaved},
+                {title: '关闭数据库', action: handleCloseDB},
+              ].map((item, index) => {
+                return (<Button
+                  variant="outlined"
+                  color="inherit"
+                  onClick={item.action}
+                  key={index}
+                  className={classes.actionButtons}
+                  disabled={item.disabled}
+                >{item.title}</Button>)
+              })
+            }
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer

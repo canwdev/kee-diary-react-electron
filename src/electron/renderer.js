@@ -5,8 +5,8 @@ var fs = require('fs');
 var content = document.getElementById('content');
 var button = document.getElementById('button');
 
-button.addEventListener('click',function(e){
-  fs.readFile('package.json','utf8',function(err,data){
+button.addEventListener('click', function (e) {
+  fs.readFile('package.json', 'utf8', function (err, data) {
     content.textContent = data;
     console.log(data);
   });

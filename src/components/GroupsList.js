@@ -10,7 +10,7 @@ import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 // import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 import {iconMap} from "../utils/icon-map"
 import {setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
 import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
@@ -106,18 +106,14 @@ export default function NestedList() {
   }, [])
 
   function handleEdit(item) {
-    swal({
+    swal.fire({
       title: `重命名《${item.name}》`,
-      content: {
-        element: "input",
-        attributes: {
-          value: item.name
-        },
-      },
-      buttons: true,
-      closeOnClickOutside: false,
+      input: 'text',
+      inputValue: item.name,
+      showCancelButton: true,
     })
-      .then((value) => {
+      .then((result) => {
+        const value = result.value
         if (value && value !== item.name) {
           item._ref.name = value
           setDbHasUnsavedChange()
@@ -131,15 +127,16 @@ export default function NestedList() {
     const recycleBinEnabled = db.meta.recycleBinEnabled
     const isRecycleBin = item.uuid.id === db.meta.recycleBinUuid.id
 
-    swal({
+    swal.fire({
       title: isRecycleBin ? '清空回收站' : '确认删除',
       text: isRecycleBin ? '确定要删除回收站中的所有数据吗？' :
         (recycleBinEnabled ? `确定要将《${item.name}》移动至回收站吗？` : `确定要永久删除《${item.name}》吗？`),
       icon: "warning",
-      buttons: ["取消", "确认"],
-      dangerMode: true,
+      showCancelButton: true,
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
     }).then((result) => {
-      if (result) {
+      if (result.value) {
         db.remove(db.getGroup(item.uuid))
         setDbHasUnsavedChange()
         setCurrentGroupUuid(item.uuid)

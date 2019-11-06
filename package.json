@@ -19,6 +19,7 @@
     "clsx": "^1.0.4",
     "cross-env": "^6.0.3",
     "font-awesome": "^4.7.0",
+    "hotkeys-js": "^3.7.2",
     "kdbxweb": "https://gitee.com/canwdev/kdbxweb.git",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
@@ -27,7 +28,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "redux": "^4.0.4",
-    "sweetalert": "^2.1.2",
+    "sweetalert2": "^9.1.5",
     "use-react-router": "^1.0.7"
   },
   "devDependencies": {

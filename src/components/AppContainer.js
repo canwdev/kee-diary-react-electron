@@ -27,7 +27,7 @@ import Button from "@material-ui/core/Button"
 import {Link as RouterLink} from "react-router-dom"
 import useReactRouter from "use-react-router"
 
-import {getGlobalDB, getSettings, selectorDbHasUnsavedChange, selectorUnlocked} from "../store/getters"
+import {getGlobalDB, selectorDbHasUnsavedChange, selectorUnlocked} from "../store/getters"
 import {saveKdbxDB, setUnlocked} from "../store/setters"
 import {useSelector} from "react-redux"
 
@@ -137,8 +137,8 @@ export default function AppContainer(props) {
     setUnlocked()
   }
   const handleSaveDB = () => {
-    const settings = getSettings()
-    saveKdbxDB(settings.dbPath)
+
+    saveKdbxDB()
   }
 
   return (

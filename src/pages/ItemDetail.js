@@ -7,8 +7,6 @@ import {formatDate} from "../utils"
 import {useSelector} from "react-redux"
 import {selectorCurrentEntry} from "../store/getters"
 import {setDbHasUnsavedChange} from "../store/setters"
-import AutoRedirectLogin from "../components/AutoRedirectLogin"
-
 
 const fontFamily = `"Open Sans", "Source Han Sans SC", "PingFang SC", Arial, "Microsoft YaHei", "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif`
 const useStyles = makeStyles(theme => ({
@@ -60,8 +58,7 @@ export default function () {
   const creationTime = formatDate(entry.times.creationTime)
   const lastModTime = formatDate(entry.times.lastModTime)
 
-  function updateEntry(key, value) {
-    key = value
+  function updateEntry() {
     // TODO: 潜在的性能问题
     entry.times.lastModTime = new Date()
     setDbHasUnsavedChange()
@@ -70,19 +67,22 @@ export default function () {
   function handleTitleChange(e) {
     const value = e.target.value
 
-    updateEntry(entry.fields.Title, value)
+    entry.fields.Title = value
+    updateEntry()
     setTitle(value)
   }
 
   function handleNoteTextChange(e) {
     const value = e.target.value
-    updateEntry(entry.fields.Notes, value)
+
+    entry.fields.Notes = value
+    updateEntry()
     setNoteText(value)
   }
 
   return (
     <Container maxWidth="md">
-      {!unlocked ? <Redirect to="/login"/> : null}
+      {!unlocked ? <Redirect to="/"/> : null}
       <Paper className={classes.root}>
 
         <Box className={classes.box}>

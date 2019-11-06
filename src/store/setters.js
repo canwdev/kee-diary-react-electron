@@ -9,8 +9,8 @@ import {
 import store, {globalVars} from "./index"
 import {localStorageUtil} from "../utils"
 import kdbxweb from "kdbxweb"
-import {getGlobalDB} from "./getters"
-import swal from 'sweetalert';
+import {getGlobalDB, getSettings} from "./getters"
+import swal from 'sweetalert2';
 
 export function setSettings(settings) {
   localStorageUtil.setItem(SETTINGS_LOCALSTORAGE, settings)
@@ -54,19 +54,36 @@ export function loadKdbxDB(dbPath, password, keyPath) {
   return kdbxweb.Kdbx.load(dbArrayBuffer, credentials)
 }
 
-export function saveKdbxDB(dbPath) {
+export function saveKdbxDB() {
+  const dbPath = getSettings().dbPath
   const db = getGlobalDB()
   if (db) {
     db.save().then(dataAsArrayBuffer => {
       try {
         window.api.saveFileSyncAsArrayBuffer(dbPath, dataAsArrayBuffer)
         setDbHasUnsavedChange(false)
-        swal("保存成功！", `数据库已保存至\n${dbPath}`, "success");
+        swal.fire({
+          toast: true,
+          position: 'top',
+          timer: 1500,
+          icon: 'success',
+          showConfirmButton: false,
+          title: "保存成功！",
+          text: dbPath
+        })
       } catch (e) {
-        swal("保存失败！", e, "error");
+        swal.fire({
+          icon: 'error',
+          title: '保存失败！',
+          text: e
+        })
       }
     })
   } else {
-    swal("保存失败！", "数据库实例不存在", "error");
+    swal.fire({
+      icon: 'error',
+      title: '保存失败！',
+      text: '数据库实例不存在'
+    })
   }
 }

@@ -7,7 +7,7 @@ export default function () {
 
   return (
     <>
-      {!unlocked ? <Redirect to="/login"/> : <Redirect to="/view-list"/>}
+      {!unlocked ? <Redirect to="/"/> : <Redirect to="/view-list"/>}
     </>
   )
 }

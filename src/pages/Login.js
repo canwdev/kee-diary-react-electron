@@ -21,12 +21,11 @@ import {useSelector} from "react-redux"
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" component="button">
-        KeeDiary
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
+      {'Copyright © '+new Date().getFullYear()+' '}
+      <Link color="inherit" component="button">KeeDiary</Link>
+      {' by canwdev'}
+      <br/>
+      {'可信任的日记编辑工具(或许)'}
     </Typography>
   );
 }
@@ -121,7 +120,7 @@ export default function Login() {
       <div className={classes.paper}>
         <Avatar className={classes.avatar} src={LogoImg} />
         <Typography component="h1" variant="h5">
-          打开数据库
+          打开 KDBX 数据库
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <Box className={classes.lrBox}>
@@ -185,7 +184,7 @@ export default function Login() {
               /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
               <input type="checkbox" name="rememberPathChecked" ref={register}/>
             }
-            label="记住数据库和密钥位置"
+            label="记住密码和密钥位置"
           />
           <Button
             type="submit"
@@ -194,7 +193,7 @@ export default function Login() {
             color="primary"
             className={classes.submit}
           >
-            解密
+            解锁
           </Button>
           <Grid container>
             <Grid item xs>

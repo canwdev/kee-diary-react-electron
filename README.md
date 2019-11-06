@@ -1,6 +1,14 @@
-# KeeDiary · KeePass Diary App
+# KeeDiary · KeePass 日记 - 桌面应用
 
-> 技术栈：Electron + React (create-react-app)
+可信任的日记编辑器，使用 kdbx 作为数据库加密存储您的日记。
+
+> 配合 syncthing 使用，可以方便的在不同设备同步数据库。
+
+## 技术栈
+
+- Electron
+- React (create-react-app、react全家桶，新手学习 React 中，存在诸多性能问题等待后期优化...)
+- [kdbxweb](https://github.com/keeweb/kdbxweb) (用于操作数据库，由于网络问题使用了拷贝的国内源)
 
 ## Run
 

@@ -35,7 +35,7 @@ function createWindow() {
       nodeIntegration: false,
       preload: path.join(__dirname, 'electron', 'preload.js')
     },
-    icon: __dirname + '/../public/favicon.ico'
+    icon: __dirname + '/../build/favicon.ico'
   })
 
   // and load the index.html of the app.

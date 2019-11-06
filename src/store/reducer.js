@@ -24,7 +24,11 @@ export default (state = initialState, action) => {
   const type = action.type
 
   if (type === SET_SETTINGS) {
-    return Object.assign(state, action.value)
+    const settings =  Object.assign(state.settings, action.value)
+    return {
+      ...state,
+      settings
+    }
   }
 
   if (type === SET_UNLOCKED) {

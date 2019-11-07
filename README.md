@@ -26,13 +26,15 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
     - [X] 移动至回收站（如果关闭了回收站则直接删除群组）
     - [X] 清空回收站
     - [ ] 移动群组 🚨
+    - [X] 新建群组
     - [ ] 列表的展开与收缩
     - [ ] 渲染性能优化
 - 条目(entries)
     - [X] 标题(Title)和内容(Note)的查看与编辑
-    - [ ] 创建新条目 🚨
+    - [X] 创建新条目
     - [ ] 删除条目
-    - [ ] 条目列表的排序（按创建或修改日期排序）
+    - [ ] 移动条目
+    - [ ] 排序（按创建或修改日期排序）
     - [ ] Markdown支持
 
 ## Run · 运行

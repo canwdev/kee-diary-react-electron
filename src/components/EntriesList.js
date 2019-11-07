@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {useSelector} from "react-redux"
 import {iconMap} from "../utils/icon-map"
-import {selectorCurrentGroupUuid, getGlobalDB} from "../store/getters"
+import {selectorCurrentGroupUuid, getGlobalDB, selectorCurrentEntry} from "../store/getters"
 import {formatDate} from "../utils"
 import useReactRouter from "use-react-router"
 import {setCurrentEntry} from "../store/setters"
@@ -34,12 +34,17 @@ export default function (props) {
   const classes = useStyles();
 
   const {history} = useReactRouter();
-  const uuid = useSelector(selectorCurrentGroupUuid);
+  const groupUuid = useSelector(selectorCurrentGroupUuid);
+  let currentEntry = useSelector(selectorCurrentEntry) || {
+    uuid: {
+      id: null
+    }
+  }
   const db = getGlobalDB()
 
   const entries = []
-  if (db && uuid && uuid.id) {
-    const group = db.getGroup(uuid)
+  if (db && groupUuid && groupUuid.id) {
+    const group = db.getGroup(groupUuid)
     // console.log('获取详情', group)
 
     group && group.entries.forEach((item, index) => {
@@ -56,7 +61,7 @@ export default function (props) {
   }
 
   function handleEntryItemClick(item) {
-    setCurrentEntry(item)
+    setCurrentEntry(item._ref)
     history.push('/item-detail')
   }
 
@@ -65,7 +70,7 @@ export default function (props) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>图标</TableCell>
+            <TableCell/>
             <TableCell>标题</TableCell>
             <TableCell>URL</TableCell>
             <TableCell>创建时间</TableCell>
@@ -75,6 +80,7 @@ export default function (props) {
         <TableBody>
           {entries.map(row => (
             <TableRow
+              selected={currentEntry.uuid.id === row.uuid.id}
               key={row.uuid.id}
               className={classes.tableRow}
               onClick={() => {

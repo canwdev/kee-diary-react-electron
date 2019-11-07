@@ -12,9 +12,12 @@ import MenuItem from "@material-ui/core/MenuItem"
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import swal from 'sweetalert2';
 import {iconMap} from "../utils/icon-map"
-import {setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
+import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
 import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
 import {useSelector} from "react-redux"
+import Divider from "@material-ui/core/Divider"
+import useReactRouter from "use-react-router"
+import {formatDate} from "../utils"
 // import StarBorder from '@material-ui/icons/StarBorder';
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +34,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: '18px'
   }
 }));
-
 
 // 递归遍历数据库 groups
 function deepWalkGroup(node, counter = 0) {
@@ -55,8 +57,9 @@ function deepWalkGroup(node, counter = 0) {
 }
 
 export default function NestedList() {
-  const [on, setOn] = useState(false)
+  const [on, setOn] = useState(false) // 仅在目前用于强制刷新组件状态，会有严重性能问题
 
+  const {history} = useReactRouter();
   const classes = useStyles();
   const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
 
@@ -77,13 +80,16 @@ export default function NestedList() {
   };
   const handleMenuItemClick = (type) => {
     setMenuState(menuInitState)
+    const group = menuState.item._ref
     switch (type) {
+      case 'addGroup':
+        return handleAddGroup(group)
+      case 'addEntry':
+        return handleAddEntry(group)
       case 'rename':
-        handleEdit(menuState.item)
-        return
+        return handleEdit(group)
       case 'delete':
-        handleDelete(menuState.item)
-        return
+        return handleDelete(group)
       default:
         return
     }
@@ -99,47 +105,76 @@ export default function NestedList() {
   }
 
   useEffect(() => {
-    if (groupsFiltered && groupsFiltered[0]) { // 自动选择第一个群组
+    if (!currentGroupUuid && groupsFiltered && groupsFiltered[0]) { // 自动选择第一个群组
       setCurrentGroupUuid(groupsFiltered[0].uuid)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function handleEdit(item) {
+  function handleAddGroup(group) {
+
     swal.fire({
-      title: `重命名《${item.name}》`,
+      title: '添加群组',
       input: 'text',
-      inputValue: item.name,
+      inputValue: '新群组',
+      showCancelButton: true,
+    }).then((result) => {
+      if (!result.dismiss && result.value) {
+        const newGroup = db.createGroup(group, result.value)
+        setDbHasUnsavedChange()
+        setCurrentGroupUuid(newGroup.uuid)
+      }
+    })
+  }
+
+  function handleAddEntry(group) {
+    const newEntry = db.createEntry(group)
+    newEntry.fields.Title = '新条目 - ' + formatDate(new Date())
+    console.log(newEntry)
+    setCurrentGroupUuid(group.uuid)
+    setCurrentEntry(newEntry)
+    history.push('/item-detail')
+  }
+
+  function handleEdit(group) {
+    const name = group.name
+    swal.fire({
+      title: `重命名《${name}》`,
+      input: 'text',
+      inputValue: name,
       showCancelButton: true,
     })
       .then((result) => {
         const value = result.value
-        if (value && value !== item.name) {
-          item._ref.name = value
+        if (value && value !== name) {
+          group.name = value
           setDbHasUnsavedChange()
-          setCurrentGroupUuid(item.uuid)
+          setCurrentGroupUuid(group.uuid)
+          setOn(!on)
         }
       });
-    // console.log('handleEdit', item)
   }
 
-  function handleDelete(item) {
+  function handleDelete(group) {
     const recycleBinEnabled = db.meta.recycleBinEnabled
-    const isRecycleBin = item.uuid.id === db.meta.recycleBinUuid.id
+    const isRecycleBin = group.uuid.id === db.meta.recycleBinUuid.id
+
+    const name = group.name
 
     swal.fire({
       title: isRecycleBin ? '清空回收站' : '确认删除',
       text: isRecycleBin ? '确定要删除回收站中的所有数据吗？' :
-        (recycleBinEnabled ? `确定要将《${item.name}》移动至回收站吗？` : `确定要永久删除《${item.name}》吗？`),
+        (recycleBinEnabled ? `确定要将《${name}》移动至回收站吗？` : `确定要永久删除《${name}》吗？其中的所有条目将被删除！`),
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: '确定',
       cancelButtonText: '取消'
     }).then((result) => {
       if (result.value) {
-        db.remove(db.getGroup(item.uuid))
+        db.remove(db.getGroup(group.uuid))
         setDbHasUnsavedChange()
-        setCurrentGroupUuid(item.uuid)
+        setCurrentGroupUuid(null)
+        setOn(!on)
       }
     });
 
@@ -201,7 +236,7 @@ export default function NestedList() {
           <ListSubheader component="div" id="nested-list-subheader">
             群组列表
             <button
-              title="点击测试组件更新"
+              title="强制刷新组件状态"
               onClick={() => {
                 setOn(!on)
               }}
@@ -227,14 +262,21 @@ export default function NestedList() {
             }
           >
             <MenuItem onClick={() => {
+              handleMenuItemClick('addGroup')
+            }}>添加群组</MenuItem>
+            <MenuItem onClick={() => {
+              handleMenuItemClick('addEntry')
+            }}>添加条目</MenuItem>
+            <Divider/>
+            <MenuItem onClick={() => {
               handleMenuItemClick('rename')
             }}>重命名</MenuItem>
-            {
-              menuState.item.index !== 0 &&
-              <MenuItem onClick={() => {
+            <MenuItem
+              disabled={menuState.item.index === 0}
+              onClick={() => {
                 handleMenuItemClick('delete')
-              }}>删除群组</MenuItem>
-            }
+              }}
+            >删除群组</MenuItem>
           </Menu>
         )
       }

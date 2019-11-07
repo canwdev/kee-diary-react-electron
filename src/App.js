@@ -21,7 +21,6 @@ function App() {
     });
 
     return () => {
-      console.log('unbind')
       hotkeys.unbind('ctrl+s, command+s')
     }
   }, [])

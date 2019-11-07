@@ -42,9 +42,9 @@ export default function () {
   const unlocked = useSelector(state => state.unlocked);
 
   let entry = useSelector(selectorCurrentEntry)
-  entry = (entry && entry._ref) || {
+  entry = entry || {
     fields: {
-      Title: '没有打开数据库',
+      Title: '没有打开的条目',
       Notes: '你的修改不会被保存',
     },
     times: {

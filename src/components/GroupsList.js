@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import ReactDOM from 'react-dom'
 import {makeStyles} from '@material-ui/core/styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
@@ -8,6 +9,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
+import Divider from "@material-ui/core/Divider"
+
+import Typography from '@material-ui/core/Typography';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import BorderColorIcon from '@material-ui/icons/BorderColor';
+import DeleteIcon from '@material-ui/icons/Delete';
+import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 // import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import swal from 'sweetalert2';
@@ -15,7 +24,6 @@ import {iconMap} from "../utils/icon-map"
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
 import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
 import {useSelector} from "react-redux"
-import Divider from "@material-ui/core/Divider"
 import useReactRouter from "use-react-router"
 import {formatDate} from "../utils"
 // import StarBorder from '@material-ui/icons/StarBorder';
@@ -32,6 +40,15 @@ const useStyles = makeStyles(theme => ({
   iconWrap: {
     minWidth: '32px',
     fontSize: '18px'
+  },
+  targetGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    lineHeight: '30px',
+    "&:hover": {
+      backgroundColor: theme.palette.grey["300"]
+    }
   }
 }));
 
@@ -88,6 +105,8 @@ export default function NestedList() {
         return handleAddEntry(group)
       case 'rename':
         return handleEdit(group)
+      case 'move':
+        return handleMove(group)
       case 'delete':
         return handleDelete(group)
       default:
@@ -133,6 +152,7 @@ export default function NestedList() {
     console.log(newEntry)
     setCurrentGroupUuid(group.uuid)
     setCurrentEntry(newEntry)
+    setDbHasUnsavedChange()
     history.push('/item-detail')
   }
 
@@ -153,6 +173,60 @@ export default function NestedList() {
           setOn(!on)
         }
       });
+  }
+
+  function handleMove(group) {
+    let selectedGroup = null
+
+    function generateGroupSelector(list, counter = 0) {
+      const VDOM = []
+      if (!list || list.length === 0) return null
+
+      list.forEach(item => {
+        const children = item.children
+        VDOM.push(
+          <div
+            key={item.uuid}
+            className={classes.nested}
+          >
+            <label className={classes.targetGroup}>
+              <input
+                type="radio"
+                name="target-group"
+                disabled={group.uuid.id === item._ref.uuid.id}
+                onClick={() => {
+                  selectedGroup = item._ref
+                }}
+              />
+              <span>{item.name}</span>
+            </label>
+            {generateGroupSelector(children, counter + 1)}
+          </div>
+        )
+      })
+      return VDOM
+    }
+
+    swal.fire({
+      title: '请选择目标群组',
+      html: ReactDOM.render((
+        <div style={{textAlign: 'left'}}>
+          {generateGroupSelector(groupsFiltered)}
+        </div>
+      ), document.createElement('div')),
+      showCancelButton: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        return selectedGroup
+      }
+    }).then(res => {
+      if (!res.dismiss && res.value) {
+        db.move(group, res.value);
+        setDbHasUnsavedChange()
+        setCurrentGroupUuid(group.uuid)
+        setOn(!on)
+      }
+    })
   }
 
   function handleDelete(group) {
@@ -228,6 +302,79 @@ export default function NestedList() {
     return VDOM
   }
 
+  function generateMenu() {
+    if (menuState.item) {
+      const menuList = [
+        {
+          icon: <AddBoxIcon fontSize="small"/>,
+          title: '添加群组',
+          action: 'addGroup'
+        },
+        {
+          icon: <AddCircleIcon fontSize="small"/>,
+          title: '添加条目',
+          action: 'addEntry'
+        },
+        {isDivider: true},
+        {
+          icon: <BorderColorIcon fontSize="small"/>,
+          title: '重命名',
+          action: 'rename'
+        },
+        {
+          disabled: menuState.item.index === 0,
+          icon: <DoubleArrowIcon fontSize="small"/>,
+          title: '移动',
+          action: 'move'
+        },
+        {
+          disabled: menuState.item.index === 0,
+          icon: <DeleteIcon fontSize="small"/>,
+          title: '删除群组',
+          action: 'delete'
+        }
+      ]
+      return (
+        <Menu
+          keepMounted
+          open={menuState.mouseY !== null}
+          onClose={handleMenuItemClick}
+          anchorReference="anchorPosition"
+          anchorPosition={
+            menuState.mouseY !== null && menuState.mouseX !== null
+              ? {top: menuState.mouseY, left: menuState.mouseX}
+              : undefined
+          }
+        >
+          {
+            menuList.map((item, index) => {
+              if (item.isDivider) {
+                return <Divider key={index}/>
+              }
+              return (
+                <MenuItem
+                  key={index}
+                  disabled={item.disabled}
+                  onClick={() => {
+                    handleMenuItemClick(item.action)
+                  }}
+                >
+                  <ListItemIcon className={classes.iconWrap}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <Typography variant="inherit">{item.title}</Typography>
+                </MenuItem>
+              )
+
+            })
+          }
+
+        </Menu>
+      )
+    }
+  }
+
+
   return (
     <>
       <List
@@ -249,36 +396,7 @@ export default function NestedList() {
       </List>
 
       {
-        menuState.item && (
-          <Menu
-            keepMounted
-            open={menuState.mouseY !== null}
-            onClose={handleMenuItemClick}
-            anchorReference="anchorPosition"
-            anchorPosition={
-              menuState.mouseY !== null && menuState.mouseX !== null
-                ? {top: menuState.mouseY, left: menuState.mouseX}
-                : undefined
-            }
-          >
-            <MenuItem onClick={() => {
-              handleMenuItemClick('addGroup')
-            }}>添加群组</MenuItem>
-            <MenuItem onClick={() => {
-              handleMenuItemClick('addEntry')
-            }}>添加条目</MenuItem>
-            <Divider/>
-            <MenuItem onClick={() => {
-              handleMenuItemClick('rename')
-            }}>重命名</MenuItem>
-            <MenuItem
-              disabled={menuState.item.index === 0}
-              onClick={() => {
-                handleMenuItemClick('delete')
-              }}
-            >删除群组</MenuItem>
-          </Menu>
-        )
+        generateMenu()
       }
 
     </>

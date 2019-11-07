@@ -17,15 +17,14 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-// import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+// import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import swal from 'sweetalert2';
-import {iconMap} from "../utils/icon-map"
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
-import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
+import {getGlobalDB, getIsRecycleBin, getIsRecycleBinEnabled, selectorCurrentGroupUuid} from "../store/getters"
 import {useSelector} from "react-redux"
 import useReactRouter from "use-react-router"
-import {formatDate} from "../utils"
+import {deepWalkGroup, formatDate} from "../utils"
 import clsx from "clsx"
 // import StarBorder from '@material-ui/icons/StarBorder';
 
@@ -56,27 +55,6 @@ const useStyles = makeStyles(theme => ({
     opacity: 0.5
   }
 }));
-
-// 递归遍历数据库 groups
-function deepWalkGroup(node, counter = 0) {
-  // console.log('TODO: 性能优化 ▲ deepWalkGroup')
-  const list = []
-  if (!node || node.length === 0) return list
-
-  node.forEach((item) => {
-    const children = item.groups
-
-    list.push({
-      icon: iconMap[item.icon],
-      uuid: item.uuid,
-      name: item.name,
-      index: counter,
-      children: deepWalkGroup(children, counter + 1),
-      _ref: item
-    })
-  })
-  return list
-}
 
 export default function NestedList() {
   const [on, setOn] = useState(false) // 仅在目前用于强制刷新组件状态，会有严重性能问题
@@ -109,11 +87,11 @@ export default function NestedList() {
       case 'addEntry':
         return handleAddEntry(group)
       case 'rename':
-        return handleEdit(group)
+        return handleEditGroup(group)
       case 'move':
-        return handleMove(group)
+        return handleMoveToGroup(group)
       case 'delete':
-        return handleDelete(group)
+        return handleDeleteGroup(group)
       default:
         return
     }
@@ -161,7 +139,7 @@ export default function NestedList() {
     history.push('/item-detail')
   }
 
-  function handleEdit(group) {
+  function handleEditGroup(group) {
     const name = group.name
     swal.fire({
       title: `重命名《${name}》`,
@@ -180,7 +158,7 @@ export default function NestedList() {
       });
   }
 
-  function handleMove(group) {
+  function handleMoveToGroup(group) {
     let selectedGroup = null
 
     function generateGroupSelector(list, counter = 0) {
@@ -230,7 +208,7 @@ export default function NestedList() {
       }
     }).then(res => {
       if (!res.dismiss && res.value) {
-        db.move(group, res.value);
+        db.move(group, selectedGroup);
         setDbHasUnsavedChange()
         setCurrentGroupUuid(group.uuid)
         setOn(!on)
@@ -238,16 +216,15 @@ export default function NestedList() {
     })
   }
 
-  function handleDelete(group) {
-    const recycleBinEnabled = db.meta.recycleBinEnabled
-    const isRecycleBin = group.uuid.id === db.meta.recycleBinUuid.id
+  function handleDeleteGroup(group) {
+    const isRecycleBin = getIsRecycleBin(group.uuid)
 
     const name = group.name
 
     swal.fire({
       title: isRecycleBin ? '清空回收站' : '确认删除',
       text: isRecycleBin ? '确定要删除回收站中的所有数据吗？' :
-        (recycleBinEnabled ? `确定要将《${name}》移动至回收站吗？` : `确定要永久删除《${name}》吗？其中的所有条目将被删除！`),
+        (getIsRecycleBinEnabled() ? `确定要将《${name}》移动至回收站吗？` : `确定要永久删除《${name}》吗？其中的所有条目将被删除！`),
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: '确定',
@@ -299,7 +276,7 @@ export default function NestedList() {
               <i className={`fa fa-${item.icon}`}/>
             </ListItemIcon>
             <ListItemText primary={item.name}/>
-            {hasChildren && <ExpandMore/>}
+            {hasChildren && <ExpandMoreIcon/>}
           </ListItem>
           <Collapse in={true} timeout="auto" unmountOnExit>
             {generateVDOM(children)}
@@ -313,6 +290,7 @@ export default function NestedList() {
 
   function generateMenu() {
     if (menuState.item) {
+      const item = menuState.item
       const menuList = [
         {
           icon: <AddBoxIcon fontSize="small"/>,
@@ -339,7 +317,7 @@ export default function NestedList() {
         {
           disabled: menuState.item.index === 0,
           icon: <DeleteIcon fontSize="small"/>,
-          title: '删除群组',
+          title: getIsRecycleBin(item._ref.uuid) ? '清空回收站' : '删除群组',
           action: 'delete'
         }
       ]

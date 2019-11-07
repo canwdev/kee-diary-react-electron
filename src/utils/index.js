@@ -1,3 +1,5 @@
+import {iconMap} from "./icon-map"
+
 export const localStorageUtil = {
   setItem(key, value) {
     return window.localStorage.setItem(key, JSON.stringify(value))
@@ -23,4 +25,28 @@ export function formatDate(date) {
   const hours = ' ' + date.getHours() + '时'
   const minutes = date.getMinutes() + '分'
   return [year, month, day, hours, minutes].join('')
+}
+
+/**
+ * 递归遍历数据库 groups
+ * usage: deepWalkGroup(db.groups)
+ * return: customized group list
+ */
+export function deepWalkGroup(node, counter = 0) {
+  const list = []
+  if (!node || node.length === 0) return list
+
+  node.forEach((item) => {
+    const children = item.groups
+
+    list.push({
+      icon: iconMap[item.icon],
+      uuid: item.uuid,
+      name: item.name,
+      index: counter,
+      children: deepWalkGroup(children, counter + 1),
+      _ref: item
+    })
+  })
+  return list
 }

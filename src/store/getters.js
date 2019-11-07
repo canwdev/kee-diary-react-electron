@@ -14,3 +14,11 @@ export const getDbHasUnsavedChange = () => store.getState().dbHasUnsavedChange
 export function getGlobalDB() {
   return globalVars.db
 }
+
+export function getIsRecycleBinEnabled() {
+  return globalVars.db.meta.recycleBinEnabled
+}
+
+export function getIsRecycleBin(groupUuid) {
+  return groupUuid.id === globalVars.db.meta.recycleBinUuid.id
+}

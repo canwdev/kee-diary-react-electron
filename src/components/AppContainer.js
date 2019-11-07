@@ -111,7 +111,7 @@ export default function AppContainer(props) {
     return icons[index]
   }
   const theme = useTheme();
-  const {location} = useReactRouter();
+  const {location, history} = useReactRouter();
 
   const [open, setOpen] = React.useState(initOpenState);
   const unlocked = useSelector(selectorUnlocked)
@@ -135,10 +135,6 @@ export default function AppContainer(props) {
 
   const handleCloseDB = () => {
     setUnlocked()
-  }
-  const handleSaveDB = () => {
-
-    saveKdbxDB()
   }
 
   return (
@@ -166,8 +162,22 @@ export default function AppContainer(props) {
           </div>
           <div>
             {
+              (unlocked && location.pathname === '/item-detail') && (
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  onClick={() => {
+                    history.push('/view-list')
+                  }}
+                  className={classes.actionButtons}
+                >返回</Button>
+              )
+            }
+
+
+            {
               unlocked && [
-                {title: '保存更改', action: handleSaveDB, disabled: !dbUnsaved},
+                {title: '保存更改', action: saveKdbxDB, disabled: !dbUnsaved},
                 {title: '关闭数据库', action: handleCloseDB},
               ].map((item, index) => {
                 return (<Button

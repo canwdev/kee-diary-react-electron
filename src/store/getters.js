@@ -1,5 +1,4 @@
-import {globalVars} from "./index"
-import store from "./index"
+import store, {globalVars} from "./index"
 
 // selectors
 export const selectorSettings = state => state.settings
@@ -9,7 +8,8 @@ export const selectorCurrentEntry = state => state.currentEntry
 export const selectorDbHasUnsavedChange = state => state.dbHasUnsavedChange
 
 // getters
-export const getSettings = ()=> store.getState().settings
+export const getSettings = () => store.getState().settings
+export const getDbHasUnsavedChange = () => store.getState().dbHasUnsavedChange
 
 export function getGlobalDB() {
   return globalVars.db

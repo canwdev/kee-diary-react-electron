@@ -9,7 +9,7 @@ import {
 import store, {globalVars} from "./index"
 import {localStorageUtil} from "../utils"
 import kdbxweb from "kdbxweb"
-import {getGlobalDB, getSettings} from "./getters"
+import {getDbHasUnsavedChange, getGlobalDB, getSettings} from "./getters"
 import swal from 'sweetalert2';
 
 export function setSettings(settings) {
@@ -28,9 +28,40 @@ export function setCurrentEntry(value) {
 
 export function setUnlocked(stat = false) {
   if (!stat) { // 关闭数据库
-    setGlobalDB(null) // 销毁实例
+    if (getDbHasUnsavedChange()) { // 有未保存的数据
+      swal.fire({
+        title: '要保存数据库吗？',
+        text: '您对数据库做了修改，但并未保存',
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: '保存并关闭',
+        cancelButtonText: '不保存',
+        showCloseButton: true,
+      }).then((result) => {
+        if (result.dismiss === swal.DismissReason.esc ||
+          result.dismiss === swal.DismissReason.backdrop ||
+          result.dismiss === swal.DismissReason.close) {
+          return
+        }
+        if (result.value) {
+          saveKdbxDB().then(() => {
+            closeDbDirectly()
+          })
+        } else {
+          closeDbDirectly()
+        }
+      })
+    } else {
+      closeDbDirectly()
+    }
+  } else {
+    store.dispatch({type: SET_UNLOCKED, value: stat})
   }
-  store.dispatch({type: SET_UNLOCKED, value: stat})
+
+  function closeDbDirectly() {
+    setGlobalDB(null) // 销毁实例
+    store.dispatch({type: SET_UNLOCKED, value: false})
+  }
 }
 
 export function setDbHasUnsavedChange(stat = true) {
@@ -57,33 +88,38 @@ export function loadKdbxDB(dbPath, password, keyPath) {
 export function saveKdbxDB() {
   const dbPath = getSettings().dbPath
   const db = getGlobalDB()
-  if (db) {
-    db.save().then(dataAsArrayBuffer => {
-      try {
-        window.api.saveFileSyncAsArrayBuffer(dbPath, dataAsArrayBuffer)
-        setDbHasUnsavedChange(false)
-        swal.fire({
-          toast: true,
-          position: 'top',
-          timer: 1500,
-          icon: 'success',
-          showConfirmButton: false,
-          title: "保存成功！",
-          text: dbPath
-        })
-      } catch (e) {
-        swal.fire({
-          icon: 'error',
-          title: '保存失败！',
-          text: e
-        })
-      }
-    })
-  } else {
-    swal.fire({
-      icon: 'error',
-      title: '保存失败！',
-      text: '数据库实例不存在'
-    })
-  }
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.save().then(dataAsArrayBuffer => {
+        try {
+          window.api.saveFileSyncAsArrayBuffer(dbPath, dataAsArrayBuffer)
+          setDbHasUnsavedChange(false)
+          swal.fire({
+            toast: true,
+            position: 'top',
+            timer: 1500,
+            icon: 'success',
+            showConfirmButton: false,
+            title: "保存成功！",
+            text: dbPath
+          })
+          resolve('保存成功')
+        } catch (e) {
+          swal.fire({
+            icon: 'error',
+            title: '保存失败！',
+            text: e
+          })
+          reject(e)
+        }
+      })
+    } else {
+      swal.fire({
+        icon: 'error',
+        title: '保存失败！',
+        text: '数据库实例不存在'
+      })
+      reject('数据库实例不存在')
+    }
+  })
 }

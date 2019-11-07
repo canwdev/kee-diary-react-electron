@@ -26,6 +26,7 @@ import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
 import {useSelector} from "react-redux"
 import useReactRouter from "use-react-router"
 import {formatDate} from "../utils"
+import clsx from "clsx"
 // import StarBorder from '@material-ui/icons/StarBorder';
 
 const useStyles = makeStyles(theme => ({
@@ -49,6 +50,10 @@ const useStyles = makeStyles(theme => ({
     "&:hover": {
       backgroundColor: theme.palette.grey["300"]
     }
+  },
+  disabled: {
+    pointerEvents: 'none',
+    opacity: 0.5
   }
 }));
 
@@ -187,7 +192,11 @@ export default function NestedList() {
         VDOM.push(
           <div
             key={item.uuid}
-            className={classes.nested}
+            className={clsx(
+              classes.nested, {
+                [classes.disabled]: group.uuid.id === item._ref.uuid.id,
+              }
+            )}
           >
             <label className={classes.targetGroup}>
               <input

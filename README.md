@@ -8,6 +8,8 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
 
 > 配合 Syncthing 使用，可以方便的在不同设备同步数据库。
 
+![demo](./public/demo.png)
+
 ## TechStack · 技术栈
 
 - Electron

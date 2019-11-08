@@ -4,24 +4,14 @@ import {HashRouter as Router, Route,} from "react-router-dom";
 import AppContainer from "./components/AppContainer"
 
 import router from './router'
-import hotkeys from "hotkeys-js"
-import {saveKdbxDB} from "./store/setters"
+import {registerKeyShortcuts, unRegisterKeyShortcuts} from "./utils/key-shortcuts"
 
 function App() {
 
   useEffect(() => {
-
-    // 保存数据库
-    hotkeys('ctrl+s, command+s', function(event, handler){
-      event.preventDefault()
-      if(event.target === "input"){
-        alert('你在输入框中按下了 a!')
-      }
-      saveKdbxDB()
-    });
-
+    registerKeyShortcuts()
     return () => {
-      hotkeys.unbind('ctrl+s, command+s')
+      unRegisterKeyShortcuts()
     }
   }, [])
 

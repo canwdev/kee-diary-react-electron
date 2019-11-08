@@ -293,14 +293,14 @@ export default function NestedList() {
       const item = menuState.item
       const menuList = [
         {
-          icon: <AddBoxIcon fontSize="small"/>,
-          title: '添加群组',
-          action: 'addGroup'
-        },
-        {
           icon: <AddCircleIcon fontSize="small"/>,
           title: '添加条目',
           action: 'addEntry'
+        },
+        {
+          icon: <AddBoxIcon fontSize="small"/>,
+          title: '添加群组',
+          action: 'addGroup'
         },
         {isDivider: true},
         {

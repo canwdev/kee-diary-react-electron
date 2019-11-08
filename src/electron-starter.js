@@ -70,6 +70,10 @@ function createWindow() {
       console.log(e)
     })
 
+  } else {
+
+    mainWindow.setMenuBarVisibility(false)
+
   }
 
 

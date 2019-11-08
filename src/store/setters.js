@@ -11,6 +11,7 @@ import {localStorageUtil} from "../utils"
 import kdbxweb from "kdbxweb"
 import {getDbHasUnsavedChange, getGlobalDB, getSettings} from "./getters"
 import swal from 'sweetalert2';
+import _debounce from 'lodash/debounce'
 
 export function setSettings(settings) {
   localStorageUtil.setItem(SETTINGS_LOCALSTORAGE, settings)
@@ -85,7 +86,13 @@ export function loadKdbxDB(dbPath, password, keyPath) {
   return kdbxweb.Kdbx.load(dbArrayBuffer, credentials)
 }
 
-export function saveKdbxDB() {
+// 防抖函数防止瞬间多次重复保存
+export const saveKdbxDB = _debounce(_saveKdbxDB, 1000, {
+  'leading': true,
+  'trailing': false
+})
+
+function _saveKdbxDB() {
   const dbPath = getSettings().dbPath
   const db = getGlobalDB()
   return new Promise((resolve, reject) => {

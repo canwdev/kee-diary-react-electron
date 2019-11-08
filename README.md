@@ -22,6 +22,7 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
 - [X] 浏览群组(groups)和群组里面的条目(entries)
 - [X] 保存数据库/关闭数据库
 - [X] 使用一个变量判断数据库是否被改动
+- [X] 加密存储本地密码
 - [ ] 构建索引以实现搜索功能
 - 群组(groups)
     - [X] 重命名群组
@@ -38,7 +39,7 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
     - [X] 移动条目
     - [ ] 排序（按创建或修改日期排序）🚨
     - [ ] Markdown支持
-    - [ ] 渲染性能优化
+    - [ ] 渲染性能优化 🚨
 
 ## Run · 运行
 

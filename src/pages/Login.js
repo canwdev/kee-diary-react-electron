@@ -17,6 +17,7 @@ import useForm from 'react-hook-form';
 import {loadKdbxDB, setGlobalDB, setSettings, setUnlocked} from "../store/setters"
 import {selectorSettings} from "../store/getters"
 import {useSelector} from "react-redux"
+import {decryptByDES, encryptByDES} from "../utils/crypto"
 
 function Copyright() {
   return (
@@ -69,6 +70,8 @@ const useStyles = makeStyles(theme => ({
 export default function Login() {
   const classes = useStyles();
   const settings = useSelector(selectorSettings)
+  settings.password = decryptByDES(settings.password)
+
   const {handleSubmit, register, errors, setValue} = useForm({
     defaultValues: settings
   });
@@ -89,6 +92,9 @@ export default function Login() {
         delete settings.keyPath
         delete settings.password
       }
+
+      // 加密密码
+      settings.password = encryptByDES(settings.password)
 
       setSettings(settings)
     }).catch(e => {

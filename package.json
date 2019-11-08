@@ -19,6 +19,7 @@
     "@material-ui/icons": "^4.5.1",
     "clsx": "^1.0.4",
     "cross-env": "^6.0.3",
+    "crypto-js": "^3.1.9-1",
     "font-awesome": "^4.7.0",
     "kdbxweb": "https://gitee.com/canwdev/kdbxweb.git",
     "lodash": "^4.17.15",
@@ -33,7 +34,7 @@
     "use-react-router": "^1.0.7"
   },
   "devDependencies": {
-    "electron": "^6.0.11",
+    "electron": "^5.0.1",
     "electron-devtools-installer": "^2.2.4",
     "foreman": "^3.0.1"
   },

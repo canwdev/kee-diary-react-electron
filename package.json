@@ -1,6 +1,6 @@
 {
   "name": "kee-diary",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A trusted journal editor that uses kdbx as a database encryption to store your journals.",
   "author": "canwdev",
   "private": true,

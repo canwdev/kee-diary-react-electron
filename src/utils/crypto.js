@@ -1,6 +1,6 @@
 const CryptoJS = require('crypto-js')
 
-const KEY = require('./private').key || '3esooNU9qo5J8T4FapH7'
+const KEY = '3esooNU9qo5J8T4FapH7'
 
 export function encryptByDES(message) { // 传入加密的内容
   // 把私钥转换成16进制的字符串

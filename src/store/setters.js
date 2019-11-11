@@ -108,7 +108,7 @@ function _saveKdbxDB() {
             icon: 'success',
             showConfirmButton: false,
             title: "保存成功！",
-            text: dbPath
+            // text: dbPath
           })
           resolve('保存成功')
         } catch (e) {

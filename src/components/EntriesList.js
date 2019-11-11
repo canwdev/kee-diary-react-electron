@@ -234,17 +234,21 @@ export default function (props) {
     const group = db.getGroup(groupUuid)
     // console.log('获取详情', group)
 
-    group && group.entries.forEach((item, index) => {
-      entries.push({
-        uuid: item.uuid,
-        icon: iconMap[item.icon],
-        title: item.fields.Title,
-        url: item.fields.URL,
-        creationTime: item.times.creationTime,
-        lastModTime: item.times.lastModTime,
-        _ref: item
-      })
-    })
+    if (group) {
+      for (let i = group.entries.length - 1; i >= 0; i--) {
+        let item = group.entries[i]
+        entries.push({
+          uuid: item.uuid,
+          icon: iconMap[item.icon],
+          title: item.fields.Title,
+          url: item.fields.URL,
+          creationTime: item.times.creationTime,
+          lastModTime: item.times.lastModTime,
+          _ref: item
+        })
+      }
+    }
+
   }
 
   function handleEntryItemClick(item) {
@@ -259,7 +263,6 @@ export default function (props) {
           <TableRow>
             <TableCell style={{width: '32px'}}/>
             <TableCell>标题</TableCell>
-            <TableCell>URL</TableCell>
             <TableCell>创建时间</TableCell>
             <TableCell align="left">修改时间</TableCell>
           </TableRow>
@@ -281,7 +284,6 @@ export default function (props) {
               <TableCell component="th" scope="row">
                 {row.title}
               </TableCell>
-              <TableCell>{row.url}</TableCell>
               <TableCell>{formatDate(row.creationTime)}</TableCell>
               <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
             </TableRow>

@@ -7,9 +7,9 @@
   "main": "src/electron-starter.js",
   "homepage": "./",
   "scripts": {
-    "electron": "cross-env ELECTRON_START_URL=http://localhost:5000 electron .",
     "dev": "nf start",
     "start": "react-scripts start",
+    "electron": "cross-env ELECTRON_START_URL=http://localhost:5000 electron .",
     "build:react": "react-scripts build",
     "build:electron": "electron-builder --dir",
     "eject": "react-scripts eject"

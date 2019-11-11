@@ -22,9 +22,14 @@ export function formatDate(date) {
   const year = date.getFullYear() + '年'
   const month = date.getMonth() + 1 + '月'
   const day = date.getDate() + '日'
-  const hours = ' ' + date.getHours() + '时'
-  const minutes = date.getMinutes() + '分'
-  return [year, month, day, hours, minutes].join('')
+  const hours = ' ' + pad2Num(date.getHours()) + ':'
+  const minutes = pad2Num(date.getMinutes()) + ':'
+  const seconds = pad2Num(date.getSeconds())
+  return [year, month, day, hours, minutes, seconds].join('')
+}
+
+export function pad2Num(num, len = 2) {
+  return num.toString().padStart(len, '0')
 }
 
 /**

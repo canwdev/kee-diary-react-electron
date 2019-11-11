@@ -37,7 +37,7 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
     - [X] 创建新条目
     - [X] 删除条目
     - [X] 移动条目
-    - [ ] 渲染性能优化 🚨
+    - [ ] 列表性能优化 🚨
     - [ ] 排序（按创建或修改日期排序）🚨
     - [ ] 搜索/过滤
     - [ ] Markdown 支持
@@ -64,6 +64,10 @@ npm run build:react
 # 构建 electron 生成可执行文件
 npm run build:electron
 ```
+
+## 备注
+
+- 如果在开发过程中出现 electron 无法启动的问题，请删除应用缓存：`C:\Users<user>\AppData\Roaming\<yourAppName>`
 
 ## Reference · 参考
 

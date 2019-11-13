@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -38,6 +38,10 @@ const initOpenState = JSON.parse(localStorage.getItem(SETTINGS_DRAWER_OPEN)) || 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
+  },
+  appTitle: {
+    fontSize: '18px',
+    fontWeight: '500'
   },
   appBar: {
     transition: theme.transitions.create(['margin', 'width'], {
@@ -138,7 +142,7 @@ export default function AppContainer(props) {
             >
               <MenuIcon/>
             </IconButton>
-            <Typography variant="h6" noWrap>
+            <Typography variant="h6" noWrap className={classes.appTitle}>
               {appTitle}
             </Typography>
           </div>
@@ -146,6 +150,7 @@ export default function AppContainer(props) {
             {
               (unlocked && location.pathname === '/item-detail') && (
                 <Button
+                  size="small"
                   variant="outlined"
                   color="inherit"
                   onClick={() => {
@@ -163,6 +168,7 @@ export default function AppContainer(props) {
                 {title: '关闭数据库', action: handleCloseDB},
               ].map((item, index) => {
                 return (<Button
+                  size="small"
                   variant="outlined"
                   color="inherit"
                   onClick={item.action}
@@ -186,7 +192,7 @@ export default function AppContainer(props) {
       >
         <div className={classes.drawerHeader}>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon/> : <ChevronRightIcon/>}
+            {theme.direction === 'ltr' ? <MenuOpenIcon/> : <ChevronRightIcon/>}
           </IconButton>
         </div>
         <Divider/>

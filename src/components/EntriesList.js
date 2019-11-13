@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -165,7 +165,7 @@ export default function (props) {
     })
   }
 
-  function generateMenu() {
+  const generatedMenu = useMemo(()=>{
     if (menuState.item) {
       const menuList = [
         {
@@ -219,7 +219,7 @@ export default function (props) {
         </Menu>
       )
     }
-  }
+  }, [menuState])
 
   const groupUuid = useSelector(selectorCurrentGroupUuid);
   let currentEntry = useSelector(selectorCurrentEntry) || {
@@ -227,37 +227,37 @@ export default function (props) {
       id: null
     }
   }
+
   const db = getGlobalDB()
+  const entries = useMemo(() => {
+    console.log('generate entries')
+    const list = []
+    if (db && groupUuid && groupUuid.id) {
+      const group = db.getGroup(groupUuid)
+      // console.log('获取详情', group)
 
-  const entries = []
-  if (db && groupUuid && groupUuid.id) {
-    const group = db.getGroup(groupUuid)
-    // console.log('获取详情', group)
-
-    if (group) {
-      for (let i = group.entries.length - 1; i >= 0; i--) {
-        let item = group.entries[i]
-        entries.push({
-          uuid: item.uuid,
-          icon: iconMap[item.icon],
-          title: item.fields.Title,
-          url: item.fields.URL,
-          creationTime: item.times.creationTime,
-          lastModTime: item.times.lastModTime,
-          _ref: item
-        })
+      if (group) {
+        for (let i = group.entries.length - 1; i >= 0; i--) {
+          let item = group.entries[i]
+          list.push({
+            uuid: item.uuid,
+            icon: iconMap[item.icon],
+            title: item.fields.Title,
+            url: item.fields.URL,
+            creationTime: item.times.creationTime,
+            lastModTime: item.times.lastModTime,
+            _ref: item
+          })
+        }
       }
+
     }
+    return list
+  }, [on, groupUuid]);
 
-  }
-
-  function handleEntryItemClick(item) {
-    setCurrentEntry(item._ref)
-    history.push('/item-detail')
-  }
-
-  return (
-    <Paper className={classes.root}>
+  const generatedTable = useMemo(() => {
+    console.log('generateTable')
+    return (
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -267,6 +267,7 @@ export default function (props) {
             <TableCell align="left">修改时间</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
           {entries.map(row => (
             <TableRow
@@ -289,7 +290,23 @@ export default function (props) {
             </TableRow>
           ))}
         </TableBody>
+
       </Table>
+    )
+
+  }, [on, groupUuid])
+
+  function handleEntryItemClick(item) {
+    setCurrentEntry(item._ref)
+    history.push('/item-detail')
+  }
+
+  return (
+    <Paper className={classes.root}>
+      {
+        generatedTable
+      }
+
       {
         entries.length === 0 && (
           <div className={classes.empty}>没有条目</div>
@@ -297,7 +314,7 @@ export default function (props) {
       }
 
       {
-        generateMenu()
+        generatedMenu
       }
     </Paper>
   );

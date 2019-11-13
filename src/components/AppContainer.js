@@ -46,14 +46,6 @@ const useStyles = makeStyles(theme => ({
     }),
     userSelect: 'none'
   },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
   menuButton: {
     marginRight: theme.spacing(2),
   },
@@ -77,8 +69,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
+    // ...theme.mixins.toolbar,
+    justifyContent: 'flex-start',
   },
   content: {
     flexGrow: 1,
@@ -87,14 +79,6 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: -drawerWidth,
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
   },
 }));
 
@@ -141,18 +125,16 @@ export default function AppContainer(props) {
     <div className={classes.root}>
       <AppBar
         position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
+        className={classes.appBar}
       >
-        <Toolbar className={classes.Toolbar}>
+        <Toolbar className={classes.Toolbar} variant="dense">
           <div style={{display: 'flex', alignItems: 'center'}}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={handleDrawerOpen}
               edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
+              className={clsx(classes.menuButton)}
             >
               <MenuIcon/>
             </IconButton>
@@ -195,12 +177,12 @@ export default function AppContainer(props) {
       </AppBar>
       <Drawer
         className={classes.drawer}
-        variant="persistent"
         anchor="left"
         open={open}
         classes={{
           paper: classes.drawerPaper,
         }}
+        onClose={handleDrawerClose}
       >
         <div className={classes.drawerHeader}>
           <IconButton onClick={handleDrawerClose}>
@@ -215,6 +197,7 @@ export default function AppContainer(props) {
                 selected={location.pathname === item.path}
                 button
                 key={index}
+                onClick={handleDrawerClose}
                 component={React.forwardRef((props, ref) => <RouterLink to={item.path} innerRef={ref} {...props} />)}
               >
                 <ListItemIcon>{getIcon(index) || <HelpIcon/>}</ListItemIcon>
@@ -229,7 +212,8 @@ export default function AppContainer(props) {
           <>
             <Divider/>
             <List>
-              <ListItem button selected>
+              <ListItem button selected
+                        onClick={handleDrawerClose}>
                 <ListItemIcon><ViewQuiltIcon/></ListItemIcon>
                 <ListItemText primary="普通视图"/>
               </ListItem>
@@ -242,11 +226,10 @@ export default function AppContainer(props) {
         }
       </Drawer>
       <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: open,
-        })}
+        className={classes.content}
       >
         <div className={classes.drawerHeader}/>
+        <div style={{height: '50px'}}></div>
         {props.children}
       </main>
     </div>

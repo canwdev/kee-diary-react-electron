@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -22,7 +22,7 @@ import {decryptByDES, encryptByDES} from "../utils/crypto"
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '+new Date().getFullYear()+' '}
+      {'Copyright © ' + new Date().getFullYear() + ' '}
       <Link color="inherit" component="button">KeeDiary</Link>
       {' by canwdev'}
       <br/>
@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
 export default function Login() {
   const classes = useStyles();
   const settings = useSelector(selectorSettings)
-  settings.password = decryptByDES(settings.password)
+  settings.password = useMemo(() => decryptByDES(settings.password), [settings])
 
   const {handleSubmit, register, errors, setValue} = useForm({
     defaultValues: settings
@@ -124,11 +124,15 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       <AutoRedirectLogin/>
       <div className={classes.paper}>
-        <Avatar className={classes.avatar} src={LogoImg} />
+        <Avatar className={classes.avatar} src={LogoImg}/>
         <Typography component="h1" variant="h5">
           打开 KDBX 数据库
         </Typography>
-        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+
+        <form
+          className={classes.form}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Box className={classes.lrBox}>
             <TextField
               name="dbPath"
@@ -207,7 +211,8 @@ export default function Login() {
                 component="button"
                 type="button"
                 onClick={forgotPassword}
-                variant="body2">
+                variant="body2"
+              >
                 忘记密码
               </Link>
             </Grid>

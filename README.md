@@ -67,7 +67,7 @@ npm run build:electron
 
 ## 备注
 
-- 如果在开发过程中出现 electron 无法启动的问题，请删除应用缓存：`C:\Users<user>\AppData\Roaming\<yourAppName>`
+- 如果在开发过程中出现 electron 无法启动的问题，请删除应用缓存：`C:\Users\<user>\AppData\Roaming\<yourAppName>`
 
 ## Reference · 参考
 

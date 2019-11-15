@@ -58,7 +58,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function (props) {
-  const [on, setOn] = useState(false)
+  const db = getGlobalDB()
+  const [updater, setUpdater] = useState(false)
 
   const {history} = useReactRouter();
   const classes = useStyles();
@@ -105,7 +106,7 @@ export default function (props) {
       if (result.value) {
         db.remove(entry);
         setDbHasUnsavedChange()
-        setOn(!on)
+        setUpdater(!updater)
       }
     });
   }
@@ -160,7 +161,7 @@ export default function (props) {
         setDbHasUnsavedChange()
         setCurrentGroupUuid(selectedGroup.uuid)
         setCurrentEntry(entry)
-        setOn(!on)
+        setUpdater(!updater)
       }
     })
   }
@@ -228,7 +229,6 @@ export default function (props) {
     }
   }
 
-  const db = getGlobalDB()
   const entries = useMemo(() => {
     console.log('generate entries')
     const list = []
@@ -253,7 +253,7 @@ export default function (props) {
 
     }
     return list
-  }, [on, groupUuid]);
+  }, [updater, groupUuid]);
 
   const generatedTable = useMemo(() => {
     console.log('generateTable')
@@ -294,7 +294,7 @@ export default function (props) {
       </Table>
     )
 
-  }, [on, groupUuid])
+  }, [updater, groupUuid])
 
   function handleEntryItemClick(item) {
     setCurrentEntry(item._ref)

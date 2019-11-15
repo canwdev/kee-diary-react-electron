@@ -41,8 +41,7 @@ export default function () {
   const classes = useStyles()
   const unlocked = useSelector(state => state.unlocked);
 
-  let entry = useSelector(selectorCurrentEntry)
-  entry = entry || {
+  let entry = useSelector(selectorCurrentEntry) || {
     fields: {
       Title: '没有打开的条目',
       Notes: '你的修改不会被保存',

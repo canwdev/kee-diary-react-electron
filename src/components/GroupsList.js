@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import ReactDOM from 'react-dom'
 import {makeStyles} from '@material-ui/core/styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -31,7 +31,6 @@ import clsx from "clsx"
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    minWidth: '300px',
     backgroundColor: theme.palette.background.paper,
   },
   nested: {
@@ -50,6 +49,13 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.grey["300"]
     }
   },
+  listItemText: {
+    width: '100px',
+    display: 'inline-block',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
   disabled: {
     pointerEvents: 'none',
     opacity: 0.5
@@ -57,7 +63,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function NestedList() {
-  const [on, setOn] = useState(false) // 仅在目前用于强制刷新组件状态，会有严重性能问题
+  // 数据库加载
+  const db = getGlobalDB() || {}
+
+  const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
 
   const {history} = useReactRouter();
   const classes = useStyles();
@@ -97,9 +106,9 @@ export default function NestedList() {
     }
   };
 
-  // 数据库加载
-  const db = getGlobalDB() || {}
-  const groupsFiltered = deepWalkGroup(db.groups)
+  const groupsFiltered = useMemo(() => {
+    return deepWalkGroup(db.groups)
+  }, [updater, currentGroupUuid])
 
   function handleItemClick(item) {
     // console.log('点击群组项', item)
@@ -153,7 +162,7 @@ export default function NestedList() {
           group.name = value
           setDbHasUnsavedChange()
           setCurrentGroupUuid(group.uuid)
-          setOn(!on)
+          setUpdater(!updater)
         }
       });
   }
@@ -211,7 +220,7 @@ export default function NestedList() {
         db.move(group, selectedGroup);
         setDbHasUnsavedChange()
         setCurrentGroupUuid(group.uuid)
-        setOn(!on)
+        setUpdater(!updater)
       }
     })
   }
@@ -234,18 +243,17 @@ export default function NestedList() {
         db.remove(db.getGroup(group.uuid))
         setDbHasUnsavedChange()
         setCurrentGroupUuid(null)
-        setOn(!on)
+        setUpdater(!updater)
       }
     });
 
   }
 
   /**
-   * 递归生成虚拟DOM
+   * 生成Group列表 DOM（递归生成虚拟DOM）
    * @param list 传 groupsFiltered
-   * @returns VDOM
    */
-  function generateVDOM(list) {
+  function generateGroupListVDOM(list) {
     const VDOM = []
     if (!list || list.length === 0) return null
 
@@ -275,11 +283,14 @@ export default function NestedList() {
             >
               <i className={`fa fa-${item.icon}`}/>
             </ListItemIcon>
-            <ListItemText primary={item.name}/>
+            <ListItemText
+              className={classes.listItemText}
+              primary={item.name}
+            />
             {hasChildren && <ExpandMoreIcon/>}
           </ListItem>
           <Collapse in={true} timeout="auto" unmountOnExit>
-            {generateVDOM(children)}
+            {generateGroupListVDOM(children)}
           </Collapse>
         </List>
       )
@@ -287,6 +298,10 @@ export default function NestedList() {
 
     return VDOM
   }
+
+  const generatedGroupList = useMemo(() => {
+    return generateGroupListVDOM(groupsFiltered)
+  }, [updater, currentGroupUuid])
 
   function generateMenu() {
     if (menuState.item) {
@@ -361,6 +376,9 @@ export default function NestedList() {
     }
   }
 
+  const generatedMenu = useMemo(() => {
+    return generateMenu()
+  }, [menuState])
 
   return (
     <>
@@ -369,21 +387,15 @@ export default function NestedList() {
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
             群组列表
-            <button
-              title="强制刷新组件状态"
-              onClick={() => {
-                setOn(!on)
-              }}
-            >{JSON.stringify(on)}</button>
           </ListSubheader>
         }
         className={classes.root}
       >
-        {generateVDOM(groupsFiltered)}
+        {generatedGroupList}
       </List>
 
       {
-        generateMenu()
+        generatedMenu
       }
 
     </>

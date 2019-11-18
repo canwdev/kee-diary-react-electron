@@ -67,10 +67,12 @@ npm run build:electron
 
 ## 备注
 
-- 如果在开发过程中出现 electron 无法启动的问题，请删除应用缓存：`C:\Users\<user>\AppData\Roaming\<yourAppName>`
+- 如果在开发过程中出现 electron 无法启动的问题，请删除应用缓存：`C:\Users\<user>\AppData\Roaming\<yourAppName>` （已查明是 `electron-devtools-installer` 插件的问题，已禁用插件）
+- 安装**前端**依赖时请务必安装在 `devDependencies`（`yarn add axios --D`），否则，如果安装在 `dependencies` 会一并打包进发行版，从而增大 electron 体积。
 
 ## Reference · 参考
 
 - [Building an Electron application with create-react-app](https://www.freecodecamp.org/news/building-an-electron-application-with-create-react-app-97945861647c/)
 - [Electron.js 快速入坑指南 - Windows 下的打包](https://canwdev.gitee.io/manual/setup-electronjs.html#windows-%E4%B8%8B%E7%9A%84%E6%89%93%E5%8C%85)
 - [KdbxWeb 国内拷贝并修改依赖源](https://gitee.com/canwdev/kdbxweb)
+- [Electron 打包优化 - 从 393MB 到 161MB](https://imweb.io/topic/5b9f500cc2ec8e6772f34d79)

@@ -8,7 +8,13 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
 
 > 配合 Syncthing 使用，可以方便的在不同设备同步数据库。
 
-![demo](./public/demo.png)
+## Screenshots · 截图
+
+![demo](./public/screenshots/01.png)
+
+![demo](./public/screenshots/02.png)
+
+![demo](./public/screenshots/03.png)
 
 ## TechStack · 技术栈
 
@@ -31,13 +37,13 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
     - [X] 移动群组
     - [X] 新建群组
     - [ ] 列表的展开与收缩
-    - [ ] 渲染性能优化
+    - [x] 渲染性能优化
 - 条目(entries)
     - [X] 标题(Title)和内容(Note)的查看与编辑
     - [X] 创建新条目
     - [X] 删除条目
     - [X] 移动条目
-    - [ ] 列表性能优化 🚨
+    - [x] 列表性能优化
     - [ ] 排序（按创建或修改日期排序）🚨
     - [ ] 搜索/过滤
     - [ ] Markdown 支持

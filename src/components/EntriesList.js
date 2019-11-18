@@ -166,7 +166,7 @@ export default function (props) {
     })
   }
 
-  const generatedMenu = useMemo(()=>{
+  const generatedMenu = useMemo(() => {
     if (menuState.item) {
       const menuList = [
         {
@@ -220,6 +220,7 @@ export default function (props) {
         </Menu>
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState])
 
   const groupUuid = useSelector(selectorCurrentGroupUuid);
@@ -230,7 +231,7 @@ export default function (props) {
   }
 
   const entries = useMemo(() => {
-    console.log('generate entries')
+    // console.log('generate entries')
     const list = []
     if (db && groupUuid && groupUuid.id) {
       const group = db.getGroup(groupUuid)
@@ -253,10 +254,11 @@ export default function (props) {
 
     }
     return list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, groupUuid]);
 
   const generatedTable = useMemo(() => {
-    console.log('generateTable')
+    // console.log('generateTable')
     return (
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
@@ -293,7 +295,7 @@ export default function (props) {
 
       </Table>
     )
-
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, groupUuid])
 
   function handleEntryItemClick(item) {

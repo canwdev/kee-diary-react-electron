@@ -65,9 +65,17 @@ export function setUnlocked(stat = false) {
   }
 }
 
-export function setDbHasUnsavedChange(stat = true) {
+function _setDbHasUnsavedChange(stat = true) {
+  if (getDbHasUnsavedChange() === stat) return
+  window.api.setShowExitPrompt(stat)
   store.dispatch({type: SET_DB_HAS_UNSAVED_CHANGE, value: stat})
 }
+
+// 防止频繁设置
+export const setDbHasUnsavedChange = _debounce(_setDbHasUnsavedChange, 1000, {
+  'leading': true,
+  'trailing': false
+})
 
 export function setGlobalDB(value) {
   return globalVars.db = value
@@ -100,7 +108,7 @@ function _saveKdbxDB() {
       db.save().then(dataAsArrayBuffer => {
         try {
           window.api.saveFileSyncAsArrayBuffer(dbPath, dataAsArrayBuffer)
-          setDbHasUnsavedChange(false)
+          _setDbHasUnsavedChange(false)
           swal.fire({
             toast: true,
             position: 'top',

@@ -56,6 +56,10 @@ window.addEventListener('DOMContentLoaded', () => {
         message
       })
     }
+
+    // 退出前提示
+    this.getShowExitPrompt = remote.app.showExitPrompt
+    this.setShowExitPrompt = (flag = true) => remote.app.showExitPrompt = flag
   }
 
   window.api = new API()

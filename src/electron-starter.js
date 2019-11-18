@@ -1,6 +1,6 @@
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, dialog} = require('electron')
 const path = require('path')
 const url = require('url')
 const isDev = judgementElectronIsDev()
@@ -10,6 +10,7 @@ const isDev = judgementElectronIsDev()
 let mainWindow
 
 function createWindow() {
+  console.log('createWindow')
 
   // 自定义菜单
   // require('./electron/menu')
@@ -34,6 +35,24 @@ function createWindow() {
   });
   mainWindow.loadURL(startUrl);
 
+  // 退出前询问
+  app.showExitPrompt = false
+  mainWindow.on('close', (e) => {
+    if (app.showExitPrompt) {
+      e.preventDefault() // Prevents the window from closing
+      dialog.showMessageBox({
+        type: 'question',
+        buttons: ['确认', '取消'],
+        title: '确认退出',
+        message: '未保存的数据将会丢失, 你确定要退出吗?'
+      }, function (response) {
+        if (response === 0) { // Runs the following if 'Yes' is clicked
+          app.showExitPrompt = false
+          mainWindow.close()
+        }
+      })
+    }
+  })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -49,18 +68,16 @@ function createWindow() {
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 
-    const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer')
-
-    installExtension(REACT_DEVELOPER_TOOLS).then(name => {
-      console.log('Added extension', name)
-    }).catch(e => {
-      console.log(e)
-    })
+    // Devtools 可能导致 electron 无法启动，暂时关闭...
+    // const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer')
+    // installExtension(REACT_DEVELOPER_TOOLS).then(name => {
+    //   console.log('Added extension', name)
+    // }).catch(e => {
+    //   console.log(e)
+    // })
 
   } else {
-
     mainWindow.setMenuBarVisibility(false)
-
   }
 
 

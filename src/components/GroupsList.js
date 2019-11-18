@@ -108,6 +108,7 @@ export default function NestedList() {
 
   const groupsFiltered = useMemo(() => {
     return deepWalkGroup(db.groups)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, currentGroupUuid])
 
   function handleItemClick(item) {
@@ -301,6 +302,7 @@ export default function NestedList() {
 
   const generatedGroupList = useMemo(() => {
     return generateGroupListVDOM(groupsFiltered)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, currentGroupUuid])
 
   function generateMenu() {
@@ -378,6 +380,7 @@ export default function NestedList() {
 
   const generatedMenu = useMemo(() => {
     return generateMenu()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState])
 
   return (

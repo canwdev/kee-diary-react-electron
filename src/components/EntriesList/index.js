@@ -42,10 +42,20 @@ const useStyles = makeStyles(theme => ({
   tableRowHeader: {
     cursor: 'pointer'
   },
-  icon: {
-    marginRight: '5px'
+  checkboxWrap: {
+    display: 'flex',
+    alignItems: 'center'
   },
-  iconWrap: {
+  icon: {
+    fontSize: 20,
+    borderRadius: '50%',
+    width: '32px',
+    height: '32px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  menuIconWrap: {
     minWidth: '32px',
     fontSize: '18px'
   },
@@ -162,7 +172,7 @@ export default function () {
                     handleMenuItemClick(item.action)
                   }}
                 >
-                  <ListItemIcon className={classes.iconWrap}>
+                  <ListItemIcon className={classes.menuIconWrap}>
                     {item.icon}
                   </ListItemIcon>
                   <Typography variant="inherit">{item.title}</Typography>
@@ -183,7 +193,7 @@ export default function () {
     const list = []
     if (db && groupUuid && groupUuid.id) {
       const group = db.getGroup(groupUuid)
-      // console.log('获取详情', group)
+      console.log('获取详情', group)
 
       if (group) {
         for (let i = group.entries.length - 1; i >= 0; i--) {
@@ -193,6 +203,8 @@ export default function () {
             icon: iconMap[item.icon],
             title: item.fields.Title,
             url: item.fields.URL,
+            bgColor: item.bgColor,
+            fgColor: item.fgColor,
             creationTime: item.times.creationTime,
             lastModTime: item.times.lastModTime,
             _ref: item
@@ -218,7 +230,7 @@ export default function () {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell style={{width: '32px'}}/>
+              <TableCell style={{width: '80px'}}/>
               <TableCell className={classes.tableHeadCell}>标题</TableCell>
               <TableCell className={classes.tableHeadCell}>创建时间</TableCell>
               <TableCell className={classes.tableHeadCell} align="left">修改时间</TableCell>
@@ -226,36 +238,50 @@ export default function () {
           </TableHead>
 
           <TableBody>
-            {entries.map(row => (
-              <TableRow
-                selected={currentEntry.uuid.id === row.uuid.id}
-                key={row.uuid.id}
-                className={classes.tableRow}
-                onContextMenu={(event) => {
-                  handleRightClick(event, row)
-                }}
-              >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={checked.indexOf(row) !== -1}
-                    onClick={() => {
-                      handleCheckEntry(row)
+            {entries.map(row => {
+                const rowChecked = checked.indexOf(row) !== -1
+                return (
+                  <TableRow
+                    selected={currentEntry.uuid.id === row.uuid.id}
+                    key={row.uuid.id}
+                    className={classes.tableRow}
+                    onContextMenu={(event) => {
+                      handleRightClick(event, row)
                     }}
-                  />
-                </TableCell>
-                <TableCell
-                  className={classes.tableRowHeader}
-                  onClick={() => {
-                    handleEntryItemClick(row)
-                  }}
-                >
-                  <i style={{fontSize: 20}}
-                     className={clsx(classes.icon, `fa fa-${row.icon}`)}/><span>{row.title}</span>
-                </TableCell>
-                <TableCell>{formatDate(row.creationTime)}</TableCell>
-                <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
-              </TableRow>
-            ))}
+                  >
+                    <TableCell padding="checkbox">
+                      <div className={classes.checkboxWrap}>
+                        <Checkbox
+                          className={classes.checkBox}
+                          checked={rowChecked}
+                          onClick={() => {
+                            handleCheckEntry(row)
+                          }}
+                        />
+                        <i
+                          style={{
+                            backgroundColor: row.bgColor,
+                            color: row.fgColor
+                          }}
+                          className={clsx(classes.icon, `fa fa-${row.icon}`)}
+                        />
+                      </div>
+
+                    </TableCell>
+                    <TableCell
+                      className={classes.tableRowHeader}
+                      onClick={() => {
+                        handleEntryItemClick(row)
+                      }}
+                    >
+                      <span>{row.title}</span>
+                    </TableCell>
+                    <TableCell>{formatDate(row.creationTime)}</TableCell>
+                    <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
+                  </TableRow>
+                )
+              }
+            )}
           </TableBody>
 
         </Table>

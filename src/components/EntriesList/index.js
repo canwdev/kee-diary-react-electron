@@ -29,7 +29,8 @@ const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     width: '100%',
-    overflowX: 'auto',
+    height: 'calc(95vh - 60px)',
+    overflow: 'auto',
   },
   tableHeadCell: {
     fontWeight: 'bold',
@@ -114,7 +115,7 @@ export default function () {
   };
 
   function handleDeleteEntry(entry) {
-    confirmDeleteEntry.then(() => {
+    confirmDeleteEntry(entry).then(() => {
       db.remove(entry);
       setDbHasUnsavedChange()
       setUpdater(v => !v)
@@ -193,7 +194,7 @@ export default function () {
     const list = []
     if (db && groupUuid && groupUuid.id) {
       const group = db.getGroup(groupUuid)
-      console.log('获取详情', group)
+      // console.log('获取详情', group)
 
       if (group) {
         for (let i = group.entries.length - 1; i >= 0; i--) {

@@ -13,22 +13,30 @@ import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
 const useToolbarStyles = makeStyles(theme => ({
   root: {
-    position: 'absolute',
+    top: '0',
+    position: 'sticky',
+    zIndex: '2',
+    float: 'left',
     width: '100%',
+    height: 0,
+    display: 'flex',
+    visibility: 'hidden',
+  },
+  toolBar: {
+    width: '100%',
+    minHeight: '56px',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
-    display: 'none',
-    minHeight: '56px'
   },
   highlight:
     theme.palette.type === 'light'
       ? {
-        display: 'flex',
+        visibility: 'visible',
         color: theme.palette.secondary.main,
         backgroundColor: lighten(theme.palette.secondary.light, 0.85),
       }
       : {
-        display: 'flex',
+        visibility: 'visible',
         color: theme.palette.text.primary,
         backgroundColor: theme.palette.secondary.dark,
       },
@@ -75,25 +83,27 @@ export const EnhancedTableToolbar = props => {
   }
 
   return (
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
+    <div
+      className={classes.root}
     >
-      <Typography className={classes.title} color="inherit" variant="subtitle1">
-        批量操作：已选择 {numSelected} 个条目
-      </Typography>
+      <Toolbar className={clsx(classes.toolBar, {
+        [classes.highlight]: numSelected > 0,
+      })}>
+        <Typography className={classes.title} color="inherit" variant="subtitle1">
+          批量操作：已选择 {numSelected} 个条目
+        </Typography>
 
-      <Tooltip title="移动至群组">
-        <IconButton onClick={handleMoveEntries} aria-label="move">
-          <DoubleArrowIcon/>
-        </IconButton>
-      </Tooltip>
-      <Tooltip title="删除条目">
-        <IconButton onClick={handleDeleteEntries} aria-label="delete">
-          <DeleteIcon/>
-        </IconButton>
-      </Tooltip>
-    </Toolbar>
+        <Tooltip title="移动至群组">
+          <IconButton onClick={handleMoveEntries} aria-label="move">
+            <DoubleArrowIcon/>
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="删除条目">
+          <IconButton onClick={handleDeleteEntries} aria-label="delete">
+            <DeleteIcon/>
+          </IconButton>
+        </Tooltip>
+      </Toolbar>
+    </div>
   );
 };

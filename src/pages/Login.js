@@ -22,20 +22,25 @@ import {useSelector} from "react-redux"
 import {decryptByDES, encryptByDES} from "../utils/crypto"
 
 function Copyright() {
-  var pjson = require('../../package.json');
+  const pjson = require('../../package.json');
+  const {
+    author: {
+      name:creator, url:homepage
+    }
+  } = pjson
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © ' + new Date().getFullYear() + ' '}
+      {'© ' + new Date().getFullYear() + ' '}
       <Link
         color="inherit"
         component="button"
         onClick={() => {
-          window.api.openExternal(pjson.homepage)
+          window.api.openExternal(homepage)
         }}
       >
         KeeDiary {pjson.version}
       </Link>
-      {' by canwdev'}
+      {' by ' + creator}
       <br/>
       {'可信任的日记编辑工具'}
     </Typography>

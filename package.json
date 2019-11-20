@@ -16,7 +16,7 @@
   "electron": "cross-env ELECTRON_START_URL=http://localhost:5000 electron .",
   "build:react": "react-scripts build",
   "build:electron-dir": "electron-builder --dir",
-  "build:electron": "electron-builder",
+  "build:electron": "electron-builder --ia32",
   "eject": "react-scripts eject"
  },
  "devDependencies": {

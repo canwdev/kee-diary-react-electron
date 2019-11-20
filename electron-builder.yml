@@ -22,7 +22,7 @@ dmg:
 
 # Windows configuration
 win:
-  icon: "src/assets/img/favicon.ico"
+  icon: "public/favicon.ico"
   target:
 #    - "zip"
     - "nsis"
@@ -32,6 +32,9 @@ nsis:
   oneClick: false
   perMachine: true
   allowToChangeInstallationDirectory: true
+  installerHeader: "public/installerHeader.bmp"
+  installerSidebar: "public/installerSidebar.bmp"
+  shortcutName: "KeeDiary"
 
 # Linux configuration
 linux:

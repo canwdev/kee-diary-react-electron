@@ -3,6 +3,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 // import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
@@ -20,13 +22,22 @@ import {useSelector} from "react-redux"
 import {decryptByDES, encryptByDES} from "../utils/crypto"
 
 function Copyright() {
+  var pjson = require('../../package.json');
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © ' + new Date().getFullYear() + ' '}
-      <Link color="inherit" component="button">KeeDiary</Link>
+      <Link
+        color="inherit"
+        component="button"
+        onClick={() => {
+          window.api.openExternal(pjson.homepage)
+        }}
+      >
+        KeeDiary {pjson.version}
+      </Link>
       {' by canwdev'}
       <br/>
-      {'可信任的日记编辑工具(或许)'}
+      {'可信任的日记编辑工具'}
     </Typography>
   );
 }
@@ -38,15 +49,15 @@ const useStyles = makeStyles(theme => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(5),
+    marginTop: theme.spacing(0),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    width: 88,
-    height: 88,
+    width: 76,
+    height: 76,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -149,10 +160,14 @@ export default function Login() {
               className={classes.inputFlex1}
             />
             <Button
+              title="选择数据库文件"
               onClick={() => {
                 handleChooseFile('dbPath', [{name: 'KeePass KDBX 文件', extensions: ['kdbx']}])
               }}
-              variant="outlined">选择文件</Button>
+              variant="outlined"
+            >
+              <FolderOpenIcon/>
+            </Button>
           </Box>
 
           <TextField
@@ -161,7 +176,7 @@ export default function Login() {
             variant="outlined"
             // required
             fullWidth
-            label="密码"
+            label="数据库密码"
             type="password"
             autoComplete="current-password"
           />
@@ -171,7 +186,7 @@ export default function Login() {
               name="keyPath"
               inputRef={register}
               variant="outlined"
-              label="密钥文件（可选）"
+              label="密钥文件 (可选)"
               InputLabelProps={{shrink: true}}
               // InputProps={{
               //   readOnly: true,
@@ -179,6 +194,7 @@ export default function Login() {
               className={classes.inputFlex1}
             />
             <Button
+              title="选择密钥文件"
               onClick={() => {
                 handleChooseFile('keyPath', [
                   {name: '所有文件', extensions: ['*']},
@@ -186,13 +202,15 @@ export default function Login() {
                 ])
               }}
               variant="outlined"
-            >选择文件</Button>
+            >
+              <FolderOpenIcon/>
+            </Button>
           </Box>
           <FormControlLabel
-
+            style={{marginLeft: 0}}
             control={
               /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
-              <input type="checkbox" name="rememberPathChecked" ref={register}/>
+              <input className="__checkbox" type="checkbox" name="rememberPathChecked" ref={register}/>
             }
             label="记住密码和密钥位置"
           />
@@ -226,7 +244,7 @@ export default function Login() {
                   window.api.openExternal('https://keepass.info/')
                 }}
               >
-                {"没有数据库? 创建一个"}
+                {"创建数据库"}
               </Link>
             </Grid>
           </Grid>

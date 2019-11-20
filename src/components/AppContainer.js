@@ -22,14 +22,17 @@ import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import NotesIcon from '@material-ui/icons/Notes';
 import HelpIcon from '@material-ui/icons/Help';
-
-import Button from "@material-ui/core/Button"
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import SaveIcon from '@material-ui/icons/Save';
+import EjectIcon from '@material-ui/icons/Eject';
 import {Link as RouterLink} from "react-router-dom"
 import useReactRouter from "use-react-router"
 
 import {getGlobalDB, selectorDbHasUnsavedChange, selectorUnlocked} from "../store/getters"
 import {saveKdbxDB, setUnlocked} from "../store/setters"
 import {useSelector} from "react-redux"
+import Tooltip from "@material-ui/core/Tooltip"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 const drawerWidth = 240;
 const SETTINGS_DRAWER_OPEN = 'SETTINGS_DRAWER_OPEN'
@@ -86,18 +89,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function getDrawerIcon(index) {
+  // 抽屉条目图标列表
+  const icons = [
+    <LockIcon/>,
+    <VisibilityIcon/>,
+    <NotesIcon/>,
+    <BugReportIcon/>,
+  ]
+  return icons[index]
+}
+
 export default function AppContainer(props) {
   const classes = useStyles();
-  const getIcon = (index) => {
-    // 抽屉条目图标列表
-    const icons = [
-      <LockIcon/>,
-      <VisibilityIcon/>,
-      <NotesIcon/>,
-      <BugReportIcon/>,
-    ]
-    return icons[index]
-  }
   const theme = useTheme();
   const {location, history} = useReactRouter();
 
@@ -105,11 +109,13 @@ export default function AppContainer(props) {
   const unlocked = useSelector(selectorUnlocked)
   const dbUnsaved = useSelector(selectorDbHasUnsavedChange)
   const db = getGlobalDB()
+
+  const breakPointSM = useMediaQuery(theme.breakpoints.up('sm'));
+
   let appTitle = 'KeeDiary'
-  if (db) {
+  if (db && breakPointSM) {
     appTitle += ` - ${db.groups[0].name}`
   }
-
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -142,40 +148,56 @@ export default function AppContainer(props) {
             >
               <MenuIcon/>
             </IconButton>
+
             <Typography variant="h6" noWrap className={classes.appTitle}>
               {appTitle}
             </Typography>
+
           </div>
-          <div>
+          <div
+            className={classes.actionButtons}
+          >
             {
               (unlocked && location.pathname === '/item-detail') && (
-                <Button
-                  size="small"
-                  variant="outlined"
+                <Tooltip
+                  title="返回列表"
                   color="inherit"
-                  onClick={() => {
-                    history.push('/view-list')
-                  }}
-                  className={classes.actionButtons}
-                >返回</Button>
+                >
+                  <IconButton
+                    onClick={() => {
+                      history.push('/view-list')
+                    }}
+                  >
+                    <ArrowBackIcon/>
+                  </IconButton>
+                </Tooltip>
+
               )
             }
 
 
             {
               unlocked && [
-                {title: '保存更改', action: saveKdbxDB, disabled: !dbUnsaved},
-                {title: '关闭数据库', action: handleCloseDB},
+                {title: '保存更改', action: saveKdbxDB, disabled: !dbUnsaved, icon: <SaveIcon/>},
+                {title: '关闭数据库', action: handleCloseDB, icon: <EjectIcon/>},
               ].map((item, index) => {
-                return (<Button
-                  size="small"
-                  variant="outlined"
-                  color="inherit"
-                  onClick={item.action}
-                  key={index}
-                  className={classes.actionButtons}
-                  disabled={item.disabled}
-                >{item.title}</Button>)
+                return (
+                  <Tooltip
+                    title={item.title}
+                    key={index}
+                  >
+                    <span>
+                      <IconButton
+                        color="inherit"
+                        aria-label={item.title}
+                        disabled={item.disabled}
+                        onClick={item.action}
+                      >
+                      {item.icon}
+                    </IconButton>
+                    </span>
+                  </Tooltip>
+                )
               })
             }
           </div>
@@ -206,7 +228,7 @@ export default function AppContainer(props) {
                 onClick={handleDrawerClose}
                 component={React.forwardRef((props, ref) => <RouterLink to={item.path} innerRef={ref} {...props} />)}
               >
-                <ListItemIcon>{getIcon(index) || <HelpIcon/>}</ListItemIcon>
+                <ListItemIcon>{getDrawerIcon(index) || <HelpIcon/>}</ListItemIcon>
                 <ListItemText primary={item.title}/>
               </ListItem>
             )
@@ -235,7 +257,7 @@ export default function AppContainer(props) {
         className={classes.content}
       >
         <div className={classes.drawerHeader}/>
-        <div style={{height: '50px'}}></div>
+        <div style={{height: '50px'}}/>
         {props.children}
       </main>
     </div>

@@ -85,7 +85,7 @@ export const EnhancedTableToolbar = props => {
       </Typography>
 
       <Tooltip title="移动至群组">
-        <IconButton onClick={handleMoveEntries}>
+        <IconButton onClick={handleMoveEntries} aria-label="move">
           <DoubleArrowIcon/>
         </IconButton>
       </Tooltip>

@@ -24,13 +24,14 @@ dmg:
 win:
   icon: "src/assets/img/favicon.ico"
   target:
-    - "zip"
+#    - "zip"
     - "nsis"
 
 # Config for the windows installer
 nsis:
-  oneClick: true
+  oneClick: false
   perMachine: true
+  allowToChangeInstallationDirectory: true
 
 # Linux configuration
 linux:

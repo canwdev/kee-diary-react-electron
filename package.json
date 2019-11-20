@@ -1,11 +1,11 @@
 {
   "name": "kee-diary",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A trusted journal editor that uses kdbx as a database encryption to store your journals.",
   "author": "canwdev",
+  "homepage": "https://github.com/canwdev/keepass-diary-electron",
   "private": true,
   "main": "src/electron-starter.js",
-  "homepage": "./",
   "scripts": {
     "dev": "nf start",
     "start": "react-scripts start",

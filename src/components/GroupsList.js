@@ -163,7 +163,7 @@ export default function NestedList() {
           group.name = value
           setDbHasUnsavedChange()
           setCurrentGroupUuid(group.uuid)
-          setUpdater(!updater)
+          setUpdater(v=>!v)
         }
       });
   }
@@ -221,7 +221,7 @@ export default function NestedList() {
         db.move(group, selectedGroup);
         setDbHasUnsavedChange()
         setCurrentGroupUuid(group.uuid)
-        setUpdater(!updater)
+        setUpdater(v=>!v)
       }
     })
   }
@@ -244,7 +244,7 @@ export default function NestedList() {
         db.remove(db.getGroup(group.uuid))
         setDbHasUnsavedChange()
         setCurrentGroupUuid(null)
-        setUpdater(!updater)
+        setUpdater(v=>!v)
       }
     });
 

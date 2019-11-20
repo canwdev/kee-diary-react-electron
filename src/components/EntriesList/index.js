@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,11 +7,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {useSelector} from "react-redux"
-import {iconMap} from "../utils/icon-map"
-import {getGlobalDB, getIsRecycleBinEnabled, selectorCurrentEntry, selectorCurrentGroupUuid} from "../store/getters"
-import {deepWalkGroup, formatDate} from "../utils"
+import {iconMap} from "../../utils/icon-map"
+import {getGlobalDB, selectorCurrentEntry, selectorCurrentGroupUuid} from "../../store/getters"
+import {formatDate} from "../../utils"
 import useReactRouter from "use-react-router"
-import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
+import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
 import Menu from "@material-ui/core/Menu"
 import Divider from "@material-ui/core/Divider"
 import MenuItem from "@material-ui/core/MenuItem"
@@ -20,19 +20,30 @@ import Typography from "@material-ui/core/Typography"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-import swal from "sweetalert2"
-import ReactDOM from "react-dom"
+import clsx from "clsx"
+import Checkbox from "@material-ui/core/Checkbox"
+import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
+import {confirmDeleteEntry, confirmMoveToGroupChooser} from "./utils"
 
 const useStyles = makeStyles(theme => ({
   root: {
+    position: 'relative',
     width: '100%',
     overflowX: 'auto',
   },
+  tableHeadCell: {
+    fontWeight: 'bold',
+  },
   tableRow: {
-    cursor: 'pointer',
     "&:hover": {
       backgroundColor: theme.palette.grey["300"]
     }
+  },
+  tableRowHeader: {
+    cursor: 'pointer'
+  },
+  icon: {
+    marginRight: '5px'
   },
   iconWrap: {
     minWidth: '32px',
@@ -42,24 +53,23 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     padding: theme.spacing(10)
   },
-
-  nested: {
-    paddingLeft: theme.spacing(2),
-  },
-  targetGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    lineHeight: '30px',
-    "&:hover": {
-      backgroundColor: theme.palette.grey["300"]
-    }
-  },
 }));
 
-export default function (props) {
+export default function () {
   const db = getGlobalDB()
   const [updater, setUpdater] = useState(false)
+  const [checked, setChecked] = useState([]);
+
+  const groupUuid = useSelector(selectorCurrentGroupUuid);
+  let currentEntry = useSelector(selectorCurrentEntry) || {
+    uuid: {
+      id: null
+    }
+  }
+
+  useEffect(() => {
+    setChecked([]) // 如果切换了群组则清空选择列表
+  }, [groupUuid])
 
   const {history} = useReactRouter();
   const classes = useStyles();
@@ -94,75 +104,20 @@ export default function (props) {
   };
 
   function handleDeleteEntry(entry) {
-    const title = entry.fields.Title
-    swal.fire({
-      title: '确认删除',
-      text: getIsRecycleBinEnabled() ? `确定要将《${title}》移动至回收站吗？` : `确定要永久删除《${title}》吗？`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: '确定',
-      cancelButtonText: '取消'
-    }).then((result) => {
-      if (result.value) {
-        db.remove(entry);
-        setDbHasUnsavedChange()
-        setUpdater(!updater)
-      }
-    });
+    confirmDeleteEntry.then(() => {
+      db.remove(entry);
+      setDbHasUnsavedChange()
+      setUpdater(v => !v)
+    })
   }
 
   function handleMoveToGroup(entry) {
-    let selectedGroup = null
-
-    function generateGroupSelector(list, counter = 0) {
-      const VDOM = []
-      if (!list || list.length === 0) return null
-
-      list.forEach(item => {
-        const children = item.children
-        VDOM.push(
-          <div
-            key={item.uuid}
-            className={classes.nested}
-          >
-            <label className={classes.targetGroup}>
-              <input
-                type="radio"
-                name="target-group"
-                disabled={entry.uuid.id === item._ref.uuid.id}
-                onClick={() => {
-                  selectedGroup = item._ref
-                }}
-              />
-              <span>{item.name}</span>
-            </label>
-            {generateGroupSelector(children, counter + 1)}
-          </div>
-        )
-      })
-      return VDOM
-    }
-
-    swal.fire({
-      title: '请选择目标群组',
-      html: ReactDOM.render((
-        <div style={{textAlign: 'left'}}>
-          {generateGroupSelector(deepWalkGroup(db.groups))}
-        </div>
-      ), document.createElement('div')),
-      showCancelButton: true,
-      focusConfirm: false,
-      preConfirm: () => {
-        return selectedGroup
-      }
-    }).then(res => {
-      if (!res.dismiss && res.value) {
-        db.move(entry, selectedGroup);
-        setDbHasUnsavedChange()
-        setCurrentGroupUuid(selectedGroup.uuid)
-        setCurrentEntry(entry)
-        setUpdater(!updater)
-      }
+    confirmMoveToGroupChooser(db).then(selectedGroup => {
+      db.move(entry, selectedGroup);
+      setDbHasUnsavedChange()
+      setCurrentGroupUuid(selectedGroup.uuid)
+      setCurrentEntry(entry)
+      setUpdater(v => !v)
     })
   }
 
@@ -223,13 +178,6 @@ export default function (props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState])
 
-  const groupUuid = useSelector(selectorCurrentGroupUuid);
-  let currentEntry = useSelector(selectorCurrentEntry) || {
-    uuid: {
-      id: null
-    }
-  }
-
   const entries = useMemo(() => {
     // console.log('generate entries')
     const list = []
@@ -260,43 +208,74 @@ export default function (props) {
   const generatedTable = useMemo(() => {
     // console.log('generateTable')
     return (
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell style={{width: '32px'}}/>
-            <TableCell>标题</TableCell>
-            <TableCell>创建时间</TableCell>
-            <TableCell align="left">修改时间</TableCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {entries.map(row => (
-            <TableRow
-              selected={currentEntry.uuid.id === row.uuid.id}
-              key={row.uuid.id}
-              className={classes.tableRow}
-              onClick={() => {
-                handleEntryItemClick(row)
-              }}
-              onContextMenu={(event) => {
-                handleRightClick(event, row)
-              }}
-            >
-              <TableCell><i style={{fontSize: 20}} className={`fa fa-${row.icon}`}/></TableCell>
-              <TableCell component="th" scope="row">
-                {row.title}
-              </TableCell>
-              <TableCell>{formatDate(row.creationTime)}</TableCell>
-              <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
+      <div>
+        <EnhancedTableToolbar
+          db={db}
+          checked={checked}
+          setChecked={setChecked}
+          setUpdater={setUpdater}
+        />
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell style={{width: '32px'}}/>
+              <TableCell className={classes.tableHeadCell}>标题</TableCell>
+              <TableCell className={classes.tableHeadCell}>创建时间</TableCell>
+              <TableCell className={classes.tableHeadCell} align="left">修改时间</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
+          </TableHead>
 
-      </Table>
+          <TableBody>
+            {entries.map(row => (
+              <TableRow
+                selected={currentEntry.uuid.id === row.uuid.id}
+                key={row.uuid.id}
+                className={classes.tableRow}
+                onContextMenu={(event) => {
+                  handleRightClick(event, row)
+                }}
+              >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={checked.indexOf(row) !== -1}
+                    onClick={() => {
+                      handleCheckEntry(row)
+                    }}
+                  />
+                </TableCell>
+                <TableCell
+                  className={classes.tableRowHeader}
+                  onClick={() => {
+                    handleEntryItemClick(row)
+                  }}
+                >
+                  <i style={{fontSize: 20}}
+                     className={clsx(classes.icon, `fa fa-${row.icon}`)}/><span>{row.title}</span>
+                </TableCell>
+                <TableCell>{formatDate(row.creationTime)}</TableCell>
+                <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+
+        </Table>
+      </div>
     )
 // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, groupUuid])
+  }, [updater, groupUuid, checked])
+
+  function handleCheckEntry(item) {
+    const selectedIndex = checked.indexOf(item)
+    let newChecked = []
+
+    if (selectedIndex === -1) {
+      newChecked = [...checked, item]
+    } else {
+      newChecked = checked.filter(i => i !== item)
+    }
+
+    setChecked(newChecked)
+  }
 
   function handleEntryItemClick(item) {
     setCurrentEntry(item._ref)

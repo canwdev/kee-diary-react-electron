@@ -16,3 +16,18 @@ code {
 .swal2-container {
   z-index: 9999 !important;
 }
+
+.__nested {
+  padding-left: 20px;
+}
+
+.__target-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  line-height: 30px;
+}
+
+.__target-group:hover {
+  background-color: #ebebeb;
+}

@@ -6,13 +6,14 @@ import App from './App';
 import {Provider} from 'react-redux'
 import store from "./store"
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import {brown} from '@material-ui/core/colors';
+import {brown, deepPurple} from '@material-ui/core/colors';
 if (module.hot) {
   module.hot.accept();
 }
 const theme = createMuiTheme({
   palette: {
     primary: brown,
+    secondary: deepPurple
   },
 });
 

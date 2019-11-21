@@ -25,10 +25,15 @@
   "clsx": "^1.0.4",
   "cross-env": "^6.0.3",
   "crypto-js": "^3.1.9-1",
+  "electron": "^6.0.11",
+  "electron-devtools-installer": "^2.2.4",
   "font-awesome": "^4.7.0",
+  "foreman": "^3.0.1",
   "kdbxweb": "https://gitee.com/canwdev/kdbxweb.git",
   "lodash": "^4.17.15",
+  "markdown-it": "^10.0.0",
   "react": "^16.10.2",
+  "react-color": "^2.17.3",
   "react-dom": "^16.10.2",
   "react-hook-form": "^3.24.1",
   "react-redux": "^7.1.1",
@@ -36,10 +41,7 @@
   "react-scripts": "3.2.0",
   "redux": "^4.0.4",
   "sweetalert2": "^9.1.5",
-  "use-react-router": "^1.0.7",
-  "electron": "^6.0.11",
-  "electron-devtools-installer": "^2.2.4",
-  "foreman": "^3.0.1"
+  "use-react-router": "^1.0.7"
  },
  "eslintConfig": {
   "extends": "react-app"

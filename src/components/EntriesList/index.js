@@ -9,7 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import {useSelector} from "react-redux"
 import {iconMap} from "../../utils/icon-map"
 import {getGlobalDB, selectorCurrentEntry, selectorCurrentGroupUuid} from "../../store/getters"
-import {formatDate} from "../../utils"
 import useReactRouter from "use-react-router"
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
 import Menu from "@material-ui/core/Menu"
@@ -20,10 +19,9 @@ import Typography from "@material-ui/core/Typography"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-import clsx from "clsx"
-import Checkbox from "@material-ui/core/Checkbox"
 import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
 import {confirmDeleteEntry, confirmMoveToGroupChooser} from "./utils"
+import ListItem from "./ListItem"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,7 +38,7 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.grey["300"]
     }
   },
-  tableRowHeader: {
+  tableCell: {
     cursor: 'pointer'
   },
   checkboxWrap: {
@@ -239,47 +237,20 @@ export default function () {
           </TableHead>
 
           <TableBody>
-            {entries.map(row => {
+            {entries.map((row, index) => {
                 const rowChecked = checked.indexOf(row) !== -1
                 return (
-                  <TableRow
-                    selected={currentEntry.uuid.id === row.uuid.id}
-                    key={row.uuid.id}
-                    className={classes.tableRow}
-                    onContextMenu={(event) => {
-                      handleRightClick(event, row)
-                    }}
-                  >
-                    <TableCell padding="checkbox">
-                      <div className={classes.checkboxWrap}>
-                        <Checkbox
-                          className={classes.checkBox}
-                          checked={rowChecked}
-                          onClick={() => {
-                            handleCheckEntry(row)
-                          }}
-                        />
-                        <i
-                          style={{
-                            backgroundColor: row.bgColor,
-                            color: row.fgColor
-                          }}
-                          className={clsx(classes.icon, `fa fa-${row.icon}`)}
-                        />
-                      </div>
-
-                    </TableCell>
-                    <TableCell
-                      className={classes.tableRowHeader}
-                      onClick={() => {
-                        handleEntryItemClick(row)
-                      }}
-                    >
-                      <span>{row.title}</span>
-                    </TableCell>
-                    <TableCell>{formatDate(row.creationTime)}</TableCell>
-                    <TableCell align="left">{formatDate(row.lastModTime)}</TableCell>
-                  </TableRow>
+                  <ListItem
+                    key={index}
+                    row={row}
+                    currentEntry={currentEntry}
+                    classes={classes}
+                    rowChecked={rowChecked}
+                    handleRightClick={handleRightClick}
+                    handleCheckEntry={handleCheckEntry}
+                    handleEntryItemClick={handleEntryItemClick}
+                    setUpdater={setUpdater}
+                  />
                 )
               }
             )}

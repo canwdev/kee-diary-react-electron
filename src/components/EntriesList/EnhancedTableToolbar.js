@@ -13,7 +13,7 @@ import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
 const useToolbarStyles = makeStyles(theme => ({
   root: {
-    top: '0',
+    top: 0,
     position: 'sticky',
     zIndex: '2',
     float: 'left',

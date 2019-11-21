@@ -22,6 +22,7 @@ import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
 import {confirmDeleteEntry, confirmMoveToGroupChooser} from "./utils"
 import ListItem from "./ListItem"
+import TablePagination from "@material-ui/core/TablePagination"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,12 +63,22 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     padding: theme.spacing(10)
   },
+  pagination: {
+    userSelect: 'none',
+    position: 'sticky',
+    background: theme.palette.background.default,
+    bottom: -1,
+    borderTop: '1px solid ' + theme.palette.grey[300]
+  }
 }));
 
 export default function () {
   const db = getGlobalDB()
   const [updater, setUpdater] = useState(false)
   const [checked, setChecked] = useState([]);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const groupUuid = useSelector(selectorCurrentGroupUuid);
   let currentEntry = useSelector(selectorCurrentEntry) || {
@@ -129,6 +140,33 @@ export default function () {
       setUpdater(v => !v)
     })
   }
+
+  function handleCheckEntry(item) {
+    const selectedIndex = checked.indexOf(item)
+    let newChecked = []
+
+    if (selectedIndex === -1) {
+      newChecked = [...checked, item]
+    } else {
+      newChecked = checked.filter(i => i !== item)
+    }
+
+    setChecked(newChecked)
+  }
+
+  function handleEntryItemClick(item) {
+    setCurrentEntry(item._ref)
+    history.push('/item-detail')
+  }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const generatedMenu = useMemo(() => {
     if (menuState.item) {
@@ -216,9 +254,33 @@ export default function () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, groupUuid]);
 
-  const generatedTable = useMemo(() => {
+  const TableRows = useMemo(() => {
     // console.log('generateTable')
-    return (
+    return entries
+      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      .map((row, index) => {
+          const rowChecked = checked.indexOf(row) !== -1
+          return (
+            <ListItem
+              key={index}
+              row={row}
+              currentEntry={currentEntry}
+              classes={classes}
+              rowChecked={rowChecked}
+              handleRightClick={handleRightClick}
+              handleCheckEntry={handleCheckEntry}
+              handleEntryItemClick={handleEntryItemClick}
+              setUpdater={setUpdater}
+            />
+          )
+        }
+      )
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updater, groupUuid, checked, page, rowsPerPage])
+
+  return (
+    <Paper className={classes.root}>
       <div>
         <EnhancedTableToolbar
           db={db}
@@ -226,7 +288,11 @@ export default function () {
           setChecked={setChecked}
           setUpdater={setUpdater}
         />
-        <Table className={classes.table} aria-label="simple table">
+        <Table
+          className={classes.table}
+          // size="small"
+          // stickyHeader
+        >
           <TableHead>
             <TableRow>
               <TableCell style={{width: '80px'}}/>
@@ -237,54 +303,28 @@ export default function () {
           </TableHead>
 
           <TableBody>
-            {entries.map((row, index) => {
-                const rowChecked = checked.indexOf(row) !== -1
-                return (
-                  <ListItem
-                    key={index}
-                    row={row}
-                    currentEntry={currentEntry}
-                    classes={classes}
-                    rowChecked={rowChecked}
-                    handleRightClick={handleRightClick}
-                    handleCheckEntry={handleCheckEntry}
-                    handleEntryItemClick={handleEntryItemClick}
-                    setUpdater={setUpdater}
-                  />
-                )
-              }
-            )}
+            {TableRows}
           </TableBody>
 
         </Table>
+
       </div>
-    )
-// eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, groupUuid, checked])
-
-  function handleCheckEntry(item) {
-    const selectedIndex = checked.indexOf(item)
-    let newChecked = []
-
-    if (selectedIndex === -1) {
-      newChecked = [...checked, item]
-    } else {
-      newChecked = checked.filter(i => i !== item)
-    }
-
-    setChecked(newChecked)
-  }
-
-  function handleEntryItemClick(item) {
-    setCurrentEntry(item._ref)
-    history.push('/item-detail')
-  }
-
-  return (
-    <Paper className={classes.root}>
-      {
-        generatedTable
-      }
+      <TablePagination
+        className={classes.pagination}
+        rowsPerPageOptions={[5, 10, 20, 30]}
+        component="div"
+        count={entries.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        backIconButtonProps={{
+          'aria-label': '上一页',
+        }}
+        nextIconButtonProps={{
+          'aria-label': '下一页',
+        }}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
 
       {
         entries.length === 0 && (

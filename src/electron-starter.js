@@ -41,12 +41,14 @@ function createWindow() {
     if (app.showExitPrompt) {
       e.preventDefault() // Prevents the window from closing
       dialog.showMessageBox(mainWindow, {
-        type: 'question',
-        buttons: ['取消', '确定'],
+        type: 'warning',
+        buttons: ['不保存并退出', '取消'],
+        defaultId: 1,
+        cancelId: 1,
         title: '退出程序',
-        message: '未保存的数据将会丢失, 你确定要退出吗?'
+        message: '警告：未保存的数据将会丢失！确定要退出吗?'
       }, function (response) {
-        if (response === 1) {
+        if (response === 0) { // 退出
           app.showExitPrompt = false
           mainWindow.close()
         }

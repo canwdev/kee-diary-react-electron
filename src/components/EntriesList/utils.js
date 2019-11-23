@@ -2,7 +2,10 @@ import swal from "sweetalert2"
 import {getIsRecycleBinEnabled} from "../../store/getters"
 import React from "react"
 import ReactDOM from "react-dom"
+import ColorPicker from "../ColorPicker"
 import {deepWalkGroup} from "../../utils"
+import {markdownIt} from "../../store"
+import {setCurrentEntry, setDbHasUnsavedChange} from "../../store/setters"
 
 export function confirmMoveToGroupChooser(db) {
   let selectedGroup = null
@@ -98,5 +101,57 @@ export function confirmDeleteEntries(numSelected) {
         return reject()
       }
     })
+  })
+}
+
+export function showDetailWindow(entry) {
+  const {
+    fields: {
+      Title: title,
+      Notes: note
+    }
+  } = entry
+
+  const html = markdownIt.render(note)
+
+  swal.fire({
+    title: title,
+    html: ReactDOM.render((
+      <div
+        className="__view-detail-note markdown-body"
+        dangerouslySetInnerHTML={{__html: html}}
+      >
+      </div>
+    ), document.createElement('div')),
+    showConfirmButton: false,
+    showCloseButton: true,
+    customClass: {
+      container: '__swal-container',
+      title: '__swal-title',
+    }
+  })
+}
+
+export function handleChangeColor(entry, setUpdater) {
+  let selectedColor = null
+  swal.fire({
+    title: '选择颜色',
+    width: 278,
+    html: ReactDOM.render((
+      <div>
+        <ColorPicker updateColor={(color) => {
+          selectedColor = color
+        }}/>
+      </div>
+    ), document.createElement('div'))
+  }).then((result) => {
+    if (result.value && selectedColor) {
+      entry.fgColor = selectedColor.hex
+      setDbHasUnsavedChange()
+      setCurrentEntry(entry)
+      setUpdater(v => !v)
+    } else {
+
+    }
   })
 }

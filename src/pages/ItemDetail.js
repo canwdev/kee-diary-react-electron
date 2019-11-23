@@ -32,7 +32,8 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.body1.fontSize,
     fontFamily,
     border: 'none',
-    outline: 'none'
+    outline: 'none',
+    lineHeight: 1.5,
   }
 
 }))

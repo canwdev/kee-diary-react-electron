@@ -89,6 +89,7 @@ export default function () {
 
   useEffect(() => {
     setChecked([]) // 如果切换了群组则清空选择列表
+    setPage(0)
   }, [groupUuid])
 
   const {history} = useReactRouter();

@@ -1,5 +1,5 @@
 import React from 'react';
-import {CirclePicker } from 'react-color';
+import {CirclePicker} from 'react-color';
 
 export default class ColorPicker extends React.Component {
   state = {
@@ -7,13 +7,13 @@ export default class ColorPicker extends React.Component {
   }
 
   handleChangeComplete = (color) => {
-    this.setState({ color });
+    this.setState({color});
     this.props.updateColor(color)
   };
 
   render() {
     return <CirclePicker
-      color={ this.state.color }
+      color={this.state.color}
       onChangeComplete={this.handleChangeComplete}
     />;
   }

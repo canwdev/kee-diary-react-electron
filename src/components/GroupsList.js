@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import ReactDOM from 'react-dom'
 import {makeStyles} from '@material-ui/core/styles';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -63,14 +62,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function NestedList() {
+  const classes = useStyles();
+  const {history} = useReactRouter();
+  const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
+  const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
+
   // 数据库加载
   const db = getGlobalDB() || {}
-
-  const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
-
-  const {history} = useReactRouter();
-  const classes = useStyles();
-  const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
 
   // 右键菜单
   const menuInitState = {
@@ -111,17 +109,17 @@ export default function NestedList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, currentGroupUuid])
 
-  function handleItemClick(item) {
-    // console.log('点击群组项', item)
-    setCurrentGroupUuid(item.uuid)
-  }
-
   useEffect(() => {
     if (!currentGroupUuid && groupsFiltered && groupsFiltered[0]) { // 自动选择第一个群组
       setCurrentGroupUuid(groupsFiltered[0].uuid)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  function handleItemClick(item) {
+    // console.log('点击群组项', item)
+    setCurrentGroupUuid(item.uuid)
+  }
 
   function handleAddGroup(group) {
 
@@ -163,7 +161,7 @@ export default function NestedList() {
           group.name = value
           setDbHasUnsavedChange()
           setCurrentGroupUuid(group.uuid)
-          setUpdater(v=>!v)
+          setUpdater(v => !v)
         }
       });
   }
@@ -221,7 +219,7 @@ export default function NestedList() {
         db.move(group, selectedGroup);
         setDbHasUnsavedChange()
         setCurrentGroupUuid(group.uuid)
-        setUpdater(v=>!v)
+        setUpdater(v => !v)
       }
     })
   }
@@ -244,7 +242,7 @@ export default function NestedList() {
         db.remove(db.getGroup(group.uuid))
         setDbHasUnsavedChange()
         setCurrentGroupUuid(null)
-        setUpdater(v=>!v)
+        setUpdater(v => !v)
       }
     });
 
@@ -305,7 +303,7 @@ export default function NestedList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, currentGroupUuid])
 
-  function generateMenu() {
+  const generatedMenu = useMemo(() => {
     if (menuState.item) {
       const item = menuState.item
       const menuList = [
@@ -376,10 +374,6 @@ export default function NestedList() {
         </Menu>
       )
     }
-  }
-
-  const generatedMenu = useMemo(() => {
-    return generateMenu()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState])
 
@@ -387,11 +381,7 @@ export default function NestedList() {
     <>
       <List
         component="nav"
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            群组列表
-          </ListSubheader>
-        }
+
         className={classes.root}
       >
         {generatedGroupList}

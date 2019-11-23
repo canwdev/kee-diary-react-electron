@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import {lighten, makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,7 +21,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 
 function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+  return {name, calories, fat, carbs, protein};
 }
 
 const rows = [
@@ -65,15 +65,15 @@ function getSorting(order, orderBy) {
 }
 
 const headCells = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
+  {id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)'},
+  {id: 'calories', numeric: true, disablePadding: false, label: 'Calories'},
+  {id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)'},
+  {id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)'},
+  {id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)'},
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort} = props;
   const createSortHandler = property => event => {
     onRequestSort(event, property);
   };
@@ -86,7 +86,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
+            inputProps={{'aria-label': 'select all desserts'}}
           />
         </TableCell>
         {headCells.map(headCell => (
@@ -147,7 +147,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const {numSelected} = props;
 
   return (
     <Toolbar
@@ -168,13 +168,13 @@ const EnhancedTableToolbar = props => {
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton aria-label="delete">
-            <DeleteIcon />
+            <DeleteIcon/>
           </IconButton>
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
           <IconButton aria-label="filter list">
-            <FilterListIcon />
+            <FilterListIcon/>
           </IconButton>
         </Tooltip>
       )}
@@ -278,7 +278,7 @@ export default function EnhancedTable() {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length}/>
         <div className={classes.tableWrapper}>
           <Table
             className={classes.table}
@@ -315,7 +315,7 @@ export default function EnhancedTable() {
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
+                          inputProps={{'aria-labelledby': labelId}}
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none">
@@ -329,8 +329,8 @@ export default function EnhancedTable() {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={6} />
+                <TableRow style={{height: (dense ? 33 : 53) * emptyRows}}>
+                  <TableCell colSpan={6}/>
                 </TableRow>
               )}
             </TableBody>
@@ -353,7 +353,7 @@ export default function EnhancedTable() {
         />
       </Paper>
       <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        control={<Switch checked={dense} onChange={handleChangeDense}/>}
         label="Dense padding"
       />
     </div>

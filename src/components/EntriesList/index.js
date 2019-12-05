@@ -23,13 +23,14 @@ import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
 import {confirmDeleteEntry, confirmMoveToGroupChooser} from "./utils"
 import ListItem from "./ListItem"
 import TablePagination from "@material-ui/core/TablePagination"
+import {localStorageUtil} from "../../utils"
 
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     width: '100%',
     height: 'calc(95vh - 60px)',
-    minHeight: '300px',
+    minHeight: '200px',
     overflow: 'auto',
   },
   tableHeadCell: {
@@ -82,6 +83,7 @@ export default function () {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const groupUuid = useSelector(selectorCurrentGroupUuid);
+  const PAGE_FLAG = 'PAGE_'+groupUuid
   let currentEntry = useSelector(selectorCurrentEntry) || {
     uuid: {
       id: null
@@ -90,7 +92,8 @@ export default function () {
 
   useEffect(() => {
     setChecked([]) // 如果切换了群组则清空选择列表
-    setPage(0)
+    const page = localStorageUtil.getItem(PAGE_FLAG) || 0
+    setPage(page)
   }, [groupUuid])
 
   const {history} = useReactRouter();
@@ -162,6 +165,7 @@ export default function () {
   }
 
   const handleChangePage = (event, newPage) => {
+    localStorageUtil.setItem(PAGE_FLAG, newPage)
     setPage(newPage);
   };
 

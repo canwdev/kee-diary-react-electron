@@ -3,10 +3,12 @@ import {Redirect} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles"
 import {Box, Container, Input, Paper, TextareaAutosize} from "@material-ui/core"
 import clsx from "clsx"
-import {formatDate} from "../utils"
+import {formatDate, pad2Num} from "../utils"
 import {useSelector} from "react-redux"
 import {selectorCurrentEntry} from "../store/getters"
 import {setDbHasUnsavedChange} from "../store/setters"
+import swal from "sweetalert2"
+import ReactDOM from "react-dom"
 
 const fontFamily = `"Open Sans", "Source Han Sans SC", "PingFang SC", Arial, "Microsoft YaHei", "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif`
 const useStyles = makeStyles(theme => ({
@@ -22,10 +24,16 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.h6.fontSize,
     fontFamily
   },
-  time: {
+  timeWrap: {
     display: 'flex',
     justifyContent: 'space-between',
     color: theme.palette.grey["400"]
+  },
+  time: {
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline'
+    }
   },
   NoteTextArea: {
     width: '100%',
@@ -52,7 +60,7 @@ export default function () {
       lastModTime: new Date()
     }
   }
-
+  const [updater, setUpdater] = useState(false)
   const [title, setTitle] = useState(entry.fields.Title)
   const [noteText, setNoteText] = useState(entry.fields.Notes)
   const creationTime = formatDate(entry.times.creationTime)
@@ -70,6 +78,42 @@ export default function () {
     entry.fields.Title = value
     updateEntry()
     setTitle(value)
+  }
+
+  /**
+   * 手动更新时间
+   * @param timeType
+   */
+  function handleTimeChange(timeType = 'creationTime') {
+    let now = entry.times[timeType] || new Date()
+    let date = now.toISOString().substr(0, 10)
+      , time = pad2Num(now.getHours()) + ':' + pad2Num(now.getMinutes())
+    // console.log(entry.times, {date, time})
+
+    swal.fire({
+      title: '修改时间',
+      html: ReactDOM.render((
+        <div>
+          <input type="date" defaultValue={date} onChange={(e) => {
+            date = e.target.value
+          }}/>
+          <input type="time" defaultValue={time} onChange={(e) => {
+            time = e.target.value
+          }}/>
+        </div>
+      ), document.createElement('div')),
+      showCancelButton: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        return {date, time}
+      }
+    }).then(res => {
+      if (!res.dismiss && res.value) {
+        entry.times[timeType] = new Date(res.value.date + ' ' + res.value.time)
+        setDbHasUnsavedChange()
+        setUpdater(v => !v)
+      }
+    })
   }
 
   function handleNoteTextChange(e) {
@@ -94,9 +138,19 @@ export default function () {
           />
         </Box>
 
-        <Box className={clsx(classes.box, classes.time)}>
-          <div>创建时间：{creationTime}</div>
-          <div>最近修改：{lastModTime}</div>
+        <Box className={clsx(classes.box, classes.timeWrap)}>
+          <div>创建时间：<span
+            className={classes.time}
+            onClick={() => {
+              handleTimeChange('creationTime')
+            }}
+          >{creationTime}</span></div>
+          <div>最近修改：<span
+            className={classes.time}
+            onClick={() => {
+              handleTimeChange('lastModTime')
+            }}
+          >{lastModTime}</span></div>
         </Box>
 
         <Box className={classes.box}>

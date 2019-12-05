@@ -29,6 +29,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     width: '100%',
     height: 'calc(95vh - 60px)',
+    minHeight: '300px',
     overflow: 'auto',
   },
   tableHeadCell: {

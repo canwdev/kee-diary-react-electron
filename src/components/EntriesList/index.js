@@ -24,6 +24,7 @@ import {confirmDeleteEntry, confirmMoveToGroupChooser} from "./utils"
 import ListItem from "./ListItem"
 import TablePagination from "@material-ui/core/TablePagination"
 import {localStorageUtil} from "../../utils"
+import TableSortLabel from "@material-ui/core/TableSortLabel"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,11 +39,14 @@ const useStyles = makeStyles(theme => ({
   },
   tableRow: {
     "&:hover": {
-      backgroundColor: theme.palette.grey["300"]
+      backgroundColor: theme.palette.grey[300]
     }
   },
   tableCell: {
     cursor: 'pointer'
+  },
+  tableHeadCellActions: {
+    width: '80px'
   },
   checkboxWrap: {
     display: 'flex',
@@ -71,19 +75,70 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.background.default,
     bottom: -1,
     borderTop: '1px solid ' + theme.palette.grey[300]
-  }
+  },
+
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
 }));
+
+// --- 排序方法 ---
+function stableSort(array, cmp) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = cmp(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map(el => el[0]);
+}
+function getSorting(order, orderBy) {
+  return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
+}
+function desc(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+const headCells = [
+  {id: 'title', width: '40%', label: '标题'},
+  {id: 'creationTime', width: '20%', label: '创建时间'},
+  {id: 'lastModTime', width: '20%', label: '修改时间'}
+]
+const FLAG_SORT_ORDER = 'SETTINGS_SORT_ORDER'
+const FLAG_SORT_ORDER_BY = 'SETTINGS_SORT_BY'
 
 export default function () {
   const db = getGlobalDB()
   const [updater, setUpdater] = useState(false)
   const [checked, setChecked] = useState([]);
 
+  // --- 排序 ---
+  const initSortOrder = localStorageUtil.getItem(FLAG_SORT_ORDER) || 'desc'
+  const [order, setOrder] = React.useState(initSortOrder);
+  const initSortBy = localStorageUtil.getItem(FLAG_SORT_ORDER_BY) || 'creationTime'
+  const [orderBy, setOrderBy] = React.useState(initSortBy);
+
+  // --- 分页 ---
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  // --- 数据 ---
   const groupUuid = useSelector(selectorCurrentGroupUuid);
-  const PAGE_FLAG = 'PAGE_'+groupUuid
+  const FLAG_PAGE = 'PAGE_' + groupUuid
   let currentEntry = useSelector(selectorCurrentEntry) || {
     uuid: {
       id: null
@@ -92,14 +147,15 @@ export default function () {
 
   useEffect(() => {
     setChecked([]) // 如果切换了群组则清空选择列表
-    const page = localStorageUtil.getItem(PAGE_FLAG) || 0
+    const page = localStorageUtil.getItem(FLAG_PAGE) || 0
     setPage(page)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupUuid])
 
   const {history} = useReactRouter();
   const classes = useStyles();
 
-  // 右键菜单
+  // --- 右键菜单 ---
   const menuInitState = {
     mouseX: null,
     mouseY: null,
@@ -128,7 +184,7 @@ export default function () {
     }
   };
 
-  function handleDeleteEntry(entry) {
+  const handleDeleteEntry = (entry) => {
     confirmDeleteEntry(entry).then(() => {
       db.remove(entry);
       setDbHasUnsavedChange()
@@ -136,7 +192,8 @@ export default function () {
     })
   }
 
-  function handleMoveToGroup(entry) {
+  // --- 操作 ---
+  const handleMoveToGroup = (entry) => {
     confirmMoveToGroupChooser(db).then(selectedGroup => {
       db.move(entry, selectedGroup);
       setDbHasUnsavedChange()
@@ -145,8 +202,7 @@ export default function () {
       setUpdater(v => !v)
     })
   }
-
-  function handleCheckEntry(item) {
+  const handleCheckEntry = (item) => {
     const selectedIndex = checked.indexOf(item)
     let newChecked = []
 
@@ -158,35 +214,46 @@ export default function () {
 
     setChecked(newChecked)
   }
-
-  function handleEntryItemClick(item) {
+  const handleEntryItemClick = (item) => {
     setCurrentEntry(item._ref)
     history.push('/item-detail')
   }
-
   const handleChangePage = (event, newPage) => {
-    localStorageUtil.setItem(PAGE_FLAG, newPage)
+    localStorageUtil.setItem(FLAG_PAGE, newPage)
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
+  // --- 排序操作 ---
+  const createSortHandler = property => event => {
+    handleRequestSort(event, property);
+  }
+  const handleRequestSort = (event, property) => {
+    const isDesc = (orderBy === property && order === 'desc') ? 'asc' : 'desc';
+
+    setOrder(isDesc);
+    setOrderBy(property);
+    localStorageUtil.setItem(FLAG_SORT_ORDER, isDesc)
+    localStorageUtil.setItem(FLAG_SORT_ORDER_BY, property)
+  }
+
+  // --- 生成菜单VDOM ---
   const generatedMenu = useMemo(() => {
     if (menuState.item) {
       const menuList = [
         {
           disabled: menuState.item.index === 0,
           icon: <DoubleArrowIcon fontSize="small"/>,
-          title: '移动至群组',
+          title: '移动此条目至群组',
           action: 'move'
         },
         {
           disabled: menuState.item.index === 0,
           icon: <DeleteIcon fontSize="small"/>,
-          title: '删除条目',
+          title: '删除此条目',
           action: 'delete'
         }
       ]
@@ -231,6 +298,7 @@ export default function () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState])
 
+  // --- 生成数据 ---
   const entries = useMemo(() => {
     // console.log('generate entries')
     const list = []
@@ -258,11 +326,12 @@ export default function () {
     }
     return list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, groupUuid]);
+  }, [updater, groupUuid])
 
+  // --- 生成列表 ---
   const TableRows = useMemo(() => {
     // console.log('generateTable')
-    return entries
+    return stableSort(entries, getSorting(order, orderBy))
       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       .map((row, index) => {
           const rowChecked = checked.indexOf(row) !== -1
@@ -283,7 +352,7 @@ export default function () {
       )
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, groupUuid, checked, page, rowsPerPage])
+  }, [updater, groupUuid, checked, page, rowsPerPage, order, orderBy])
 
   return (
     <Paper className={classes.root}>
@@ -301,10 +370,32 @@ export default function () {
         >
           <TableHead>
             <TableRow>
-              <TableCell style={{width: '80px'}}/>
-              <TableCell className={classes.tableHeadCell}>标题</TableCell>
-              <TableCell className={classes.tableHeadCell}>创建时间</TableCell>
-              <TableCell className={classes.tableHeadCell} align="left">修改时间</TableCell>
+
+              <TableCell align="center" className={classes.tableHeadCellActions}>#</TableCell>
+
+              {headCells.map(headCell => (
+                <TableCell
+                  key={headCell.id}
+                  sortDirection={orderBy === headCell.id ? order : false}
+                  className={classes.tableHeadCell}
+                  style={{width: headCell.width}}
+                >
+                  <TableSortLabel
+                    active={orderBy === headCell.id}
+                    direction={order}
+                    onClick={createSortHandler(headCell.id)}
+                  >
+                    {headCell.label}
+                    {orderBy === headCell.id ? (
+                      <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+
+              <TableCell align="center" className={classes.tableHeadCellActions}>@</TableCell>
             </TableRow>
           </TableHead>
 

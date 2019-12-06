@@ -44,7 +44,9 @@ const useStyles = makeStyles(theme => ({
   },
   appTitle: {
     fontSize: '18px',
-    fontWeight: '500'
+    fontWeight: '500',
+    cursor: 'pointer',
+    maxWidth: '230px'
   },
   appBar: {
     transition: theme.transitions.create(['margin', 'width'], {
@@ -149,7 +151,14 @@ export default function AppContainer(props) {
               <MenuIcon/>
             </IconButton>
 
-            <Typography variant="h6" noWrap className={classes.appTitle}>
+            <Typography
+              variant="h6"
+              noWrap
+              className={classes.appTitle}
+              onClick={() => {
+                history.push('/view-list')
+              }}
+            >
               {appTitle}
             </Typography>
 

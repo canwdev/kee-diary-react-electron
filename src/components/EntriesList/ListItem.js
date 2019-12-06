@@ -1,9 +1,10 @@
 import TableCell from "@material-ui/core/TableCell"
 import Checkbox from "@material-ui/core/Checkbox"
 import IconButton from "@material-ui/core/IconButton"
+import IconMenuBook from "@material-ui/icons/MenuBook"
 import {handleChangeColor, showDetailWindow} from "./utils"
 import clsx from "clsx"
-import {formatDate} from "../../utils"
+import {formatDateLite} from "../../utils"
 import TableRow from "@material-ui/core/TableRow"
 import React from "react"
 
@@ -56,7 +57,7 @@ export default function ListItem(props) {
       <TableCell
         className={classes.tableCell}
         onClick={() => {
-          showDetailWindow(row._ref)
+          handleEntryItemClick(row)
         }}
       >
         <span>{row.title}</span>
@@ -66,13 +67,25 @@ export default function ListItem(props) {
         onClick={() => {
           handleEntryItemClick(row)
         }}
-      >{formatDate(row.creationTime)}</TableCell>
+      >{formatDateLite(row.creationTime)}</TableCell>
       <TableCell
-        className={classes.tableCell}
         onClick={() => {
           handleEntryItemClick(row)
         }}
-      >{formatDate(row.lastModTime)}</TableCell>
+      >{formatDateLite(row.lastModTime)}</TableCell>
+      <TableCell
+        padding="checkbox"
+        align="center"
+      >
+        <IconButton
+          size="small"
+          onClick={() => {
+            showDetailWindow(row._ref)
+          }}
+        >
+          <IconMenuBook/>
+        </IconButton>
+      </TableCell>
     </TableRow>
   )
 }

@@ -18,6 +18,13 @@ export const localStorageUtil = {
   }
 }
 
+export function formatDateLite(d) {
+  let date = d.toISOString().substr(0, 10)
+    , time = pad2Num(d.getHours()) + ':' + pad2Num(d.getMinutes())
+
+  return `${date} ${time}`
+}
+
 export function formatDate(date) {
   const year = date.getFullYear() + '年'
   const month = date.getMonth() + 1 + '月'

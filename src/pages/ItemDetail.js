@@ -60,19 +60,20 @@ export default function () {
       lastModTime: new Date()
     }
   }
+  // eslint-disable-next-line no-unused-vars
   const [updater, setUpdater] = useState(false)
   const [title, setTitle] = useState(entry.fields.Title)
   const [noteText, setNoteText] = useState(entry.fields.Notes)
   const creationTime = formatDate(entry.times.creationTime)
   const lastModTime = formatDate(entry.times.lastModTime)
 
-  function updateEntry() {
-    // TODO: 潜在的性能问题
+  const updateEntry = () => {
+    // FIXME: 潜在的性能问题
     entry.times.lastModTime = new Date()
     setDbHasUnsavedChange()
   }
 
-  function handleTitleChange(e) {
+  const handleTitleChange = (e) => {
     const value = e.target.value
 
     entry.fields.Title = value
@@ -84,7 +85,7 @@ export default function () {
    * 手动更新时间
    * @param timeType
    */
-  function handleTimeChange(timeType = 'creationTime') {
+  const handleTimeChange = (timeType = 'creationTime') => {
     let now = entry.times[timeType] || new Date()
     let date = now.toISOString().substr(0, 10)
       , time = pad2Num(now.getHours()) + ':' + pad2Num(now.getMinutes())
@@ -116,7 +117,7 @@ export default function () {
     })
   }
 
-  function handleNoteTextChange(e) {
+  const handleNoteTextChange = (e) => {
     const value = e.target.value
 
     entry.fields.Notes = value

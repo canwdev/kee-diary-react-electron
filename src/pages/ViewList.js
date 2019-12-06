@@ -19,12 +19,12 @@ export default function () {
     <Container maxWidth="xl">
       <AutoRedirectLogin/>
       <Grid container spacing={1}>
-        <Grid item xl={2} md={3} xs={12}>
+        <Grid item xl={2} md={3} sm={2} xs={12}>
           <Paper className={classes.paper}>
             <GroupsList/>
           </Paper>
         </Grid>
-        <Grid item xl={10} md={9} xs={12}>
+        <Grid item xl={10} md={9} sm={10} xs={12}>
           <EntriesList/>
         </Grid>
       </Grid>

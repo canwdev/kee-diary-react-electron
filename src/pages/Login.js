@@ -33,7 +33,7 @@ function Copyright() {
       {'© ' + new Date().getFullYear() + ' '}
       <Link
         color="inherit"
-        component="button"
+        component="a"
         onClick={() => {
           window.api.openExternal(homepage)
         }}
@@ -79,6 +79,9 @@ const useStyles = makeStyles(theme => ({
   inputFlex1: {
     flex: 1,
     marginRight: theme.spacing(1)
+  },
+  checkbox: {
+    marginRight: theme.spacing(1)
   }
 }));
 // console.log('加载默认设置', signInDefaultConfig)
@@ -93,7 +96,7 @@ export default function Login() {
   });
 
   function forgotPassword() {
-    window.api.alert('如果你忘记了密码，可能永远也找不回了。')
+    window.api.alert('如果你忘记了密码，可能无法找回。')
   }
 
   const onSubmit = values => {
@@ -212,10 +215,10 @@ export default function Login() {
             </Button>
           </Box>
           <FormControlLabel
-            style={{marginLeft: 0}}
+            style={{marginLeft: 0, }}
             control={
               /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
-              <input className="__checkbox" type="checkbox" name="rememberPathChecked" ref={register}/>
+              <input className={classes.checkbox} type="checkbox" name="rememberPathChecked" ref={register}/>
             }
             label="记住密码和密钥位置"
           />

@@ -19,8 +19,10 @@ import Typography from "@material-ui/core/Typography"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import StarIcon from '@material-ui/icons/Star';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
 import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
-import {confirmDeleteEntry, confirmMoveToGroupChooser} from "./utils"
+import {confirmDeleteEntry, confirmMoveToGroupChooser, handleChangeColor, handleChangeIcon} from "./utils"
 import ListItem from "./ListItem"
 import TablePagination from "@material-ui/core/TablePagination"
 import {localStorageUtil} from "../../utils"
@@ -100,9 +102,11 @@ function stableSort(array, cmp) {
   });
   return stabilizedThis.map(el => el[0]);
 }
+
 function getSorting(order, orderBy) {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
+
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -175,6 +179,14 @@ export default function () {
 
     const entry = menuState.item._ref
     switch (type) {
+      case 'changeIcon':
+        return handleChangeIcon(entry).then(() => {
+          setUpdater(v => !v)
+        })
+      case 'changeColor':
+        return handleChangeColor(entry).then(() => {
+          setUpdater(v => !v)
+        })
       case 'move':
         return handleMoveToGroup(entry)
       case 'delete':
@@ -245,15 +257,25 @@ export default function () {
     if (menuState.item) {
       const menuList = [
         {
-          disabled: menuState.item.index === 0,
-          icon: <DoubleArrowIcon fontSize="small"/>,
-          title: '移动此条目至群组',
+          // disabled: true,
+          icon: <StarIcon/>,
+          title: '修改图标',
+          action: 'changeIcon'
+        },
+        {
+
+          icon: <ColorLensIcon/>,
+          title: '修改颜色',
+          action: 'changeColor'
+        },
+        {
+          icon: <DoubleArrowIcon/>,
+          title: '移动...',
           action: 'move'
         },
         {
-          disabled: menuState.item.index === 0,
-          icon: <DeleteIcon fontSize="small"/>,
-          title: '删除此条目',
+          icon: <DeleteIcon/>,
+          title: '删除',
           action: 'delete'
         }
       ]

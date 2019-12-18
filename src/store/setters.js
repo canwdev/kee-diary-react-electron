@@ -1,5 +1,5 @@
 import {
-  SET_CURRENT_ENTRY_UUID,
+  SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
   SET_SETTINGS,
@@ -23,7 +23,7 @@ export function setCurrentGroupUuid(uuid) {
 }
 
 export function setCurrentEntry(value) {
-  store.dispatch({type: SET_CURRENT_ENTRY_UUID, value: value})
+  store.dispatch({type: SET_CURRENT_ENTRY, value: value})
 }
 
 

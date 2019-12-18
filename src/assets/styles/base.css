@@ -77,3 +77,30 @@ code {
   max-height: 80vh;
   overflow-y: auto;
 }
+
+.__icon-chooser-wrap {
+  text-align: left;
+  user-select: none;
+}
+.__icon-chooser-wrap input[type="radio"] {
+  display: none;
+}
+
+.__icon-chooser-wrap i {
+  display: inline-block;
+  font-size: 28px;
+  padding: 10px;
+  width: 50px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.__icon-chooser-wrap input[type="radio"]:checked ~ i {
+  background: #ccc;
+}
+
+.__icon-chooser-wrap i.active,
+.__icon-chooser-wrap i:hover {
+  background: #eeeeee;
+}

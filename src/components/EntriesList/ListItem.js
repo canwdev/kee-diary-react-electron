@@ -40,7 +40,9 @@ export default function ListItem(props) {
           <IconButton
             size="small"
             onClick={() => {
-              handleChangeColor(row._ref, setUpdater)
+              handleChangeColor(row._ref).then(()=>{
+                setUpdater(v => !v)
+              })
             }}
           >
             <i

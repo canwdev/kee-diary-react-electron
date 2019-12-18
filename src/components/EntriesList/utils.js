@@ -5,8 +5,15 @@ import ReactDOM from "react-dom"
 import ColorPicker from "../ColorPicker"
 import {deepWalkGroup} from "../../utils"
 import {markdownIt} from "../../store"
+import {iconMap} from "../../utils/icon-map"
+import clsx from 'clsx'
 import {setCurrentEntry, setDbHasUnsavedChange} from "../../store/setters"
 
+/**
+ * 条目移动至群组
+ * @param db
+ * @returns {Promise<unknown>}
+ */
 export function confirmMoveToGroupChooser(db) {
   let selectedGroup = null
 
@@ -62,6 +69,9 @@ export function confirmMoveToGroupChooser(db) {
   })
 }
 
+/**
+ * 确认删除对话框
+ */
 export function confirmDeleteEntry(entry) {
   return new Promise((resolve, reject) => {
     const title = entry.fields.Title
@@ -85,6 +95,10 @@ export function confirmDeleteEntry(entry) {
 
 }
 
+/**
+ * 确认删除对话框（多选）
+ * @param numSelected 个数
+ */
 export function confirmDeleteEntries(numSelected) {
   return new Promise((resolve, reject) => {
     swal.fire({
@@ -104,6 +118,9 @@ export function confirmDeleteEntries(numSelected) {
   })
 }
 
+/**
+ * 显示 markdown编译后 预览窗口
+ */
 export function showDetailWindow(entry) {
   const {
     fields: {
@@ -132,26 +149,79 @@ export function showDetailWindow(entry) {
   })
 }
 
-export function handleChangeColor(entry, setUpdater) {
-  let selectedColor = null
-  swal.fire({
-    title: '选择颜色',
-    width: 278,
-    html: ReactDOM.render((
-      <div>
-        <ColorPicker updateColor={(color) => {
-          selectedColor = color
-        }}/>
-      </div>
-    ), document.createElement('div'))
-  }).then((result) => {
-    if (result.value && selectedColor) {
-      entry.fgColor = selectedColor.hex
-      setDbHasUnsavedChange()
-      setCurrentEntry(entry)
-      setUpdater(v => !v)
-    } else {
+/**
+ * 修改前景色
+ */
+export function handleChangeColor(entry) {
+  return new Promise((resolve, reject) => {
+    let selectedColor = null
+    swal.fire({
+      title: '选择颜色',
+      width: 278,
+      html: ReactDOM.render((
+        <div>
+          <ColorPicker updateColor={(color) => {
+            selectedColor = color
+          }}/>
+        </div>
+      ), document.createElement('div'))
+    }).then((result) => {
+      if (result.value && selectedColor) {
+        entry.fgColor = selectedColor.hex
+        setDbHasUnsavedChange()
+        setCurrentEntry(entry)
 
-    }
+        return resolve()
+      } else {
+        return reject()
+      }
+    })
+  })
+}
+
+/**
+ * 修改图标
+ */
+export function handleChangeIcon(entry) {
+  return new Promise((resolve, reject) => {
+    let {icon: iconIndex} = entry
+    swal.fire({
+      title: '选择图标',
+      html: ReactDOM.render((
+        <div className="__icon-chooser-wrap">
+          {
+            iconMap.map((icon, index) => {
+              return (
+                <label className="__icon-item">
+                  <input type="radio" name="icon-group"/>
+                  <i
+                    className={clsx(
+                      iconIndex === index ? 'active' : '',
+                      `fa fa-${icon}`
+                    )}
+                    title={index}
+                    key={index}
+                    onClick={()=>{
+                      iconIndex = index
+                    }}
+                  />
+                </label>
+
+              )
+            })
+          }
+        </div>
+      ), document.createElement('div'))
+    }).then((result) => {
+      if (result.value && iconIndex) {
+        entry.icon = iconIndex
+        setDbHasUnsavedChange()
+        setCurrentEntry(entry)
+
+        return resolve()
+      } else {
+        return reject()
+      }
+    })
   })
 }

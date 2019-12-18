@@ -1,5 +1,5 @@
 import {
-  SET_CURRENT_ENTRY_UUID,
+  SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
   SET_SETTINGS,
@@ -58,7 +58,7 @@ export default (state = initialState, action) => {
     }
   }
 
-  if (type === SET_CURRENT_ENTRY_UUID) {
+  if (type === SET_CURRENT_ENTRY) {
     return {
       ...state,
       currentEntry: action.value

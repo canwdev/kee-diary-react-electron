@@ -2,8 +2,9 @@ import {
   SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
+  SET_IS_LIST_VIEW,
   SET_SETTINGS,
-  SET_UNLOCKED,
+  SET_UNLOCKED, SETTINGS_IS_LIST_VIEW,
   SETTINGS_LOCALSTORAGE
 } from "./actionTypes"
 import store, {globalVars} from "./index"
@@ -16,6 +17,11 @@ import _debounce from 'lodash/debounce'
 export function setSettings(settings) {
   localStorageUtil.setItem(SETTINGS_LOCALSTORAGE, settings)
   store.dispatch({type: SET_SETTINGS, value: settings})
+}
+
+export function setIsListView(flag = true) {
+  localStorageUtil.setItem(SETTINGS_IS_LIST_VIEW, flag)
+  store.dispatch({type: SET_IS_LIST_VIEW, value: flag})
 }
 
 export function setCurrentGroupUuid(uuid) {

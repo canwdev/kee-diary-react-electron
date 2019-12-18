@@ -21,15 +21,13 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import NotesIcon from '@material-ui/icons/Notes';
-import HelpIcon from '@material-ui/icons/Help';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SaveIcon from '@material-ui/icons/Save';
 import EjectIcon from '@material-ui/icons/Eject';
-import {Link as RouterLink} from "react-router-dom"
 import useReactRouter from "use-react-router"
 
-import {getGlobalDB, selectorDbHasUnsavedChange, selectorUnlocked} from "../store/getters"
-import {saveKdbxDB, setUnlocked} from "../store/setters"
+import {getGlobalDB, selectorDbHasUnsavedChange, selectorIsListView, selectorUnlocked} from "../store/getters"
+import {saveKdbxDB, setIsListView, setUnlocked} from "../store/setters"
 import {useSelector} from "react-redux"
 import Tooltip from "@material-ui/core/Tooltip"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
@@ -45,7 +43,6 @@ const useStyles = makeStyles(theme => ({
   appTitle: {
     fontSize: '18px',
     fontWeight: '500',
-    cursor: 'pointer',
     maxWidth: '230px'
   },
   appBar: {
@@ -105,6 +102,7 @@ function getDrawerIcon(index) {
 export default function AppContainer(props) {
   const classes = useStyles();
   const theme = useTheme();
+  const breakPointSM = useMediaQuery(theme.breakpoints.up('sm'));
   const {location, history} = useReactRouter();
 
   const [open, setOpen] = React.useState(initOpenState);
@@ -112,7 +110,7 @@ export default function AppContainer(props) {
   const dbUnsaved = useSelector(selectorDbHasUnsavedChange)
   const db = getGlobalDB()
 
-  const breakPointSM = useMediaQuery(theme.breakpoints.up('sm'));
+  const isListView = useSelector(selectorIsListView)
 
   let appTitle = 'KeeDiary'
   if (db && breakPointSM) {
@@ -133,6 +131,11 @@ export default function AppContainer(props) {
     setUnlocked()
   }
 
+  const setListView = (flag) => {
+    setIsListView(flag)
+    handleDrawerClose()
+  }
+
   return (
     <div className={classes.root}>
       <AppBar
@@ -141,23 +144,46 @@ export default function AppContainer(props) {
       >
         <Toolbar className={classes.Toolbar} variant="dense">
           <div style={{display: 'flex', alignItems: 'center'}}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton)}
-            >
-              <MenuIcon/>
-            </IconButton>
+            {
+              unlocked ? (
+                (location.pathname === '/view-list') ? (
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={handleDrawerOpen}
+                    edge="start"
+                    className={clsx(classes.menuButton)}
+                  >
+                    <MenuIcon/>
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    color="inherit"
+                    onClick={() => {
+                      history.push('/view-list')
+                    }}
+                    edge="start"
+                    className={clsx(classes.menuButton)}
+                  >
+                    <ArrowBackIcon/>
+                  </IconButton>
+                )
+              ) : (
+                <IconButton
+                  color="inherit"
+                  edge="start"
+                  disabled={true}
+                  className={clsx(classes.menuButton)}
+                >
+                  <LockIcon/>
+                </IconButton>
+              )
+            }
 
             <Typography
               variant="h6"
               noWrap
               className={classes.appTitle}
-              onClick={() => {
-                history.push('/view-list')
-              }}
             >
               {appTitle}
             </Typography>
@@ -166,24 +192,6 @@ export default function AppContainer(props) {
           <div
             className={classes.actionButtons}
           >
-            {
-              (unlocked && location.pathname === '/item-detail') && (
-                <Tooltip
-                  title="返回列表"
-                  color="inherit"
-                >
-                  <IconButton
-                    onClick={() => {
-                      history.push('/view-list')
-                    }}
-                  >
-                    <ArrowBackIcon/>
-                  </IconButton>
-                </Tooltip>
-
-              )
-            }
-
 
             {
               unlocked && [
@@ -227,7 +235,7 @@ export default function AppContainer(props) {
           </IconButton>
         </div>
         <Divider/>
-        <List>
+        {/*<List>
           {props.router.map((item, index) => {
             return (
               <ListItem
@@ -242,21 +250,32 @@ export default function AppContainer(props) {
               </ListItem>
             )
           })}
-        </List>
+        </List>*/}
 
         {
           location.pathname === '/view-list' &&
           <>
             <Divider/>
             <List>
-              <ListItem button selected
-                        onClick={handleDrawerClose}>
+              <ListItem
+                button
+                selected={isListView}
+                onClick={() => {
+                  setListView(true)
+                }}
+              >
                 <ListItemIcon><ViewQuiltIcon/></ListItemIcon>
-                <ListItemText primary="普通视图"/>
+                <ListItemText primary="列表视图"/>
               </ListItem>
-              <ListItem button>
+              <ListItem
+                button
+                selected={!isListView}
+                onClick={() => {
+                  setListView(false)
+                }}
+              >
                 <ListItemIcon><EventNoteIcon/></ListItemIcon>
-                <ListItemText primary="日历视图(未实现)"/>
+                <ListItemText primary="日历视图"/>
               </ListItem>
             </List>
           </>

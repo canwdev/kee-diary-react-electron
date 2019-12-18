@@ -2,6 +2,7 @@ import store, {globalVars} from "./index"
 
 // selectors
 export const selectorSettings = state => state.settings
+export const selectorIsListView = state => state.isListView
 export const selectorUnlocked = state => state.unlocked
 export const selectorCurrentGroupUuid = state => state.currentGroupUuid
 export const selectorCurrentEntry = state => state.currentEntry

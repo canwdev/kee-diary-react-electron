@@ -105,17 +105,17 @@ export default function Login() {
       setGlobalDB(db)
       setUnlocked(true)
 
-      const settings = JSON.parse(JSON.stringify(values))
+      const newSettings = Object.assign(settings, JSON.parse(JSON.stringify(values)))
       if (!values.rememberPathChecked) {
 
-        delete settings.keyPath
-        delete settings.password
+        delete newSettings.keyPath
+        delete newSettings.password
       }
 
       // 加密密码
-      settings.password = encryptByDES(settings.password)
+      newSettings.password = encryptByDES(newSettings.password)
 
-      setSettings(settings)
+      setSettings(newSettings)
     }).catch(e => {
       console.error(e)
       let message = e.message

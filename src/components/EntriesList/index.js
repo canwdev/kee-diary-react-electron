@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer'
   },
   tableHeadCellActions: {
-    width: '80px'
+    minWidth: '140px'
   },
   checkboxWrap: {
     display: 'flex',
@@ -118,7 +118,7 @@ function desc(a, b, orderBy) {
 }
 
 const headCells = [
-  {id: 'title', width: '40%', label: '标题'},
+  {id: 'title', width: 'auto', label: '标题'},
   {id: 'creationTime', width: '20%', label: '创建时间'},
   {id: 'lastModTime', width: '20%', label: '修改时间'}
 ]
@@ -393,7 +393,7 @@ export default function () {
           <TableHead>
             <TableRow>
 
-              <TableCell align="center" className={classes.tableHeadCellActions}>#</TableCell>
+              <TableCell align="center" className={classes.tableHeadCellActions}>★</TableCell>
 
               {headCells.map(headCell => (
                 <TableCell
@@ -416,8 +416,6 @@ export default function () {
                   </TableSortLabel>
                 </TableCell>
               ))}
-
-              <TableCell align="center" className={classes.tableHeadCellActions}>@</TableCell>
             </TableRow>
           </TableHead>
 
@@ -430,7 +428,7 @@ export default function () {
       </div>
       <TablePagination
         className={classes.pagination}
-        rowsPerPageOptions={[5, 10, 20, 30]}
+        rowsPerPageOptions={[5, 10, 15, 20, 30]}
         component="div"
         count={entries.length}
         rowsPerPage={rowsPerPage}

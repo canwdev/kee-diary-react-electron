@@ -53,6 +53,13 @@ export default function ListItem(props) {
               className={clsx(classes.icon, `fa fa-${row.icon}`)}
             />
           </IconButton>
+          <IconButton
+            onClick={() => {
+              showDetailWindow(row._ref)
+            }}
+          >
+            <IconMenuBook/>
+          </IconButton>
         </div>
 
       </TableCell>
@@ -75,19 +82,6 @@ export default function ListItem(props) {
           handleEntryItemClick(row)
         }}
       >{formatDateLite(row.lastModTime)}</TableCell>
-      <TableCell
-        padding="checkbox"
-        align="center"
-      >
-        <IconButton
-          size="small"
-          onClick={() => {
-            showDetailWindow(row._ref)
-          }}
-        >
-          <IconMenuBook/>
-        </IconButton>
-      </TableCell>
     </TableRow>
   )
 }

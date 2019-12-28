@@ -184,6 +184,11 @@ export default function AppContainer(props) {
               variant="h6"
               noWrap
               className={classes.appTitle}
+              onClick={() => {
+                if (unlocked) {
+                  history.push('/view-list')
+                }
+              }}
             >
               {appTitle}
             </Typography>

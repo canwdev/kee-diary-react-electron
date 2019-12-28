@@ -20,13 +20,14 @@ const useToolbarStyles = makeStyles(theme => ({
     width: '100%',
     height: 0,
     display: 'flex',
+    justifyContent: '',
     visibility: 'hidden',
   },
   toolBar: {
     width: '100%',
     minHeight: '56px',
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
+    paddingRight: theme.spacing(2),
   },
   highlight:
     theme.palette.type === 'light'
@@ -42,6 +43,7 @@ const useToolbarStyles = makeStyles(theme => ({
       },
   title: {
     flex: '1 1 100%',
+    textAlign: 'right'
   },
 }));
 
@@ -89,20 +91,20 @@ export const EnhancedTableToolbar = props => {
       <Toolbar className={clsx(classes.toolBar, {
         [classes.highlight]: numSelected > 0,
       })}>
-        <Typography className={classes.title} color="inherit" variant="subtitle1">
-          批量操作：已选择 {numSelected} 个条目
-        </Typography>
-
-        <Tooltip title="移动至群组">
+        <Tooltip title="批量移动...">
           <IconButton onClick={handleMoveEntries} aria-label="move">
             <DoubleArrowIcon/>
           </IconButton>
         </Tooltip>
-        <Tooltip title="删除条目">
+        <Tooltip title="批量删除">
           <IconButton onClick={handleDeleteEntries} aria-label="delete">
             <DeleteIcon/>
           </IconButton>
         </Tooltip>
+
+        <Typography className={classes.title} color="inherit" variant="subtitle1">
+          批量操作：已选择 {numSelected} 个条目
+        </Typography>
       </Toolbar>
     </div>
   );

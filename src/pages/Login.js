@@ -25,7 +25,7 @@ function Copyright() {
   const pjson = require('../../package.json');
   const {
     author: {
-      name:creator, url:homepage
+      name: creator, url: homepage
     }
   } = pjson
   return (
@@ -107,10 +107,9 @@ export default function Login() {
 
       const newSettings = Object.assign(settings, JSON.parse(JSON.stringify(values)))
       if (!values.rememberPathChecked) {
-
-        delete newSettings.keyPath
         delete newSettings.password
       }
+      // delete newSettings.keyPath
 
       // 加密密码
       newSettings.password = encryptByDES(newSettings.password)
@@ -183,6 +182,7 @@ export default function Login() {
             inputRef={register}
             variant="outlined"
             // required
+            autoFocus={true}
             fullWidth
             label="数据库密码"
             type="password"
@@ -215,12 +215,12 @@ export default function Login() {
             </Button>
           </Box>
           <FormControlLabel
-            style={{marginLeft: 0, }}
+            style={{marginLeft: 0,}}
             control={
               /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
               <input className={classes.checkbox} type="checkbox" name="rememberPathChecked" ref={register}/>
             }
-            label="记住密码和密钥位置"
+            label="记住密码"
           />
           <Button
             type="submit"

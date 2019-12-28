@@ -1,4 +1,4 @@
-import {saveKdbxDB} from "../store/setters"
+import {saveKdbxDB, setUnlocked} from "../store/setters"
 
 // 注册键盘快捷键
 export function registerKeyShortcuts() {
@@ -17,6 +17,10 @@ function handleKey(event) {
       case 's':
         event.preventDefault();
         saveKdbxDB()
+        break;
+      case 'l':
+        event.preventDefault();
+        setUnlocked()
         break;
       default:
         return

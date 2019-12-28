@@ -14,13 +14,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-
-import BugReportIcon from '@material-ui/icons/BugReport';
 import LockIcon from '@material-ui/icons/Lock';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
 import EventNoteIcon from '@material-ui/icons/EventNote';
-import NotesIcon from '@material-ui/icons/Notes';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SaveIcon from '@material-ui/icons/Save';
 import EjectIcon from '@material-ui/icons/Eject';
@@ -88,7 +84,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function getDrawerIcon(index) {
+/*function getDrawerIcon(index) {
   // 抽屉条目图标列表
   const icons = [
     <LockIcon/>,
@@ -97,7 +93,7 @@ function getDrawerIcon(index) {
     <BugReportIcon/>,
   ]
   return icons[index]
-}
+}*/
 
 export default function AppContainer(props) {
   const classes = useStyles();

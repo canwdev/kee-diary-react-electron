@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer'
   },
   tableHeadCellActions: {
-    minWidth: '140px'
+    minWidth: '90px'
   },
   checkboxWrap: {
     display: 'flex',
@@ -142,7 +142,7 @@ export default function () {
 
   // --- 数据 ---
   const groupUuid = useSelector(selectorCurrentGroupUuid);
-  const FLAG_PAGE = 'PAGE_' + groupUuid
+  const FLAG_PAGE = 'SETTINGS_FLAG_PAGE_' + groupUuid
   let currentEntry = useSelector(selectorCurrentEntry) || {
     uuid: {
       id: null

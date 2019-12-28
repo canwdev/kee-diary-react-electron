@@ -1,12 +1,12 @@
 import TableCell from "@material-ui/core/TableCell"
 import Checkbox from "@material-ui/core/Checkbox"
 import IconButton from "@material-ui/core/IconButton"
-import IconMenuBook from "@material-ui/icons/MenuBook"
-import {handleChangeColor, showDetailWindow} from "./utils"
+import {showDetailWindow} from "./utils"
 import clsx from "clsx"
 import {formatDateLite} from "../../utils"
 import TableRow from "@material-ui/core/TableRow"
 import React from "react"
+import Tooltip from "@material-ui/core/Tooltip"
 
 export default function ListItem(props) {
   const {
@@ -17,7 +17,7 @@ export default function ListItem(props) {
     handleRightClick,
     handleCheckEntry,
     handleEntryItemClick,
-    setUpdater
+    // setUpdater
   } = props
   return (
     <TableRow
@@ -37,29 +37,23 @@ export default function ListItem(props) {
               handleCheckEntry(row)
             }}
           />
-          <IconButton
-            size="small"
-            onClick={() => {
-              handleChangeColor(row._ref).then(()=>{
-                setUpdater(v => !v)
-              })
-            }}
-          >
-            <i
-              style={{
-                backgroundColor: row.bgColor,
-                color: row.fgColor
+          <Tooltip title="查看 Markdown">
+            <IconButton
+              size="small"
+              onClick={() => {
+                // handleChangeColor(row._ref).then(()=>{setUpdater(v => !v)})
+                showDetailWindow(row._ref)
               }}
-              className={clsx(classes.icon, `fa fa-${row.icon}`)}
-            />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              showDetailWindow(row._ref)
-            }}
-          >
-            <IconMenuBook/>
-          </IconButton>
+            >
+              <i
+                style={{
+                  backgroundColor: row.bgColor,
+                  color: row.fgColor
+                }}
+                className={clsx(classes.icon, `fa fa-${row.icon}`)}
+              />
+            </IconButton>
+          </Tooltip>
         </div>
 
       </TableCell>

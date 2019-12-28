@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Redirect} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles"
 import {Box, Container, Input, Paper, TextareaAutosize} from "@material-ui/core"
@@ -9,6 +9,7 @@ import {selectorCurrentEntry} from "../store/getters"
 import {setDbHasUnsavedChange} from "../store/setters"
 import swal from "sweetalert2"
 import ReactDOM from "react-dom"
+import useReactRouter from "use-react-router"
 
 const fontFamily = `"Open Sans", "Source Han Sans SC", "PingFang SC", Arial, "Microsoft YaHei", "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif`
 const useStyles = makeStyles(theme => ({
@@ -64,6 +65,23 @@ export default function () {
   const [updater, setUpdater] = useState(false)
   const [title, setTitle] = useState(entry.fields.Title)
   const [noteText, setNoteText] = useState(entry.fields.Notes)
+  const {history} = useReactRouter();
+
+  const handleKey = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      history.push('/view-list')
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKey)
+    return () => {
+      window.addEventListener('keydown', handleKey)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const creationTime = formatDate(entry.times.creationTime)
   const lastModTime = formatDate(entry.times.lastModTime)
 

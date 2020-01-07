@@ -37,7 +37,7 @@ export default function ListItem(props) {
               handleCheckEntry(row)
             }}
           />
-          <Tooltip title="查看 Markdown">
+          <Tooltip title="预览">
             <IconButton
               size="small"
               onClick={() => {

@@ -158,6 +158,7 @@ export default function AppContainer(props) {
                     onClick={() => {
                       history.push('/view-list')
                     }}
+                    title="返回 (Esc)"
                     edge="start"
                     className={clsx(classes.menuButton)}
                   >
@@ -196,8 +197,8 @@ export default function AppContainer(props) {
 
             {
               unlocked && [
-                {title: '保存更改', action: saveKdbxDB, disabled: !dbUnsaved, icon: <SaveIcon/>},
-                {title: '关闭数据库', action: handleCloseDB, icon: <EjectIcon/>},
+                {title: '保存更改 (Ctrl+S)', action: saveKdbxDB, disabled: !dbUnsaved, icon: <SaveIcon/>},
+                {title: '关闭数据库 (Ctrl+L)', action: handleCloseDB, icon: <EjectIcon/>},
               ].map((item, index) => {
                 return (
                   <Tooltip

@@ -27,6 +27,7 @@ import ListItem from "./ListItem"
 import TablePagination from "@material-ui/core/TablePagination"
 import {localStorageUtil} from "../../utils"
 import TableSortLabel from "@material-ui/core/TableSortLabel"
+import {iconStyle} from "../../assets/styles/commonStyles"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -54,15 +55,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center'
   },
-  icon: {
-    fontSize: 20,
-    borderRadius: '50%',
-    width: '32px',
-    height: '32px',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
+  icon: iconStyle,
   menuIconWrap: {
     minWidth: '32px',
     fontSize: '18px'

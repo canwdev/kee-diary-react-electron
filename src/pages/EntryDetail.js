@@ -6,12 +6,16 @@ import clsx from "clsx"
 import {formatDate, pad2Num} from "../utils"
 import {useSelector} from "react-redux"
 import {selectorCurrentEntry} from "../store/getters"
-import {setDbHasUnsavedChange} from "../store/setters"
+import {saveKdbxDB, setDbHasUnsavedChange, setUnlocked} from "../store/setters"
 import swal from "sweetalert2"
 import ReactDOM from "react-dom"
 import useReactRouter from "use-react-router"
+import {showDetailWindow} from "../components/EntriesList/utils"
+import IconButton from "@material-ui/core/IconButton"
+import Tooltip from "@material-ui/core/Tooltip"
+import {iconMap} from "../utils/icon-map"
+import {fontFamily, iconStyle} from "../assets/styles/commonStyles"
 
-const fontFamily = `"Open Sans", "Source Han Sans SC", "PingFang SC", Arial, "Microsoft YaHei", "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif`
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(1),
@@ -20,10 +24,18 @@ const useStyles = makeStyles(theme => ({
   box: {
     margin: theme.spacing(2),
   },
+
+  icon: iconStyle,
+  inputWrap: {
+    display: 'flex',
+  },
   titleInput: {
     width: '100%',
     fontSize: theme.typography.h6.fontSize,
     fontFamily
+  },
+  action: {
+    marginRight: '5px'
   },
   timeWrap: {
     display: 'flex',
@@ -72,12 +84,23 @@ export default function () {
       event.preventDefault()
       history.push('/view-list')
     }
+    if (event.ctrlKey || event.metaKey) {
+      switch (String.fromCharCode(event.which).toLowerCase()) {
+        case '¿': // 符号："/"
+          event.preventDefault()
+          showDetailWindow(entry)
+          break;
+        default:
+          return
+      }
+    }
   }
 
+  // 快捷键
   useEffect(() => {
     window.addEventListener('keydown', handleKey)
     return () => {
-      window.addEventListener('keydown', handleKey)
+      window.removeEventListener('keydown', handleKey)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -148,7 +171,25 @@ export default function () {
       {!unlocked ? <Redirect to="/"/> : null}
       <Paper className={classes.root}>
 
-        <Box className={classes.box}>
+        <Box className={clsx(classes.box, classes.inputWrap)}>
+          <div className={classes.action}>
+            <Tooltip title="预览 (Ctrl+/)">
+              <IconButton
+                size="small"
+                onClick={() => {
+                  showDetailWindow(entry)
+                }}
+              >
+                <i
+                  style={{
+                    backgroundColor: entry.bgColor,
+                    color: entry.fgColor
+                  }}
+                  className={clsx(classes.icon, `fa fa-${iconMap[entry.icon]}`)}
+                />
+              </IconButton>
+            </Tooltip>
+          </div>
           <Input
             placeholder="标题"
             value={title}

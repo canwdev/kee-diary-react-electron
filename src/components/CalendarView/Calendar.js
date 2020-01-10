@@ -5,47 +5,50 @@
 
 import React from "react"
 import './calendar.css'
-import getLunarDate from './getLunarDate'
+// import getLunarDate from './getLunarDate'
+import solarLunar from 'solarlunar';
 
 class CalendarHeader extends React.Component {
-  onClickLeft = () => {
-    var self = this;
-    var date = self.props.date;
+  handleChangeMonth = (prev = false) => {
+    var date = this.props.date;
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
-    month--;
-    if (month === 0) {
-      month = 12;
-      year--;
+
+    if (!prev) {
+      month++;
+      if (month === 13) {
+        month = 1;
+        year++;
+      }
+    } else {
+      month--;
+      if (month === 0) {
+        month = 12;
+        year--;
+      }
     }
-    self.props.onNavChange(new Date(year, month - 1));
+
+    this.props.onNavChange(new Date(year, month - 1));
   }
 
-  onClickRight = () => {
-    var self = this;
-    var date = self.props.date;
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    month++;
-    if (month === 13) {
-      month = 1;
-      year++;
-    }
-    self.props.onNavChange(new Date(year, month - 1));
+  handleGoToday = () => {
+    this.props.onNavChange(new Date())
+    this.props.onSelectedChange(new Date())
   }
 
   render() {
-    var self = this;
-    var date = self.props.date;
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
+    var date = this.props.date;
     return (
-      <div className="header row s1">
-        <div onClick={self.onClickLeft} className="nav-btn s1 center">{'<'}</div>
-        <div className="current s5 center">
-          <span>{year}年{month}月</span>
+      <div className="calendar-header">
+        <div onClick={() => {
+          this.handleChangeMonth(true)
+        }} className="calendar-header-nav">←</div>
+        <div className="calendar-header-nav" onClick={this.handleGoToday}>
+          <span>{date.getFullYear()} 年 {date.getMonth() + 1} 月</span>
         </div>
-        <div onClick={self.onClickRight} className="nav-btn s1 center">{'>'}</div>
+        <div onClick={() => {
+          this.handleChangeMonth()
+        }} className="calendar-header-nav">→</div>
       </div>
     );
   }
@@ -55,15 +58,15 @@ class CalendarHeader extends React.Component {
 class CalendarHead extends React.Component {
   render() {
     var nodes = ['日', '一', '二', '三', '四', '五', '六'].map(function (text, index) {
-      var className = "day s1 center" + (index === 0 || index === 6 ? ' weekend' : '');
+      var className = "calendar-day s1 center" + (index === 0 || index === 6 ? ' weekend' : '');
       return (
-        <div className={className} key={text+index}>
+        <div className={className} key={text + index}>
           {text}
         </div>
       );
     });
     return (
-      <div className="head row s1">
+      <div className="row s1">
         {nodes}
       </div>
     );
@@ -89,7 +92,7 @@ class CalendarBody extends React.Component {
     var list = [[]];
     var i, cur, row, col;
     for (i = firstDay; i--;) {
-      list[0].push('');
+      list[0].push(null);
     }
     for (i = 1; i <= monthLen; i++) {
       cur = i + firstDay - 1;
@@ -101,7 +104,7 @@ class CalendarBody extends React.Component {
     var lastRow = list[row];
     var remain = 7 - list[row].length;
     for (i = 7 - lastRow.length; i--;) {
-      lastRow.push('');
+      lastRow.push(null);
     }
     return list;
   }
@@ -126,24 +129,39 @@ class CalendarBody extends React.Component {
       var days = row.map(function (day, index) {
         var isCur = (year === curYear) && (month === curMonth) && (day === curDay);
         var isWeekend = index === 0 || index === 6;
-        var lunarDate;
+
+        var now = new Date()
+        var isToday = (day === now.getDate()) && (year === now.getFullYear()) && (month === now.getMonth() + 1)
+
+        var lunarData;
         var pressCb = isCur ? function () {
         } : function () {
           self.onClickCallback(year, month, day);
         };
-        var className = "day s1 center";
+        var className = "calendar-day s1";
         if (isCur) className += ' cur';
         if (isWeekend) className += ' weekend';
+        if (isToday) className += ' today';
         if (day) {
-          lunarDate = getLunarDate(new Date(year, month - 1, day));
-          lunarDate = (<span className="lunar">
-            {lunarDate.month}月{lunarDate.day}
-          </span>);
+          // lunarData = getLunarDate(new Date(year, month - 1, day));
+          lunarData = solarLunar.solar2lunar(year, month, day);
         }
         return (
-          <div className={className} onClick={pressCb} key={day+index}>
-            {day}
-            {lunarDate}
+          <div className={className} onClick={pressCb} key={day + index}>
+            <div className="calendar-day-item">
+              <div className="calendar-day-item-date">
+                {day}
+              </div>
+              <div className="calendar-day-item-lunar">
+                {
+                  lunarData && (
+                    lunarData.term || (lunarData.monthCn + lunarData.dayCn)
+                  )
+                }
+
+              </div>
+            </div>
+
           </div>
         );
       });
@@ -152,7 +170,7 @@ class CalendarBody extends React.Component {
       );
     });
     return (
-      <div className="rows s11 column">
+      <div className="s11 column">
         {rows}
       </div>
     );
@@ -186,9 +204,13 @@ class Calendar extends React.Component {
     var current = this.state.current;
     return (
       <div className="react-calendar column">
-        <CalendarHeader date={date} onNavChange={this.onNavChange}></CalendarHeader>
+        <CalendarHeader
+          date={date}
+          onNavChange={this.onNavChange}
+          onSelectedChange={this.onSelectedChange}
+        />
         <div className="calendar column s9">
-          <CalendarHead></CalendarHead>
+          <CalendarHead/>
           <CalendarBody current={current} date={date} onSelectedChange={this.onSelectedChange}/>
         </div>
       </div>

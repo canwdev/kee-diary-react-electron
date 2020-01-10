@@ -22,7 +22,7 @@ export default function () {
 
   return (
     <Paper className={classes.root}>
-      <p style={{position: 'absolute', pointerEvents: 'none'}}>{ groupUuid && groupUuid.id}</p>
+      {/*<p style={{position: 'absolute', pointerEvents: 'none'}}>{ groupUuid && groupUuid.id}</p>*/}
       <Calendar/>
     </Paper>
   )

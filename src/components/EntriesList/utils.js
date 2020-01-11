@@ -192,7 +192,7 @@ export function handleChangeIcon(entry) {
           {
             iconMap.map((icon, index) => {
               return (
-                <label className="__icon-item">
+                <label className="__icon-item" key={index}>
                   <input type="radio" name="icon-group"/>
                   <i
                     className={clsx(
@@ -200,7 +200,7 @@ export function handleChangeIcon(entry) {
                       `fa fa-${icon}`
                     )}
                     title={index}
-                    key={index}
+
                     onClick={()=>{
                       iconIndex = index
                     }}
@@ -224,4 +224,12 @@ export function handleChangeIcon(entry) {
       }
     })
   })
+}
+
+/**
+ * 进入详情页面（编辑模式）
+ */
+export function handleEnterEntry(history, entry) {
+  setCurrentEntry(entry)
+  history.push('/item-detail')
 }

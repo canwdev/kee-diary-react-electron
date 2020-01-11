@@ -1,12 +1,9 @@
 import TableCell from "@material-ui/core/TableCell"
 import Checkbox from "@material-ui/core/Checkbox"
-import IconButton from "@material-ui/core/IconButton"
-import {showDetailWindow} from "./utils"
-import clsx from "clsx"
 import {formatDateLite} from "../../utils"
 import TableRow from "@material-ui/core/TableRow"
 import React from "react"
-import Tooltip from "@material-ui/core/Tooltip"
+import EntryIcon from "../EntryIcon"
 
 export default function ListItem(props) {
   const {
@@ -37,23 +34,7 @@ export default function ListItem(props) {
               handleCheckEntry(row)
             }}
           />
-          <Tooltip title="预览">
-            <IconButton
-              size="small"
-              onClick={() => {
-                // handleChangeColor(row._ref).then(()=>{setUpdater(v => !v)})
-                showDetailWindow(row._ref)
-              }}
-            >
-              <i
-                style={{
-                  backgroundColor: row.bgColor,
-                  color: row.fgColor
-                }}
-                className={clsx(classes.icon, `fa fa-${row.icon}`)}
-              />
-            </IconButton>
-          </Tooltip>
+          <EntryIcon entry={row._ref} title={"预览"}/>
         </div>
 
       </TableCell>

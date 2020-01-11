@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Redirect} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles"
 import {Box, Container, Input, Paper, TextareaAutosize} from "@material-ui/core"
@@ -6,15 +6,14 @@ import clsx from "clsx"
 import {formatDate, pad2Num} from "../utils"
 import {useSelector} from "react-redux"
 import {selectorCurrentEntry} from "../store/getters"
-import {saveKdbxDB, setDbHasUnsavedChange, setUnlocked} from "../store/setters"
+import {setDbHasUnsavedChange} from "../store/setters"
 import swal from "sweetalert2"
 import ReactDOM from "react-dom"
 import useReactRouter from "use-react-router"
 import {showDetailWindow} from "../components/EntriesList/utils"
-import IconButton from "@material-ui/core/IconButton"
-import Tooltip from "@material-ui/core/Tooltip"
-import {iconMap} from "../utils/icon-map"
-import {fontFamily, iconStyle} from "../assets/styles/commonStyles"
+import {fontFamily} from "../assets/styles/commonStyles"
+import EntryIcon from "../components/EntryIcon"
+import EntryContextMenu from "../components/EntriesList/EntryContextMenu"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,8 +23,6 @@ const useStyles = makeStyles(theme => ({
   box: {
     margin: theme.spacing(2),
   },
-
-  icon: iconStyle,
   inputWrap: {
     display: 'flex',
   },
@@ -79,6 +76,13 @@ export default function () {
   const [noteText, setNoteText] = useState(entry.fields.Notes)
   const {history} = useReactRouter();
 
+  // 右键菜单
+  const contextMenuRef = useRef();
+  const handleRightClick = (event) => {
+    contextMenuRef.current.handleRightClick(event, entry)
+  }
+
+  // 快捷键
   const handleKey = (event) => {
     if (event.key === 'Escape') {
       event.preventDefault()
@@ -96,7 +100,6 @@ export default function () {
     }
   }
 
-  // 快捷键
   useEffect(() => {
     window.addEventListener('keydown', handleKey)
     return () => {
@@ -171,24 +174,18 @@ export default function () {
       {!unlocked ? <Redirect to="/"/> : null}
       <Paper className={classes.root}>
 
-        <Box className={clsx(classes.box, classes.inputWrap)}>
+        <Box
+          className={clsx(classes.box, classes.inputWrap)}
+          onContextMenu={(event) => {
+            handleRightClick(event)
+          }}
+        >
           <div className={classes.action}>
-            <Tooltip title="预览 (Ctrl+/)">
-              <IconButton
-                size="small"
-                onClick={() => {
-                  showDetailWindow(entry)
-                }}
-              >
-                <i
-                  style={{
-                    backgroundColor: entry.bgColor,
-                    color: entry.fgColor
-                  }}
-                  className={clsx(classes.icon, `fa fa-${iconMap[entry.icon]}`)}
-                />
-              </IconButton>
-            </Tooltip>
+
+            <EntryIcon
+              entry={entry}
+              title={"预览 (Ctrl+/)"}
+            />
           </div>
           <Input
             placeholder="标题"
@@ -224,6 +221,11 @@ export default function () {
         </Box>
 
       </Paper>
+
+      <EntryContextMenu
+        ref={contextMenuRef}
+        setUpdater={setUpdater}
+      />
     </Container>
   )
 }

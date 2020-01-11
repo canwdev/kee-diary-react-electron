@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,24 +10,13 @@ import {useSelector} from "react-redux"
 import {iconMap} from "../../utils/icon-map"
 import {getGlobalDB, selectorCurrentEntry, selectorCurrentGroupUuid} from "../../store/getters"
 import useReactRouter from "use-react-router"
-import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
-import Menu from "@material-ui/core/Menu"
-import Divider from "@material-ui/core/Divider"
-import MenuItem from "@material-ui/core/MenuItem"
-import Typography from "@material-ui/core/Typography"
-
-import ListItemIcon from "@material-ui/core/ListItemIcon"
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-import StarIcon from '@material-ui/icons/Star';
-import ColorLensIcon from '@material-ui/icons/ColorLens';
 import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
-import {confirmDeleteEntry, confirmMoveToGroupChooser, handleChangeColor, handleChangeIcon} from "./utils"
 import ListItem from "./ListItem"
 import TablePagination from "@material-ui/core/TablePagination"
 import {localStorageUtil} from "../../utils"
 import TableSortLabel from "@material-ui/core/TableSortLabel"
-import {iconStyle} from "../../assets/styles/commonStyles"
+import EntryContextMenu from "./EntryContextMenu"
+import {handleEnterEntry} from "./utils"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -54,11 +43,6 @@ const useStyles = makeStyles(theme => ({
   checkboxWrap: {
     display: 'flex',
     alignItems: 'center'
-  },
-  icon: iconStyle,
-  menuIconWrap: {
-    minWidth: '32px',
-    fontSize: '18px'
   },
   empty: {
     textAlign: 'center',
@@ -152,61 +136,13 @@ export default function () {
   const {history} = useReactRouter();
   const classes = useStyles();
 
-  // --- 右键菜单 ---
-  const menuInitState = {
-    mouseX: null,
-    mouseY: null,
-    item: null
-  };
-  const [menuState, setMenuState] = useState(menuInitState);
+  // 右键菜单
+  const contextMenuRef = useRef();
   const handleRightClick = (event, item) => {
-    event.preventDefault();
-    setMenuState({
-      mouseX: event.clientX - 2,
-      mouseY: event.clientY - 4,
-      item
-    });
-  };
-  const handleMenuItemClick = (type) => {
-    setMenuState(menuInitState)
-
-    const entry = menuState.item._ref
-    switch (type) {
-      case 'changeIcon':
-        return handleChangeIcon(entry).then(() => {
-          setUpdater(v => !v)
-        })
-      case 'changeColor':
-        return handleChangeColor(entry).then(() => {
-          setUpdater(v => !v)
-        })
-      case 'move':
-        return handleMoveToGroup(entry)
-      case 'delete':
-        return handleDeleteEntry(entry)
-      default:
-        return
-    }
-  };
-
-  const handleDeleteEntry = (entry) => {
-    confirmDeleteEntry(entry).then(() => {
-      db.remove(entry);
-      setDbHasUnsavedChange()
-      setUpdater(v => !v)
-    })
+    contextMenuRef.current.handleRightClick(event, item._ref)
   }
 
   // --- 操作 ---
-  const handleMoveToGroup = (entry) => {
-    confirmMoveToGroupChooser(db).then(selectedGroup => {
-      db.move(entry, selectedGroup);
-      setDbHasUnsavedChange()
-      setCurrentGroupUuid(selectedGroup.uuid)
-      setCurrentEntry(entry)
-      setUpdater(v => !v)
-    })
-  }
   const handleCheckEntry = (item) => {
     const selectedIndex = checked.indexOf(item)
     let newChecked = []
@@ -219,10 +155,7 @@ export default function () {
 
     setChecked(newChecked)
   }
-  const handleEntryItemClick = (item) => {
-    setCurrentEntry(item._ref)
-    history.push('/item-detail')
-  }
+
   const handleChangePage = (event, newPage) => {
     localStorageUtil.setItem(FLAG_PAGE, newPage)
     setPage(newPage);
@@ -245,73 +178,6 @@ export default function () {
     localStorageUtil.setItem(FLAG_SORT_ORDER_BY, property)
   }
 
-  // --- 生成菜单VDOM ---
-  const generatedMenu = useMemo(() => {
-    if (menuState.item) {
-      const menuList = [
-        {
-          // disabled: true,
-          icon: <StarIcon/>,
-          title: '修改图标',
-          action: 'changeIcon'
-        },
-        {
-
-          icon: <ColorLensIcon/>,
-          title: '修改颜色',
-          action: 'changeColor'
-        },
-        {
-          icon: <DoubleArrowIcon/>,
-          title: '移动...',
-          action: 'move'
-        },
-        {
-          icon: <DeleteIcon/>,
-          title: '删除',
-          action: 'delete'
-        }
-      ]
-      return (
-        <Menu
-          keepMounted
-          open={menuState.mouseY !== null}
-          onClose={handleMenuItemClick}
-          anchorReference="anchorPosition"
-          anchorPosition={
-            menuState.mouseY !== null && menuState.mouseX !== null
-              ? {top: menuState.mouseY, left: menuState.mouseX}
-              : undefined
-          }
-        >
-          {
-            menuList.map((item, index) => {
-              if (item.isDivider) {
-                return <Divider key={index}/>
-              }
-              return (
-                <MenuItem
-                  key={index}
-                  disabled={item.disabled}
-                  onClick={() => {
-                    handleMenuItemClick(item.action)
-                  }}
-                >
-                  <ListItemIcon className={classes.menuIconWrap}>
-                    {item.icon}
-                  </ListItemIcon>
-                  <Typography variant="inherit">{item.title}</Typography>
-                </MenuItem>
-              )
-
-            })
-          }
-
-        </Menu>
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuState])
 
   // --- 生成数据 ---
   const entries = useMemo(() => {
@@ -323,17 +189,17 @@ export default function () {
 
       if (group) {
         for (let i = group.entries.length - 1; i >= 0; i--) {
-          let item = group.entries[i]
+          let entry = group.entries[i]
           list.push({
-            uuid: item.uuid,
-            icon: iconMap[item.icon],
-            title: item.fields.Title,
-            url: item.fields.URL,
-            bgColor: item.bgColor,
-            fgColor: item.fgColor,
-            creationTime: item.times.creationTime,
-            lastModTime: item.times.lastModTime,
-            _ref: item
+            uuid: entry.uuid,
+            icon: iconMap[entry.icon],
+            title: entry.fields.Title,
+            url: entry.fields.URL,
+            bgColor: entry.bgColor,
+            fgColor: entry.fgColor,
+            creationTime: entry.times.creationTime,
+            lastModTime: entry.times.lastModTime,
+            _ref: entry
           })
         }
       }
@@ -348,18 +214,20 @@ export default function () {
     // console.log('generateTable')
     return stableSort(entries, getSorting(order, orderBy))
       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      .map((row, index) => {
-          const rowChecked = checked.indexOf(row) !== -1
+      .map((item, index) => {
+          const rowChecked = checked.indexOf(item) !== -1
           return (
             <ListItem
               key={index}
-              row={row}
+              row={item}
               currentEntry={currentEntry}
               classes={classes}
               rowChecked={rowChecked}
               handleRightClick={handleRightClick}
               handleCheckEntry={handleCheckEntry}
-              handleEntryItemClick={handleEntryItemClick}
+              handleEntryItemClick={() => {
+                handleEnterEntry(history, item._ref)
+              }}
               setUpdater={setUpdater}
             />
           )
@@ -442,9 +310,10 @@ export default function () {
         )
       }
 
-      {
-        generatedMenu
-      }
+      <EntryContextMenu
+        ref={contextMenuRef}
+        setUpdater={setUpdater}
+      />
     </Paper>
   );
 }

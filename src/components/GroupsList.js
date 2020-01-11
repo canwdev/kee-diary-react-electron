@@ -25,6 +25,7 @@ import {useSelector} from "react-redux"
 import useReactRouter from "use-react-router"
 import {deepWalkGroup, formatDate} from "../utils"
 import clsx from "clsx"
+import {menuIconWrap} from "../assets/styles/commonStyles"
 // import StarBorder from '@material-ui/icons/StarBorder';
 
 const useStyles = makeStyles(theme => ({
@@ -35,10 +36,7 @@ const useStyles = makeStyles(theme => ({
   nested: {
     paddingLeft: theme.spacing(2),
   },
-  iconWrap: {
-    minWidth: '32px',
-    fontSize: '18px'
-  },
+  iconWrap: menuIconWrap,
   targetGroup: {
     display: 'flex',
     alignItems: 'center',
@@ -304,76 +302,74 @@ export default function NestedList() {
   }, [updater, currentGroupUuid])
 
   const generatedMenu = useMemo(() => {
-    if (menuState.item) {
-      const item = menuState.item
-      const menuList = [
-        {
-          icon: <AddCircleIcon fontSize="small"/>,
-          title: '添加条目',
-          action: 'addEntry'
-        },
-        {
-          icon: <AddBoxIcon fontSize="small"/>,
-          title: '添加群组',
-          action: 'addGroup'
-        },
-        {isDivider: true},
-        {
-          icon: <BorderColorIcon fontSize="small"/>,
-          title: '重命名',
-          action: 'rename'
-        },
-        {
-          disabled: menuState.item.index === 0,
-          icon: <DoubleArrowIcon fontSize="small"/>,
-          title: '移动',
-          action: 'move'
-        },
-        {
-          disabled: menuState.item.index === 0,
-          icon: <DeleteIcon fontSize="small"/>,
-          title: getIsRecycleBin(item._ref.uuid) ? '清空回收站' : '删除群组',
-          action: 'delete'
+    const item = menuState.item
+    const menuList = [
+      {
+        icon: <AddCircleIcon fontSize="small"/>,
+        title: '添加条目',
+        action: 'addEntry'
+      },
+      {
+        icon: <AddBoxIcon fontSize="small"/>,
+        title: '添加群组',
+        action: 'addGroup'
+      },
+      {isDivider: true},
+      {
+        icon: <BorderColorIcon fontSize="small"/>,
+        title: '重命名',
+        action: 'rename'
+      },
+      {
+        disabled: item && item.index === 0,
+        icon: <DoubleArrowIcon fontSize="small"/>,
+        title: '移动',
+        action: 'move'
+      },
+      {
+        disabled: item && item.index === 0,
+        icon: <DeleteIcon fontSize="small"/>,
+        title: item && getIsRecycleBin(item._ref.uuid) ? '清空回收站' : '删除群组',
+        action: 'delete'
+      }
+    ]
+    return (
+      <Menu
+        keepMounted
+        open={menuState.mouseY !== null}
+        onClose={handleMenuItemClick}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          menuState.mouseY !== null && menuState.mouseX !== null
+            ? {top: menuState.mouseY, left: menuState.mouseX}
+            : undefined
         }
-      ]
-      return (
-        <Menu
-          keepMounted
-          open={menuState.mouseY !== null}
-          onClose={handleMenuItemClick}
-          anchorReference="anchorPosition"
-          anchorPosition={
-            menuState.mouseY !== null && menuState.mouseX !== null
-              ? {top: menuState.mouseY, left: menuState.mouseX}
-              : undefined
-          }
-        >
-          {
-            menuList.map((item, index) => {
-              if (item.isDivider) {
-                return <Divider key={index}/>
-              }
-              return (
-                <MenuItem
-                  key={index}
-                  disabled={item.disabled}
-                  onClick={() => {
-                    handleMenuItemClick(item.action)
-                  }}
-                >
-                  <ListItemIcon className={classes.iconWrap}>
-                    {item.icon}
-                  </ListItemIcon>
-                  <Typography variant="inherit">{item.title}</Typography>
-                </MenuItem>
-              )
+      >
+        {
+          menuList.map((item, index) => {
+            if (item.isDivider) {
+              return <Divider key={index}/>
+            }
+            return (
+              <MenuItem
+                key={index}
+                disabled={item.disabled}
+                onClick={() => {
+                  handleMenuItemClick(item.action)
+                }}
+              >
+                <ListItemIcon className={classes.iconWrap}>
+                  {item.icon}
+                </ListItemIcon>
+                <Typography variant="inherit">{item.title}</Typography>
+              </MenuItem>
+            )
 
-            })
-          }
+          })
+        }
 
-        </Menu>
-      )
-    }
+      </Menu>
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuState])
 

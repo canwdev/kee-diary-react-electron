@@ -1,6 +1,6 @@
 {
  "name": "kee-diary",
- "version": "0.1.8",
+ "version": "0.1.9",
  "description": "A trusted journal editor that uses kdbx as a database encryption to store your journals.",
  "author": {
   "name": "canwdev",
@@ -16,12 +16,13 @@
   "electron": "cross-env ELECTRON_START_URL=http://localhost:5000 electron .",
   "build:react": "react-scripts build",
   "build:electron-dir": "electron-builder --dir",
-  "build:electron": "electron-builder --ia32",
+  "build:electron": "electron-builder",
+  "build:electron-ia32": "electron-builder --ia32",
   "eject": "react-scripts eject"
  },
  "devDependencies": {
-  "@material-ui/core": "^4.5.1",
-  "@material-ui/icons": "^4.5.1",
+  "@material-ui/core": "^4.9.1",
+  "@material-ui/icons": "^4.9.1",
   "clsx": "^1.0.4",
   "cross-env": "^6.0.3",
   "crypto-js": "^3.1.9-1",

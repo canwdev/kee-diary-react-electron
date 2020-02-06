@@ -42,14 +42,14 @@ class CalendarHeader extends React.Component {
       <div className="calendar-header">
         <div onClick={() => {
           this.handleChangeMonth(true)
-        }} className="calendar-header-nav">←
+        }} className="calendar-header-nav __go">◀
         </div>
         <div className="calendar-header-nav" onClick={this.handleGoToday}>
           <span>{date.getFullYear()} 年 {date.getMonth() + 1} 月</span>
         </div>
         <div onClick={() => {
           this.handleChangeMonth()
-        }} className="calendar-header-nav">→
+        }} className="calendar-header-nav __go">▶
         </div>
       </div>
     );
@@ -60,7 +60,7 @@ class CalendarHeader extends React.Component {
 class CalendarHead extends React.Component {
   render() {
     var nodes = ['日', '一', '二', '三', '四', '五', '六'].map((text, index) => {
-      var className = "calendar-day s1 center" + (index === 0 || index === 6 ? ' weekend' : '');
+      var className = "calendar-day center" + (index === 0 || index === 6 ? ' weekend' : '');
       return (
         <div className={className} key={text + index}>
           {text}
@@ -68,7 +68,7 @@ class CalendarHead extends React.Component {
       );
     });
     return (
-      <div className="row s1">
+      <div className="calendar-body-week">
         {nodes}
       </div>
     );
@@ -144,7 +144,7 @@ class CalendarBody extends React.Component {
         var pressCb = isCur ? null : () => {
           this.onClickCallback(year, month, day);
         };
-        var className = "calendar-day s1";
+        var className = "calendar-day";
         if (isCur) className += ' cur';
         if (isWeekend) className += ' weekend';
         if (isToday) className += ' today';
@@ -184,7 +184,7 @@ class CalendarBody extends React.Component {
                         }}
                       >
 
-                      <EntryIcon entry={entry} title={entry.fields.Title}/>
+                      <EntryIcon entry={entry} title={entry.fields.Title} small={true}/>
                       </span>
                     )
                   })
@@ -195,11 +195,11 @@ class CalendarBody extends React.Component {
         );
       });
       return (
-        <div className="row s1" key={rowIndex}>{days}</div>
+        <div className="calendar-body-row" key={rowIndex}>{days}</div>
       );
     });
     return (
-      <div className="s11 column">
+      <div className="calendar-body-rows-wrap">
         {rows}
       </div>
     );
@@ -232,13 +232,13 @@ class Calendar extends React.Component {
     var date = this.state.date;
     var current = this.state.current;
     return (
-      <div className="react-calendar column">
+      <div className="react-calendar">
         <CalendarHeader
           date={date}
           onNavChange={this.onNavChange}
           onSelectedChange={this.onSelectedChange}
         />
-        <div className="calendar column s9">
+        <div className="calendar-body">
           <CalendarHead/>
           <CalendarBody
             calendarData={this.props.calendarData}

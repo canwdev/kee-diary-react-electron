@@ -16,11 +16,15 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  iconSmall: {
+    width: '18px',
+    height: '18px',
+  }
 }))
 
 export default function (props) {
   const classes = useStyles()
-  const {entry, title = ""} = props
+  const {entry, title = "", small = false} = props
 
   return (
     <Tooltip title={title}>
@@ -35,7 +39,7 @@ export default function (props) {
             backgroundColor: entry.bgColor,
             color: entry.fgColor
           }}
-          className={clsx(classes.icon, `fa fa-${iconMap[entry.icon]}`)}
+          className={clsx(classes.icon, `fa fa-${iconMap[entry.icon]}`, small ? classes.iconSmall : null)}
         />
       </IconButton>
     </Tooltip>

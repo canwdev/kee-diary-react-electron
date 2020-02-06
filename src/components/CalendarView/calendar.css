@@ -4,96 +4,21 @@
   flex-direction: column;
   text-align: center;
 }
-.row {
-  display: flex;
-  flex-direction: row;
-}
-.column {
-  display: flex;
-  flex-direction: column;
-}
-.s1 {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
-}
-.s2 {
-  -webkit-box-flex: 2;
-  -webkit-flex: 2;
-  -ms-flex: 2;
-  flex: 2;
-}
-.s3 {
-  -webkit-box-flex: 3;
-  -webkit-flex: 3;
-  -ms-flex: 3;
-  flex: 3;
-}
-.s4 {
-  -webkit-box-flex: 4;
-  -webkit-flex: 4;
-  -ms-flex: 4;
-  flex: 4;
-}
-.s5 {
-  -webkit-box-flex: 5;
-  -webkit-flex: 5;
-  -ms-flex: 5;
-  flex: 5;
-}
-.s6 {
-  -webkit-box-flex: 6;
-  -webkit-flex: 6;
-  -ms-flex: 6;
-  flex: 6;
-}
-.s7 {
-  -webkit-box-flex: 7;
-  -webkit-flex: 7;
-  -ms-flex: 7;
-  flex: 7;
-}
-.s8 {
-  -webkit-box-flex: 8;
-  -webkit-flex: 8;
-  -ms-flex: 8;
-  flex: 8;
-}
-.s9 {
-  -webkit-box-flex: 9;
-  -webkit-flex: 9;
-  -ms-flex: 9;
-  flex: 9;
-}
-.s10 {
-  -webkit-box-flex: 10;
-  -webkit-flex: 10;
-  -ms-flex: 10;
-  flex: 10;
-}
-.s11 {
-  -webkit-box-flex: 11;
-  -webkit-flex: 11;
-  -ms-flex: 11;
-  flex: 11;
-}
-.s12 {
-  -webkit-box-flex: 12;
-  -webkit-flex: 12;
-  -ms-flex: 12;
-  flex: 12;
-}
+
 .center {
   display: flex;
   justify-content: center;
   flex-direction: column;
   text-align: center;
 }
+
 .react-calendar {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
+
 .calendar-header {
   display: flex;
   align-items: center;
@@ -103,7 +28,9 @@
   border-bottom: 1px solid #cccccc;
   font-size: 18px;
   user-select: none;
+  min-height: 50px;
 }
+
 .calendar-header-nav {
   height: 100%;
   min-width: 100px;
@@ -113,35 +40,81 @@
   justify-content: center;
 }
 
+.calendar-header-nav.__go {
+  font-size: 20px;
+  color: #333;
+}
+
 .calendar-header .calendar-header-nav:hover {
   cursor: pointer;
   background: #e0e0e0;
 }
 
+.calendar-body {
+  max-height: 800px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-body-week {
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+}
+
+.calendar-body-rows-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.calendar-body-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+}
+
 .calendar-day {
+  flex: 1;
   border-bottom: 1px solid #e0e0e0;
   border-right: 1px solid #e0e0e0;
-  padding: 10px;
   box-sizing: border-box;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
+.calendar-day:last-child {
+  border-right: 0;
+}
+
 .calendar-day.weekend {
 
 }
+
 .calendar-day.today::before {
   position: absolute;
   display: block;
-  content: "";
+  content: "今";
   top: 0;
-  left: 0;
-  border: 10px solid transparent;
-  border-top-color: #f44336;
-  border-left-width: 0;
+  right: 0;
+  color: #f44336;
+  padding: 2px;
+  font-size: 12px;
+  transform: scale(0.8);
+  transform-origin: right top;
+  /*border: 10px solid transparent;*/
+  /*border-top-color: #f44336;*/
+  /*border-right-width: 0;*/
 }
+
 .calendar-day.cur {
   background: #e0e0e0;
   color: #000;
 }
+
 .calendar-day.cur .calendar-day-item-lunar {
   color: #000;
 }
@@ -149,10 +122,12 @@
 .calendar-day-item {
   display: flex;
   position: relative;
+  padding: 5px 5px 0;
 }
 
 .calendar-day-item-date {
   font-size: 28px;
+  line-height: 1;
   border-radius: 50%;
   display: inline-block;
 }
@@ -160,10 +135,32 @@
 .calendar-day-item-lunar {
   color: #aaa;
   font-size: 12px;
-  margin-top: 5px;
+  padding-top: 5px;
   margin-left: 10px;
 }
 
-.calendar-day-entry-item {
+.calendar-day-entries {
+  overflow: auto;
+  padding: 2px;
+}
 
+.calendar-day-entry-item {
+  margin: 0 1px;
+}
+
+@media screen and (max-width: 1000px) {
+  .calendar-day-item-date {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .calendar-day-item {
+    flex-direction: column;
+    padding: 2px 2px 0;
+  }
+  .calendar-day-item-lunar {
+    margin-left: 0;
+    padding-top: 2px;
+  }
 }

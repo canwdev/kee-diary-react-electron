@@ -5,7 +5,7 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import Drawer from "@material-ui/core/Drawer"
-import React, {useState} from "react"
+import React from "react"
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
@@ -13,8 +13,8 @@ import EventNoteIcon from '@material-ui/icons/EventNote';
 import {makeStyles, useTheme} from "@material-ui/core/styles"
 import useReactRouter from "use-react-router"
 import {useSelector} from "react-redux"
-import {selectorIsListView} from "../store/getters"
-import {setIsListView} from "../store/setters"
+import {selectorIsDarkMode, selectorIsListView} from "../store/getters"
+import {setIsDarkMode, setIsListView} from "../store/setters"
 import Switch from "@material-ui/core/Switch"
 
 const drawerWidth = 240;
@@ -42,7 +42,7 @@ export default function AppDrawer(props) {
 
   const {location} = useReactRouter()
   const isListView = useSelector(selectorIsListView)
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const isDarkMode = useSelector(selectorIsDarkMode)
 
   const {open, handleDrawerClose} = props
 
@@ -66,19 +66,35 @@ export default function AppDrawer(props) {
           {theme.direction === 'ltr' ? <MenuOpenIcon/> : <ChevronRightIcon/>}
         </IconButton>
       </div>
-      <Divider/>
 
       <List>
+        <ListItem
+          button
+          onClick={() => {
+            setIsDarkMode(!isDarkMode)
+          }}
+        >
+          <ListItemIcon>
+            <Switch
+              size="small"
+              checked={isDarkMode}
+            />
+          </ListItemIcon>
+          <ListItemText primary="黑暗模式"/>
+        </ListItem>
 
         {
           location.pathname === '/view-list' &&
           <>
+            <Divider/>
+
             {
               [
                 {title: '列表视图', icon: <ViewQuiltIcon/>, isListView: true},
                 {title: '日历视图', icon: <EventNoteIcon/>, isListView: false},
-              ].map(item => (
+              ].map((item, index) => (
                 <ListItem
+                  key={index}
                   button
                   selected={isListView === item.isListView}
                   onClick={() => {
@@ -90,24 +106,9 @@ export default function AppDrawer(props) {
                 </ListItem>
               ))
             }
-            <Divider/>
           </>
         }
 
-        <ListItem
-          button
-          onClick={() => {
-            setIsDarkMode(v => !v)
-          }}
-        >
-          <ListItemIcon>
-            <Switch
-              size="small"
-              checked={isDarkMode}
-            />
-          </ListItemIcon>
-          <ListItemText primary="黑暗模式"/>
-        </ListItem>
       </List>
     </Drawer>
   )

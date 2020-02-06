@@ -1,5 +1,9 @@
 @import "~font-awesome/css/font-awesome.css";
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: "Open Sans", "Source Han Sans SC", "PingFang SC", Arial, "Microsoft YaHei", "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;

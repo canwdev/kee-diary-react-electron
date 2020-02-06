@@ -2,9 +2,10 @@ import {
   SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
+  SET_IS_DARK_MODE,
   SET_IS_LIST_VIEW,
   SET_SETTINGS,
-  SET_UNLOCKED, SETTINGS_IS_LIST_VIEW,
+  SET_UNLOCKED,
   SETTINGS_LOCALSTORAGE
 } from "./actionTypes"
 import store, {globalVars} from "./index"
@@ -20,8 +21,13 @@ export function setSettings(settings) {
 }
 
 export function setIsListView(flag = true) {
-  localStorageUtil.setItem(SETTINGS_IS_LIST_VIEW, flag)
+  localStorageUtil.setItem(SET_IS_LIST_VIEW, flag)
   store.dispatch({type: SET_IS_LIST_VIEW, value: flag})
+}
+
+export function setIsDarkMode(flag = true) {
+  localStorageUtil.setItem(SET_IS_DARK_MODE, flag)
+  store.dispatch({type: SET_IS_DARK_MODE, value: flag})
 }
 
 export function setCurrentGroupUuid(uuid) {

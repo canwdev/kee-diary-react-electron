@@ -52,6 +52,8 @@ const useStyles = makeStyles(theme => ({
     border: 'none',
     outline: 'none',
     lineHeight: 1.5,
+    background: theme.palette.background.paper,
+    color: theme.palette.text.primary
   }
 
 }))

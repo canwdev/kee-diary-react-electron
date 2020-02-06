@@ -7,6 +7,8 @@ import AppDrawer from "./AppDrawer"
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
+    minHeight: '100%',
+    background: theme.palette.background.default
   },
   content: {
     flexGrow: 1,

@@ -31,6 +31,7 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
 - [X] 加密存储本地密码
 - [ ] 构建索引以实现全数据库搜索功能
 - [ ] 实现日历视图
+- [X] 支持黑暗模式
 - 群组(groups)
     - [X] 重命名群组
     - [X] 移动至回收站（如果关闭了回收站则直接删除群组）
@@ -47,8 +48,8 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
     - [X] 列表性能优化
     - [X] 排序（按创建或修改日期排序）
     - [ ] 搜索/过滤
-    - [ ] Markdown 支持
-    - [ ] 修改图标
+    - [X] Markdown 支持
+    - [X] 修改图标
 
 ## Run · 运行
 

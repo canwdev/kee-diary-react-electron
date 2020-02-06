@@ -50,7 +50,7 @@ function Copyright() {
 const useStyles = makeStyles(theme => ({
   '@global': {
     body: {
-      backgroundColor: theme.palette.common.white,
+      color: theme.palette.text.primary
     },
   },
   paper: {

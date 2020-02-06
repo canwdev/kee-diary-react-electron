@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
   tableRow: {
     "&:hover": {
-      backgroundColor: theme.palette.grey[300]
+      backgroundColor: theme.palette.action.hover
     }
   },
   tableCell: {

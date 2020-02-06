@@ -24,8 +24,7 @@
   align-items: center;
   justify-content: space-between;
   height: 50px;
-  color: #000;
-  border-bottom: 1px solid #cccccc;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.5);
   font-size: 18px;
   user-select: none;
   min-height: 50px;
@@ -42,12 +41,11 @@
 
 .calendar-header-nav.__go {
   font-size: 20px;
-  color: #333;
 }
 
 .calendar-header .calendar-header-nav:hover {
   cursor: pointer;
-  background: #e0e0e0;
+  background: rgba(192, 192, 192, 0.5);
 }
 
 .calendar-body {
@@ -78,8 +76,8 @@
 
 .calendar-day {
   flex: 1;
-  border-bottom: 1px solid #e0e0e0;
-  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.5);
+  border-right: 1px solid rgba(192, 192, 192, 0.5);
   box-sizing: border-box;
   position: relative;
   display: flex;
@@ -111,8 +109,7 @@
 }
 
 .calendar-day.cur {
-  background: #e0e0e0;
-  color: #000;
+  background: rgba(192, 192, 192, 0.5);
 }
 
 .calendar-day.cur .calendar-day-item-lunar {

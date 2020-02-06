@@ -20,7 +20,13 @@ import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import swal from 'sweetalert2';
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../store/setters"
-import {getGlobalDB, getIsRecycleBin, getIsRecycleBinEnabled, selectorCurrentGroupUuid} from "../store/getters"
+import {
+  getGlobalDB,
+  getIsRecycleBin,
+  getIsRecycleBinEnabled,
+  selectorCurrentGroupUuid,
+  selectorIsDarkMode
+} from "../store/getters"
 import {useSelector} from "react-redux"
 import useReactRouter from "use-react-router"
 import {deepWalkGroup, formatDate} from "../utils"
@@ -61,6 +67,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function NestedList() {
   const classes = useStyles();
+  const isDarkMode = useSelector(selectorIsDarkMode)
+
   const {history} = useReactRouter();
   const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
   const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
@@ -114,12 +122,12 @@ export default function NestedList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function handleItemClick(item) {
+  const handleItemClick = (item) => {
     // console.log('点击群组项', item)
     setCurrentGroupUuid(item.uuid)
   }
 
-  function handleAddGroup(group) {
+  const handleAddGroup = (group) => {
 
     swal.fire({
       title: '添加群组',
@@ -135,7 +143,7 @@ export default function NestedList() {
     })
   }
 
-  function handleAddEntry(group) {
+  const handleAddEntry = (group) => {
     const newEntry = db.createEntry(group)
     newEntry.fields.Title = '新条目 - ' + formatDate(new Date())
     console.log(newEntry)
@@ -145,7 +153,7 @@ export default function NestedList() {
     history.push('/item-detail')
   }
 
-  function handleEditGroup(group) {
+  const handleEditGroup = (group) => {
     const name = group.name
     swal.fire({
       title: `重命名《${name}》`,
@@ -164,10 +172,10 @@ export default function NestedList() {
       });
   }
 
-  function handleMoveToGroup(group) {
+  const handleMoveToGroup = (group) => {
     let selectedGroup = null
 
-    function generateGroupSelector(list, counter = 0) {
+    const generateGroupSelector = (list, counter = 0) => {
       const VDOM = []
       if (!list || list.length === 0) return null
 
@@ -222,7 +230,7 @@ export default function NestedList() {
     })
   }
 
-  function handleDeleteGroup(group) {
+  const handleDeleteGroup = (group) => {
     const isRecycleBin = getIsRecycleBin(group.uuid)
 
     const name = group.name
@@ -250,7 +258,7 @@ export default function NestedList() {
    * 生成Group列表 DOM（递归生成虚拟DOM）
    * @param list 传 groupsFiltered
    */
-  function generateGroupListVDOM(list) {
+  const generateGroupListVDOM = (list) => {
     const VDOM = []
     if (!list || list.length === 0) return null
 
@@ -299,7 +307,7 @@ export default function NestedList() {
   const generatedGroupList = useMemo(() => {
     return generateGroupListVDOM(groupsFiltered)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, currentGroupUuid])
+  }, [updater, currentGroupUuid, isDarkMode])
 
   const generatedMenu = useMemo(() => {
     const item = menuState.item

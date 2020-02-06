@@ -1,14 +1,17 @@
 import {
   SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
-  SET_DB_HAS_UNSAVED_CHANGE, SET_IS_LIST_VIEW,
+  SET_DB_HAS_UNSAVED_CHANGE,
+  SET_IS_DARK_MODE,
+  SET_IS_LIST_VIEW,
   SET_SETTINGS,
-  SET_UNLOCKED, SETTINGS_IS_LIST_VIEW,
+  SET_UNLOCKED,
   SETTINGS_LOCALSTORAGE
 } from "./actionTypes"
 import {localStorageUtil} from "../utils"
 
-const isListView = localStorageUtil.getItem(SETTINGS_IS_LIST_VIEW)
+const isListView = localStorageUtil.getItem(SET_IS_LIST_VIEW)
+const isDarkMode = localStorageUtil.getItem(SET_IS_DARK_MODE)
 
 const initialState = {
   settings: localStorageUtil.getItem(SETTINGS_LOCALSTORAGE) || { // 仅用于保存解锁设置
@@ -18,6 +21,7 @@ const initialState = {
     rememberPathChecked: false,
   },
   isListView: isListView !== null ? isListView : true, // 是列表视图还是日历视图
+  isDarkMode: isDarkMode !== null ? isDarkMode : false,
   unlocked: false,
   dbHasUnsavedChange: false,
   currentGroupUuid: null,
@@ -37,6 +41,13 @@ export default (state = initialState, action) => {
     return {
       ...state,
       isListView: action.value
+    }
+  }
+
+  if (type === SET_IS_DARK_MODE) {
+    return {
+      ...state,
+      isDarkMode: action.value
     }
   }
 

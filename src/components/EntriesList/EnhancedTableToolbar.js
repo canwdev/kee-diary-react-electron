@@ -53,7 +53,7 @@ export const EnhancedTableToolbar = props => {
   const {db, checked, setChecked, setUpdater} = props;
   const numSelected = checked.length
 
-  function handleMoveEntries() {
+  const handleMoveEntries = () => {
     confirmMoveToGroupChooser(db).then(selectedGroup => {
       let newChecked = checked
 
@@ -69,7 +69,7 @@ export const EnhancedTableToolbar = props => {
     })
   }
 
-  function handleDeleteEntries() {
+  const handleDeleteEntries = () => {
     confirmDeleteEntries(numSelected).then(() => {
       let newChecked = checked
 

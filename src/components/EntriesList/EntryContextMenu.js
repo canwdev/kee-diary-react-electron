@@ -112,19 +112,18 @@ export default forwardRef((props, refs) => {
         action: 'preview'
       },
       {
+        disabled: history.location.pathname === '/item-detail',
         icon: <EditIcon/>,
         title: '编辑',
         action: 'edit'
       },
       {isDivider: true},
       {
-        // disabled: true,
         icon: <StarIcon/>,
         title: '修改图标',
         action: 'changeIcon'
       },
       {
-
         icon: <ColorLensIcon/>,
         title: '修改颜色',
         action: 'changeColor'

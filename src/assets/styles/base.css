@@ -71,6 +71,10 @@ code {
   line-height: 30px;
 }
 
+.__target-group span {
+  margin-left: 5px;
+}
+
 .__target-group:hover {
   background-color: #ebebeb;
 }

@@ -179,9 +179,10 @@ export function showDetailWindow(entry) {
 }
 
 /**
- * 修改前景色
+ * 修改条目前景色
  */
 export function handleChangeColor(entry) {
+  console.log(entry)
   return new Promise((resolve, reject) => {
     let selectedColor = null
     swal.fire({
@@ -209,7 +210,7 @@ export function handleChangeColor(entry) {
 }
 
 /**
- * 修改图标
+ * 修改条目或群组图标
  */
 export function handleChangeIcon(entry) {
   return new Promise((resolve, reject) => {

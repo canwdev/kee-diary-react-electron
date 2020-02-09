@@ -16,7 +16,8 @@ import swal from "sweetalert2"
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
 import {formatDate} from "../../utils"
 import useReactRouter from "use-react-router"
-import {confirmDeleteGroup, confirmMoveToGroupChooser} from "../EntriesList/utils"
+import {confirmDeleteGroup, confirmMoveToGroupChooser, handleChangeIcon} from "../EntriesList/utils"
+import StarIcon from "@material-ui/icons/Star"
 
 const useStyles = makeStyles(theme => ({
   menuIconWrap,
@@ -59,6 +60,10 @@ export default forwardRef((props, refs) => {
         return handleAddGroup(group)
       case 'addEntry':
         return handleAddEntry(group)
+      case 'changeIcon':
+        return handleChangeIcon(group).then(() => {
+          setUpdater(v => !v)
+        })
       case 'rename':
         return handleEditGroup(group)
       case 'move':
@@ -88,11 +93,13 @@ export default forwardRef((props, refs) => {
   }
 
   const handleAddEntry = (group) => {
-    const newEntry = db.createEntry(group)
-    newEntry.fields.Title = '新条目 - ' + formatDate(new Date())
-    console.log(newEntry)
+    const entry = db.createEntry(group)
+
+    entry.fields.Title = formatDate(new Date())
+    entry.icon = group.icon
+
     setCurrentGroupUuid(group.uuid)
-    setCurrentEntry(newEntry)
+    setCurrentEntry(entry)
     setDbHasUnsavedChange()
     history.push('/item-detail')
   }
@@ -155,9 +162,14 @@ export default forwardRef((props, refs) => {
         action: 'rename'
       },
       {
+        icon: <StarIcon/>,
+        title: '修改图标',
+        action: 'changeIcon'
+      },
+      {
         disabled: item && item.index === 0,
         icon: <DoubleArrowIcon fontSize="small"/>,
-        title: '移动',
+        title: '移动...',
         action: 'move'
       },
       {

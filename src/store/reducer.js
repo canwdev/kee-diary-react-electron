@@ -4,7 +4,7 @@ import {
   SET_DB_HAS_UNSAVED_CHANGE,
   SET_IS_DARK_MODE,
   SET_IS_LIST_VIEW,
-  SET_SETTINGS,
+  SET_SETTINGS, SET_PREVIEW,
   SET_UNLOCKED,
   SETTINGS_LOCALSTORAGE
 } from "./actionTypes"
@@ -22,6 +22,10 @@ const initialState = {
   },
   isListView: isListView !== null ? isListView : true, // 是列表视图还是日历视图
   isDarkMode: isDarkMode !== null ? isDarkMode : false,
+  preview: {
+    show: false,
+    entry: null
+  },
   unlocked: false,
   dbHasUnsavedChange: false,
   currentGroupUuid: null,
@@ -48,6 +52,13 @@ export default (state = initialState, action) => {
     return {
       ...state,
       isDarkMode: action.value
+    }
+  }
+
+  if (type === SET_PREVIEW) {
+    return {
+      ...state,
+      preview: action.value
     }
   }
 

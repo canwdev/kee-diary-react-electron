@@ -4,6 +4,7 @@ import store, {globalVars} from "./index"
 export const selectorSettings = state => state.settings
 export const selectorIsListView = state => state.isListView
 export const selectorIsDarkMode = state => state.isDarkMode
+export const selectorPreview = state => state.preview
 export const selectorUnlocked = state => state.unlocked
 export const selectorCurrentGroupUuid = state => state.currentGroupUuid
 export const selectorCurrentEntry = state => state.currentEntry

@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useRef, useState} from "react"
 import Typography from '@material-ui/core/Typography';
-import MuiDialogTitle from "@material-ui/core/DialogTitle"
+import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogContent from "@material-ui/core/DialogContent"
 import Button from "@material-ui/core/Button"
 import Dialog from "@material-ui/core/Dialog"
@@ -26,10 +26,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Divider from "@material-ui/core/Divider"
 
 const useStyles = makeStyles(theme => ({
-  dialogTitle: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
   closeButton: {
     position: 'absolute',
     right: theme.spacing(1),
@@ -177,12 +173,12 @@ export default function Search(props) {
       open={open}
       onClose={handleClose}
     >
-      <MuiDialogTitle disableTypography className={classes.dialogTitle}>
+      <DialogTitle disableTypography>
         <Typography variant="h6">搜索</Typography>
         <IconButton aria-label="close" onClick={handleClose} className={classes.closeButton}>
           <CloseIcon/>
         </IconButton>
-      </MuiDialogTitle>
+      </DialogTitle>
       <DialogContent>
 
         <form className={classes.form} onSubmit={handleSearch}>

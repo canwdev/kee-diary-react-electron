@@ -3,6 +3,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import {getGlobalDB} from "../store/getters"
 import AppActionBar from "./AppActionBar"
 import AppDrawer from "./AppDrawer"
+import Preview from "./Preview"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,6 +57,7 @@ export default function AppContainer(props) {
         <div style={{height: '50px'}}/>
         {props.children}
       </main>
+      <Preview/>
     </div>
   );
 }

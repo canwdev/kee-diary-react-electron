@@ -80,12 +80,7 @@ code {
 }
 
 .__view-detail-note {
-  padding: 5px;
-  border-top: 1px solid #ccc;
   /*white-space: pre-line;*/
-  text-align: left;
-  max-height: 80vh;
-  overflow-y: auto;
 }
 
 .__icon-chooser-wrap {

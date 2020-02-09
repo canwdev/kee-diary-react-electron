@@ -4,7 +4,7 @@ import {
   SET_DB_HAS_UNSAVED_CHANGE,
   SET_IS_DARK_MODE,
   SET_IS_LIST_VIEW,
-  SET_SETTINGS,
+  SET_SETTINGS, SET_PREVIEW,
   SET_UNLOCKED,
   SETTINGS_LOCALSTORAGE
 } from "./actionTypes"
@@ -38,6 +38,9 @@ export function setCurrentEntry(value) {
   store.dispatch({type: SET_CURRENT_ENTRY, value: value})
 }
 
+export function setPreview({show = false, entry = null}) {
+  store.dispatch({type: SET_PREVIEW, value: {show, entry}})
+}
 
 export function setUnlocked(stat = false) {
   if (!stat) { // 关闭数据库

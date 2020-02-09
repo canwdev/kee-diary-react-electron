@@ -7,7 +7,7 @@ import {deepWalkGroup} from "../../utils"
 import {markdownIt} from "../../store"
 import {iconMap} from "../../utils/icon-map"
 import clsx from 'clsx'
-import {setCurrentEntry, setDbHasUnsavedChange} from "../../store/setters"
+import {setCurrentEntry, setDbHasUnsavedChange, setPreview} from "../../store/setters"
 
 /**
  * 移动至群组
@@ -151,30 +151,9 @@ export function confirmDeleteEntries(numSelected) {
  * 显示 markdown编译后 预览窗口
  */
 export function showDetailWindow(entry) {
-  const {
-    fields: {
-      Title: title,
-      Notes: note
-    }
-  } = entry
-
-  const html = markdownIt.render(note)
-
-  swal.fire({
-    title: title,
-    html: ReactDOM.render((
-      <div
-        className="__view-detail-note markdown-body"
-        dangerouslySetInnerHTML={{__html: html}}
-      >
-      </div>
-    ), document.createElement('div')),
-    showConfirmButton: false,
-    showCloseButton: true,
-    customClass: {
-      container: '__swal-container',
-      title: '__swal-title',
-    }
+  setPreview({
+    show: true,
+    entry
   })
 }
 

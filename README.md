@@ -1,8 +1,8 @@
-# KeeDiary Desktop App · Kee日记 - 桌面应用
+# KeeDiary
 
 A trusted journal editor that uses kdbx as a database encryption to store your journals.
 
-可信任的日记编辑器，使用 kdbx 作为数据库加密存储您的日记。
+可信任的日记编辑器，使用 kdbx 作为数据库加密存储你的日记。
 
 > With Syncthing, it's easy to sync databases across different devices.
 
@@ -15,6 +15,8 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
 ![demo](./public/screenshots/02.png)
 
 ![demo](./public/screenshots/03.png)
+
+![demo](./public/screenshots/04.png)
 
 ## TechStack · 技术栈
 

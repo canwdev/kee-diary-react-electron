@@ -11,7 +11,7 @@ import {iconMap} from "../../utils/icon-map"
 import {getGlobalDB, selectorCurrentEntry, selectorCurrentGroupUuid} from "../../store/getters"
 import useReactRouter from "use-react-router"
 import {EnhancedTableToolbar} from "./EnhancedTableToolbar"
-import ListItem from "./ListItem"
+import EntryListItem from "./EntryListItem"
 import TablePagination from "@material-ui/core/TablePagination"
 import {localStorageUtil} from "../../utils"
 import TableSortLabel from "@material-ui/core/TableSortLabel"
@@ -217,7 +217,7 @@ export default function () {
       .map((item, index) => {
           const rowChecked = checked.indexOf(item) !== -1
           return (
-            <ListItem
+            <EntryListItem
               key={index}
               row={item}
               currentEntry={currentEntry}

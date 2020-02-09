@@ -6,17 +6,19 @@ import MenuIcon from "@material-ui/icons/Menu"
 import Typography from "@material-ui/core/Typography"
 import {saveKdbxDB, setUnlocked} from "../store/setters"
 import Tooltip from "@material-ui/core/Tooltip"
-import React from "react"
+import React, {useState} from "react"
 import {makeStyles, useTheme} from "@material-ui/core/styles"
 import {useSelector} from "react-redux"
 import {selectorDbHasUnsavedChange, selectorUnlocked} from "../store/getters"
 import LockIcon from '@material-ui/icons/Lock';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import SearchIcon from '@material-ui/icons/Search';
 import SaveIcon from '@material-ui/icons/Save';
 import EjectIcon from '@material-ui/icons/Eject';
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery"
 import useReactRouter from "use-react-router"
+import Search from "./Search.js"
 
 const useStyles = makeStyles(theme => ({
   appTitle: {
@@ -50,6 +52,8 @@ export default function AppActionBar(props) {
   const unlocked = useSelector(selectorUnlocked)
   const {location, history} = useReactRouter();
 
+  const [searchOpen, setSearchOpen] = useState(false)
+
   const dbUnsaved = useSelector(selectorDbHasUnsavedChange)
 
   const {db, handleDrawerOpen} = props
@@ -63,79 +67,85 @@ export default function AppActionBar(props) {
     setUnlocked()
   }
 
+  const handleSearchOpen = () => {
+    setSearchOpen(v => !v)
+  }
+
   return (
-    <AppBar
-      position="fixed"
-      className={classes.appBar}
-    >
-      <Toolbar className={classes.Toolbar} variant="dense">
-        <div style={{display: 'flex', alignItems: 'center'}}>
-          {
-            unlocked ? (
-              (location.pathname === '/view-list') ? (
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawerOpen}
-                  edge="start"
-                  className={clsx(classes.menuButton)}
-                >
-                  <MenuIcon/>
-                </IconButton>
+    <>
+      <AppBar
+        position="fixed"
+        className={classes.appBar}
+      >
+        <Toolbar className={classes.Toolbar} variant="dense">
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            {
+              unlocked ? (
+                (location.pathname === '/view-list') ? (
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={handleDrawerOpen}
+                    edge="start"
+                    className={clsx(classes.menuButton)}
+                  >
+                    <MenuIcon/>
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    color="inherit"
+                    onClick={() => {
+                      history.push('/view-list')
+                    }}
+                    title="返回 (Esc)"
+                    edge="start"
+                    className={clsx(classes.menuButton)}
+                  >
+                    <ArrowBackIcon/>
+                  </IconButton>
+                )
               ) : (
                 <IconButton
                   color="inherit"
-                  onClick={() => {
-                    history.push('/view-list')
-                  }}
-                  title="返回 (Esc)"
                   edge="start"
+                  disabled={false}
                   className={clsx(classes.menuButton)}
+                  onClick={handleDrawerOpen}
                 >
-                  <ArrowBackIcon/>
+                  <LockIcon/>
                 </IconButton>
               )
-            ) : (
-              <IconButton
-                color="inherit"
-                edge="start"
-                disabled={false}
-                className={clsx(classes.menuButton)}
-                onClick={handleDrawerOpen}
-              >
-                <LockIcon/>
-              </IconButton>
-            )
-          }
+            }
 
-          <Typography
-            variant="h6"
-            noWrap
-            className={classes.appTitle}
-            onClick={() => {
-              if (unlocked) {
-                history.push('/view-list')
-              }
-            }}
+            <Typography
+              variant="h6"
+              noWrap
+              className={classes.appTitle}
+              onClick={() => {
+                if (unlocked) {
+                  history.push('/view-list')
+                }
+              }}
+            >
+              {appTitle}
+            </Typography>
+
+          </div>
+          <div
+            className={classes.actionButtons}
           >
-            {appTitle}
-          </Typography>
 
-        </div>
-        <div
-          className={classes.actionButtons}
-        >
-
-          {
-            unlocked && [
-              {title: '保存更改 (Ctrl+S)', action: saveKdbxDB, disabled: !dbUnsaved, icon: <SaveIcon/>},
-              {title: '关闭数据库 (Ctrl+L)', action: handleCloseDB, icon: <EjectIcon/>},
-            ].map((item, index) => {
-              return (
-                <Tooltip
-                  title={item.title}
-                  key={index}
-                >
+            {
+              unlocked && [
+                {title: '搜索', action: handleSearchOpen, icon: <SearchIcon/>},
+                {title: '保存更改 (Ctrl+S)', action: saveKdbxDB, disabled: !dbUnsaved, icon: <SaveIcon/>},
+                {title: '关闭数据库 (Ctrl+L)', action: handleCloseDB, icon: <EjectIcon/>},
+              ].map((item, index) => {
+                return (
+                  <Tooltip
+                    title={item.title}
+                    key={index}
+                  >
                     <span>
                       <IconButton
                         color="inherit"
@@ -146,12 +156,19 @@ export default function AppActionBar(props) {
                       {item.icon}
                     </IconButton>
                     </span>
-                </Tooltip>
-              )
-            })
-          }
-        </div>
-      </Toolbar>
-    </AppBar>
+                  </Tooltip>
+                )
+              })
+            }
+          </div>
+        </Toolbar>
+      </AppBar>
+      <Search
+        open={searchOpen}
+        handleClose={() => {
+          setSearchOpen(false)
+        }}
+      />
+    </>
   )
 }

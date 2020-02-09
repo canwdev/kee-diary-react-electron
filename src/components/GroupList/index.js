@@ -75,16 +75,15 @@ export default function GroupList() {
 
 
   /**
-   * 生成Group列表 DOM（递归生成虚拟DOM）
+   * 生成Group列表 VDOM（递归生成）
    * @param list 传 groupsFiltered
    */
-  const generateGroupList = (list) => {
+  const generateGroupListVDOM = (list) => {
     const VDOM = []
     if (!list || list.length === 0) return null
 
     list.forEach(item => {
       const children = item.children
-      const hasChildren = children.length !== 0
 
       VDOM.push(
         <List
@@ -112,10 +111,10 @@ export default function GroupList() {
               className={classes.listItemText}
               primary={item.name}
             />
-            {hasChildren && <ExpandMoreIcon/>}
+            {children.length !== 0 && <ExpandMoreIcon/>}
           </ListItem>
           <Collapse in={true} timeout="auto" unmountOnExit>
-            {generateGroupList(children)}
+            {generateGroupListVDOM(children)}
           </Collapse>
         </List>
       )
@@ -125,7 +124,7 @@ export default function GroupList() {
   }
 
   const GroupListVDOM = useMemo(() => {
-    return generateGroupList(groupsFiltered)
+    return generateGroupListVDOM(groupsFiltered)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updater, currentGroupUuid, isDarkMode])
 

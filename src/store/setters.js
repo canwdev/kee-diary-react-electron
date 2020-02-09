@@ -77,6 +77,7 @@ export function setUnlocked(stat = false) {
   }
 }
 
+// 有未保存的数据
 function _setDbHasUnsavedChange(stat = true) {
   if (getDbHasUnsavedChange() === stat) return
   window.api.setShowExitPrompt(stat)

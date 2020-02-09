@@ -24,11 +24,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function (props) {
   const classes = useStyles()
-  const {entry, title = "", small = false} = props
+  const {entry, title = "", small = false, disabled=false} = props
 
   return (
     <Tooltip title={title}>
       <IconButton
+        disabled={disabled}
         size="small"
         onClick={() => {
           showDetailWindow(entry)

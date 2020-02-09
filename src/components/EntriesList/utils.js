@@ -33,7 +33,7 @@ export function confirmMoveToGroupChooser(db) {
               type="radio"
               name="target-group"
               onClick={() => {
-                selectedGroup = item._entry
+                selectedGroup = item._group
               }}
             />
             <span>{item.name}</span>
@@ -231,7 +231,7 @@ export function handleChangeIcon(entry) {
                     )}
                     title={index}
 
-                    onClick={()=>{
+                    onClick={() => {
                       iconIndex = index
                     }}
                   />
@@ -261,5 +261,7 @@ export function handleChangeIcon(entry) {
  */
 export function handleEnterEntry(history, entry) {
   setCurrentEntry(entry)
-  history.push('/item-detail')
+  if (history.location.pathname !== '/item-detail') {
+    history.push('/item-detail')
+  }
 }

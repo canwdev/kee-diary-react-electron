@@ -78,6 +78,12 @@ export default function () {
   const [noteText, setNoteText] = useState(entry.fields.Notes)
   const {history} = useReactRouter();
 
+  // 确保内容是新的
+  useEffect(()=>{
+    setTitle(entry.fields.Title)
+    setNoteText(entry.fields.Notes)
+  }, [entry.fields.Title, entry.fields.Notes])
+
   // 右键菜单
   const contextMenuRef = useRef();
   const handleRightClick = (event) => {
@@ -101,7 +107,6 @@ export default function () {
       }
     }
   }
-
   useEffect(() => {
     window.addEventListener('keydown', handleKey)
     return () => {
@@ -110,21 +115,16 @@ export default function () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const creationTime = formatDate(entry.times.creationTime)
-  const lastModTime = formatDate(entry.times.lastModTime)
-
   const updateEntry = () => {
-    // FIXME: 潜在的性能问题
+    // 潜在的性能问题
     entry.times.lastModTime = new Date()
     setDbHasUnsavedChange()
   }
 
   const handleTitleChange = (e) => {
-    const value = e.target.value
-
-    entry.fields.Title = value
+    entry.fields.Title = e.target.value
     updateEntry()
-    setTitle(value)
+    setTitle(e.target.value)
   }
 
   /**
@@ -164,11 +164,9 @@ export default function () {
   }
 
   const handleNoteTextChange = (e) => {
-    const value = e.target.value
-
-    entry.fields.Notes = value
+    entry.fields.Notes = e.target.value
     updateEntry()
-    setNoteText(value)
+    setNoteText(e.target.value)
   }
 
   return (
@@ -203,13 +201,13 @@ export default function () {
             onClick={() => {
               handleTimeChange('creationTime')
             }}
-          >{creationTime}</span></div>
+          >{formatDate(entry.times.creationTime)}</span></div>
           <div>最近修改：<span
             className={classes.time}
             onClick={() => {
               handleTimeChange('lastModTime')
             }}
-          >{lastModTime}</span></div>
+          >{formatDate(entry.times.lastModTime)}</span></div>
         </Box>
 
         <Box className={classes.box}>
@@ -227,6 +225,7 @@ export default function () {
       <EntryContextMenu
         ref={contextMenuRef}
         setUpdater={setUpdater}
+        disableEdit={true}
       />
     </Container>
   )

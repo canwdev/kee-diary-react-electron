@@ -5,7 +5,7 @@ import TableRow from "@material-ui/core/TableRow"
 import React from "react"
 import EntryIcon from "../EntryIcon"
 
-export default function ListItem(props) {
+export default function EntryListItem(props) {
   const {
     row,
     currentEntry,

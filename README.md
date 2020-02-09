@@ -29,8 +29,8 @@ A trusted journal editor that uses kdbx as a database encryption to store your j
 - [X] 保存数据库/关闭数据库
 - [X] 使用一个变量判断数据库是否被改动
 - [X] 加密存储本地密码
-- [ ] 构建索引以实现全数据库搜索功能
-- [ ] 实现日历视图
+- [X] 全数据库搜索功能
+- [X] 实现日历视图
 - [X] 支持黑暗模式
 - 群组(groups)
     - [X] 重命名群组

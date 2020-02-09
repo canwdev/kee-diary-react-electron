@@ -48,16 +48,16 @@ export function deepWalkGroup(node, counter = 0) {
   const list = []
   if (!node || node.length === 0) return list
 
-  node.forEach((item) => {
-    const children = item.groups
+  node.forEach((group) => {
+    const children = group.groups
 
     list.push({
-      icon: iconMap[item.icon],
-      uuid: item.uuid,
-      name: item.name,
+      icon: iconMap[group.icon],
+      uuid: group.uuid,
+      name: group.name,
       index: counter,
       children: deepWalkGroup(children, counter + 1),
-      _entry: item
+      _group: group
     })
   })
   return list

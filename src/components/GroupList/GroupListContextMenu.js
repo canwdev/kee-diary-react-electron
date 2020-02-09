@@ -23,6 +23,12 @@ const useStyles = makeStyles(theme => ({
   menuIconWrap,
 }))
 
+export const MENU_ACTION_ADD_GROUP = 'MENU_ACTION_ADD_GROUP'
+export const MENU_ACTION_ADD_ENTRY = 'MENU_ACTION_ADD_ENTRY'
+export const MENU_ACTION_CHANGE_ICON = 'MENU_ACTION_CHANGE_ICON'
+export const MENU_ACTION_RENAME = 'MENU_ACTION_RENAME'
+export const MENU_ACTION_MOVE = 'MENU_ACTION_MOVE'
+export const MENU_ACTION_DELETE = 'MENU_ACTION_DELETE'
 
 export default forwardRef((props, refs) => {
   const {
@@ -54,21 +60,21 @@ export default forwardRef((props, refs) => {
 
   const handleMenuItemClick = (type) => {
     setMenuState(menuInitState)
-    const group = menuState.item._entry
+    const group = menuState.item._group
     switch (type) {
-      case 'addGroup':
+      case MENU_ACTION_ADD_GROUP:
         return handleAddGroup(group)
-      case 'addEntry':
+      case MENU_ACTION_ADD_ENTRY:
         return handleAddEntry(group)
-      case 'changeIcon':
+      case MENU_ACTION_CHANGE_ICON:
         return handleChangeIcon(group).then(() => {
           setUpdater(v => !v)
         })
-      case 'rename':
+      case MENU_ACTION_RENAME:
         return handleEditGroup(group)
-      case 'move':
+      case MENU_ACTION_MOVE:
         return handleMoveToGroup(group)
-      case 'delete':
+      case MENU_ACTION_DELETE:
         return handleDeleteGroup(group)
       default:
         return
@@ -148,35 +154,35 @@ export default forwardRef((props, refs) => {
       {
         icon: <AddCircleIcon fontSize="small"/>,
         title: '添加条目',
-        action: 'addEntry'
+        action: MENU_ACTION_ADD_ENTRY
       },
       {
         icon: <AddBoxIcon fontSize="small"/>,
         title: '添加群组',
-        action: 'addGroup'
+        action: MENU_ACTION_ADD_GROUP
       },
       {isDivider: true},
       {
         icon: <BorderColorIcon fontSize="small"/>,
         title: '重命名',
-        action: 'rename'
+        action: MENU_ACTION_RENAME
       },
       {
         icon: <StarIcon/>,
         title: '修改图标',
-        action: 'changeIcon'
+        action: MENU_ACTION_CHANGE_ICON
       },
       {
         disabled: item && item.index === 0,
         icon: <DoubleArrowIcon fontSize="small"/>,
         title: '移动...',
-        action: 'move'
+        action: MENU_ACTION_MOVE
       },
       {
         disabled: item && item.index === 0,
         icon: <DeleteIcon fontSize="small"/>,
-        title: item && getIsRecycleBin(item._entry.uuid) ? '清空回收站' : '删除群组',
-        action: 'delete'
+        title: item && getIsRecycleBin(item._group.uuid) ? '清空回收站' : '删除群组',
+        action: MENU_ACTION_DELETE
       }
     ]
     return (

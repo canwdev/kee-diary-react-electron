@@ -8,7 +8,7 @@ import App from './App';
 import {Provider, useSelector} from 'react-redux'
 import store from "./store"
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
-import {amber, brown, cyan, deepPurple} from '@material-ui/core/colors';
+import {deepOrange, brown, cyan, deepPurple} from '@material-ui/core/colors';
 import {selectorIsDarkMode} from "./store/getters"
 
 if (module.hot) {
@@ -24,7 +24,7 @@ const themeConfig = {
 
 const themeConfigDark = {
   palette: {
-    primary: amber,
+    primary: deepOrange,
     secondary: cyan,
     type: 'dark'
   },

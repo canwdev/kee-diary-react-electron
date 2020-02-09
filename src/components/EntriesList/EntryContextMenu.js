@@ -24,14 +24,22 @@ import {makeStyles} from "@material-ui/core"
 import useReactRouter from "use-react-router"
 import {menuIconWrap} from "../../assets/styles/commonStyles"
 
+export const MENU_ACTION_PREVIEW = 'MENU_ACTION_PREVIEW'
+export const MENU_ACTION_EDIT = 'MENU_ACTION_EDIT'
+export const MENU_ACTION_CHANGE_ICON = 'MENU_ACTION_CHANGE_ICON'
+export const MENU_ACTION_CHANGE_COLOR = 'MENU_ACTION_CHANGE_COLOR'
+export const MENU_ACTION_MOVE = 'MENU_ACTION_MOVE'
+export const MENU_ACTION_DELETE = 'MENU_ACTION_DELETE'
+
 const useStyles = makeStyles(theme => ({
   menuIconWrap,
 }))
 
 export default forwardRef((props, refs) => {
   const {
-    setUpdater = () => {
-    }
+    disableEdit = false,
+    setUpdater = () => {},
+    tellClickType = null // function, 告诉外界菜单点击的类型
   } = props
   const db = getGlobalDB()
   const classes = useStyles()
@@ -59,24 +67,25 @@ export default forwardRef((props, refs) => {
 
   const handleMenuItemClick = (type) => {
     setMenuState(menuInitState)
+    tellClickType && tellClickType(type)
 
     const entry = menuState.entry
     switch (type) {
-      case 'preview':
+      case MENU_ACTION_PREVIEW:
         return showDetailWindow(entry)
-      case 'edit':
+      case MENU_ACTION_EDIT:
         return handleEnterEntry(history, entry)
-      case 'changeIcon':
+      case MENU_ACTION_CHANGE_ICON:
         return handleChangeIcon(entry).then(() => {
           setUpdater(v => !v)
         })
-      case 'changeColor':
+      case MENU_ACTION_CHANGE_COLOR:
         return handleChangeColor(entry).then(() => {
           setUpdater(v => !v)
         })
-      case 'move':
+      case MENU_ACTION_MOVE:
         return handleMoveToGroup(entry)
-      case 'delete':
+      case MENU_ACTION_DELETE:
         return handleDeleteEntry(entry)
       default:
         return
@@ -109,34 +118,35 @@ export default forwardRef((props, refs) => {
       {
         icon: <VisibilityIcon/>,
         title: '预览',
-        action: 'preview'
+        action: MENU_ACTION_PREVIEW
       },
       {
-        disabled: history.location.pathname === '/item-detail',
+        disabled: disableEdit,
+        // disabled: history.location.pathname === '/item-detail',
         icon: <EditIcon/>,
         title: '编辑',
-        action: 'edit'
+        action: MENU_ACTION_EDIT
       },
       {isDivider: true},
       {
         icon: <StarIcon/>,
         title: '修改图标',
-        action: 'changeIcon'
+        action: MENU_ACTION_CHANGE_ICON
       },
       {
         icon: <ColorLensIcon/>,
         title: '修改颜色',
-        action: 'changeColor'
+        action: MENU_ACTION_CHANGE_COLOR
       },
       {
         icon: <DoubleArrowIcon/>,
         title: '移动...',
-        action: 'move'
+        action: MENU_ACTION_MOVE
       },
       {
         icon: <DeleteIcon/>,
         title: '删除',
-        action: 'delete'
+        action: MENU_ACTION_DELETE
       }
     ]
     return (

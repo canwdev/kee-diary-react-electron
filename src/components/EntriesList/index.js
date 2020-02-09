@@ -139,7 +139,7 @@ export default function () {
   // 右键菜单
   const contextMenuRef = useRef();
   const handleRightClick = (event, item) => {
-    contextMenuRef.current.handleRightClick(event, item._ref)
+    contextMenuRef.current.handleRightClick(event, item._entry)
   }
 
   // --- 操作 ---
@@ -199,7 +199,7 @@ export default function () {
             fgColor: entry.fgColor,
             creationTime: entry.times.creationTime,
             lastModTime: entry.times.lastModTime,
-            _ref: entry
+            _entry: entry
           })
         }
       }
@@ -226,7 +226,7 @@ export default function () {
               handleRightClick={handleRightClick}
               handleCheckEntry={handleCheckEntry}
               handleEntryItemClick={() => {
-                handleEnterEntry(history, item._ref)
+                handleEnterEntry(history, item._entry)
               }}
               setUpdater={setUpdater}
             />

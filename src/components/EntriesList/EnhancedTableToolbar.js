@@ -58,7 +58,7 @@ export const EnhancedTableToolbar = props => {
       let newChecked = checked
 
       checked.forEach(item => {
-        db.move(item._ref, selectedGroup);
+        db.move(item._entry, selectedGroup);
         setDbHasUnsavedChange()
         newChecked = newChecked.filter(i => i !== item)
       })
@@ -74,7 +74,7 @@ export const EnhancedTableToolbar = props => {
       let newChecked = checked
 
       checked.forEach(item => {
-        db.remove(item._ref);
+        db.remove(item._entry);
         setDbHasUnsavedChange()
         newChecked = newChecked.filter(i => i !== item)
       })

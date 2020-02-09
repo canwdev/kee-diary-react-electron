@@ -34,7 +34,7 @@ export default function ListItem(props) {
               handleCheckEntry(row)
             }}
           />
-          <EntryIcon entry={row._ref} title={"预览"}/>
+          <EntryIcon entry={row._entry} title={"预览"}/>
         </div>
 
       </TableCell>

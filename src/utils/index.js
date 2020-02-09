@@ -57,7 +57,7 @@ export function deepWalkGroup(node, counter = 0) {
       name: item.name,
       index: counter,
       children: deepWalkGroup(children, counter + 1),
-      _ref: item
+      _entry: item
     })
   })
   return list

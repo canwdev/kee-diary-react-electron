@@ -2,7 +2,7 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {Container, Grid, Paper} from "@material-ui/core"
 import AutoRedirectLogin from "../components/AutoRedirectLogin"
-import GroupsList from "../components/GroupsList"
+import GroupsList from "../components/GroupList"
 import EntriesList from "../components/EntriesList"
 import CalendarView from "../components/CalendarView"
 import {useSelector} from "react-redux"

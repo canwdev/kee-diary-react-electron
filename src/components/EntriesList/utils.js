@@ -1,5 +1,5 @@
 import swal from "sweetalert2"
-import {getIsRecycleBinEnabled} from "../../store/getters"
+import {getIsRecycleBin, getIsRecycleBinEnabled} from "../../store/getters"
 import React from "react"
 import ReactDOM from "react-dom"
 import ColorPicker from "../ColorPicker"
@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import {setCurrentEntry, setDbHasUnsavedChange} from "../../store/setters"
 
 /**
- * 条目移动至群组
+ * 移动至群组
  * @param db
  * @returns {Promise<unknown>}
  */
@@ -33,7 +33,7 @@ export function confirmMoveToGroupChooser(db) {
               type="radio"
               name="target-group"
               onClick={() => {
-                selectedGroup = item._ref
+                selectedGroup = item._entry
               }}
             />
             <span>{item.name}</span>
@@ -70,7 +70,7 @@ export function confirmMoveToGroupChooser(db) {
 }
 
 /**
- * 确认删除对话框
+ * 确认删除条目对话框
  */
 export function confirmDeleteEntry(entry) {
   return new Promise((resolve, reject) => {
@@ -94,6 +94,35 @@ export function confirmDeleteEntry(entry) {
   })
 
 }
+
+/**
+ * 确认删除群组对话框
+ */
+export function confirmDeleteGroup(group) {
+  return new Promise((resolve, reject) => {
+    const isRecycleBin = getIsRecycleBin(group.uuid)
+    const name = group.name
+
+    swal.fire({
+      title: isRecycleBin ? '清空回收站' : '确认删除',
+      text: isRecycleBin ? '确定要删除回收站中的所有数据吗？' :
+        (getIsRecycleBinEnabled() ? `确定要将《${name}》移动至回收站吗？` : `确定要永久删除《${name}》吗？其中的所有条目将被删除！`),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then((result) => {
+      if (result.value) {
+        return resolve()
+      } else {
+        return reject()
+      }
+    })
+
+  })
+
+}
+
 
 /**
  * 确认删除对话框（多选）

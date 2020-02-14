@@ -86,7 +86,6 @@ export default function Preview() {
               <span>群组：{entry.parentGroup.name}</span>
               <span>创建：{formatDate(entry.times.creationTime)}</span>
               <span>修改：{formatDate(entry.times.creationTime)}</span>
-              {entry.fields.Password && (<span>Password：{entry.fields.Password}</span>)}
             </div>
             <div
               className={clsx('__view-detail-note', darkMode ? 'markdown-body-dark' : 'markdown-body')}

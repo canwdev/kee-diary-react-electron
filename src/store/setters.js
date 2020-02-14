@@ -77,14 +77,15 @@ export function setUnlocked(stat = false) {
   function closeDbDirectly() {
     setGlobalDB(null) // 销毁实例
     store.dispatch({type: SET_UNLOCKED, value: false})
+    window.api.setShowExitPrompt(false) // 取消关闭前弹框警告
   }
 }
 
 // 有未保存的数据
-function _setDbHasUnsavedChange(stat = true) {
-  if (getDbHasUnsavedChange() === stat) return
-  window.api.setShowExitPrompt(stat)
-  store.dispatch({type: SET_DB_HAS_UNSAVED_CHANGE, value: stat})
+function _setDbHasUnsavedChange(flag = true) {
+  if (getDbHasUnsavedChange() === flag) return
+  window.api.setShowExitPrompt(flag) // 设置关闭前弹框警告
+  store.dispatch({type: SET_DB_HAS_UNSAVED_CHANGE, value: flag})
 }
 
 // 防止频繁设置

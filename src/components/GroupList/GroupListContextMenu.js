@@ -16,7 +16,7 @@ import swal from "sweetalert2"
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
 import {formatDate} from "../../utils"
 import useReactRouter from "use-react-router"
-import {confirmDeleteGroup, confirmMoveToGroupChooser, handleChangeIcon} from "../EntriesList/utils"
+import {confirmDeleteGroup, confirmMoveToGroupChooser, handleChangeIcon} from "../../utils/actions"
 import StarIcon from "@material-ui/icons/Star"
 
 const useStyles = makeStyles(theme => ({

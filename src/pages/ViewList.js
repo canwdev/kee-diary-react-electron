@@ -33,7 +33,9 @@ export default function () {
             isListView ? (
               <EntriesList/>
             ) : (
-              <CalendarView/>
+              <div>
+                <CalendarView/>
+              </div>
             )
           }
         </Grid>

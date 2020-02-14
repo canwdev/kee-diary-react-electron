@@ -5,7 +5,7 @@ import {
   handleChangeColor,
   handleChangeIcon, handleEnterEntry,
   showDetailWindow
-} from "./utils"
+} from "../../utils/actions"
 import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
 
 import Menu from "@material-ui/core/Menu"

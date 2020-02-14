@@ -8,7 +8,7 @@ import React from "react"
 import {makeStyles} from "@material-ui/core"
 import {lighten} from "@material-ui/core/styles"
 import {setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
-import {confirmDeleteEntries, confirmMoveToGroupChooser} from "./utils"
+import {confirmDeleteEntries, confirmMoveToGroupChooser} from "../../utils/actions"
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
 const useToolbarStyles = makeStyles(theme => ({

@@ -1,13 +1,12 @@
 import swal from "sweetalert2"
-import {getIsRecycleBin, getIsRecycleBinEnabled} from "../../store/getters"
+import {getIsRecycleBin, getIsRecycleBinEnabled} from "../store/getters"
 import React from "react"
 import ReactDOM from "react-dom"
-import ColorPicker from "../ColorPicker"
-import {deepWalkGroup} from "../../utils"
-import {markdownIt} from "../../store"
-import {iconMap} from "../../utils/icon-map"
+import ColorPicker from "../components/ColorPicker"
+import {deepWalkGroup} from "./index"
+import {iconMap} from "./icon-map"
 import clsx from 'clsx'
-import {setCurrentEntry, setDbHasUnsavedChange, setPreview} from "../../store/setters"
+import {setCurrentEntry, setDbHasUnsavedChange, setPreview} from "../store/setters"
 
 /**
  * 移动至群组

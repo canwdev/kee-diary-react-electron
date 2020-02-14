@@ -18,6 +18,23 @@ export const localStorageUtil = {
   }
 }
 
+/**
+ * 获取一天的【0时0分0秒0毫秒】时间戳
+ * @param timestamp
+ * @returns {number}
+ */
+export function h0(timestamp = Date.now()) {
+  const target = new Date(timestamp)
+
+  target.setHours(0)
+  target.setMinutes(0)
+  target.setSeconds(0)
+  target.setMilliseconds(0)
+
+  return target.getTime()
+}
+
+
 export function formatDateLite(d) {
   let date = d.toISOString().substr(0, 10)
     , time = pad2Num(d.getHours()) + ':' + pad2Num(d.getMinutes())

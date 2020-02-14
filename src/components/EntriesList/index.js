@@ -16,7 +16,7 @@ import TablePagination from "@material-ui/core/TablePagination"
 import {localStorageUtil} from "../../utils"
 import TableSortLabel from "@material-ui/core/TableSortLabel"
 import EntryContextMenu from "./EntryContextMenu"
-import {handleEnterEntry} from "./utils"
+import {handleEnterEntry} from "../../utils/actions"
 
 const useStyles = makeStyles(theme => ({
   root: {

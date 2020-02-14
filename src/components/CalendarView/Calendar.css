@@ -89,7 +89,7 @@
 }
 
 .calendar-day.weekend {
-
+  color: #FF5722;
 }
 
 .calendar-day.today::before {

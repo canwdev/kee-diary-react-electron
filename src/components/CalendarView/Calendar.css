@@ -13,6 +13,7 @@
 }
 
 .react-calendar {
+  user-select: none;
   width: 100%;
   height: 100%;
   display: flex;
@@ -37,6 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background .2s;
 }
 
 .calendar-header-nav.__go {
@@ -75,13 +77,18 @@
 }
 
 .calendar-day {
+  position: relative;
   flex: 1;
   border-bottom: 1px solid rgba(192, 192, 192, 0.5);
   border-right: 1px solid rgba(192, 192, 192, 0.5);
   box-sizing: border-box;
-  position: relative;
   display: flex;
   flex-direction: column;
+  transition: background .2s;
+}
+
+.calendar-day:hover {
+  background: rgba(192, 192, 192, 0.1);
 }
 
 .calendar-day:last-child {
@@ -92,13 +99,39 @@
   color: #FF5722;
 }
 
-.calendar-day.today::before {
+.calendar-day.cur::after {
+  content: " ";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #FF5722;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.calendar-day-item {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  right: 8px;
+}
+
+.calendar-day.today .calendar-day-item::before {
   position: absolute;
   display: block;
   content: "今";
-  top: 0;
-  right: 0;
-  color: #f44336;
+  left: 0;
+  bottom: 0;
+  background: #f44336;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
   padding: 2px;
   font-size: 12px;
   transform: scale(0.8);
@@ -106,20 +139,6 @@
   /*border: 10px solid transparent;*/
   /*border-top-color: #f44336;*/
   /*border-right-width: 0;*/
-}
-
-.calendar-day.cur {
-  background: rgba(192, 192, 192, 0.5);
-}
-
-.calendar-day.cur .calendar-day-item-lunar {
-  color: #000;
-}
-
-.calendar-day-item {
-  display: flex;
-  position: relative;
-  padding: 5px 5px 0;
 }
 
 .calendar-day-item-date {
@@ -132,13 +151,14 @@
 .calendar-day-item-lunar {
   color: #aaa;
   font-size: 12px;
-  padding-top: 5px;
-  margin-left: 10px;
+  margin-right: 8px;
+  margin-bottom: 2px;
 }
 
 .calendar-day-entries {
   overflow: auto;
-  padding: 2px;
+  padding: 5px;
+  margin-bottom: 38px;
 }
 
 .calendar-day-entry-item {
@@ -157,7 +177,6 @@
     padding: 2px 2px 0;
   }
   .calendar-day-item-lunar {
-    margin-left: 0;
-    padding-top: 2px;
+    margin-right: 0;
   }
 }

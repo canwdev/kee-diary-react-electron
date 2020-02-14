@@ -12,7 +12,7 @@ import InputLabel from "@material-ui/core/InputLabel"
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import TextField from "@material-ui/core/TextField"
-import {getGlobalDB, selectorCurrentGroupUuid} from "../store/getters"
+import {getGlobalDB, selectorCurrentGroupUuid, selectorUnlocked} from "../store/getters"
 import {useSelector} from "react-redux"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
@@ -24,6 +24,7 @@ import EntryContextMenu, {MENU_ACTION_PREVIEW} from "./EntriesList/EntryContextM
 import Switch from "@material-ui/core/Switch"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Divider from "@material-ui/core/Divider"
+import clsx from "clsx"
 
 const useStyles = makeStyles(theme => ({
   closeButton: {
@@ -47,6 +48,13 @@ const useStyles = makeStyles(theme => ({
   },
   submitButton: {
     width: '100px',
+  },
+  hidden: {
+    display: 'none'
+  },
+  empty: {
+    textAlign: 'center',
+    padding: '10px'
   }
 }))
 
@@ -126,6 +134,7 @@ export default function Search(props) {
   // eslint-disable-next-line no-unused-vars
   const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
   const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
+  const unlocked = useSelector(selectorUnlocked)
 
   // 右键菜单
   const contextMenuRef = useRef();
@@ -165,6 +174,16 @@ export default function Search(props) {
     // console.log(filteredEntries)
     setResultList(filteredEntries)
   }
+
+  const clearSearch = () => {
+    setSearchText('')
+    setResultList([])
+  }
+  useEffect(() => {
+    if (!unlocked) {
+      clearSearch()
+    }
+  }, [unlocked])
 
   return (
     <Dialog
@@ -231,12 +250,18 @@ export default function Search(props) {
               }
               label="搜索子群组"
             />
-            <Button
-              className={classes.submitButton}
-              variant='contained'
-              type='submit'
-              color="primary"
-            >搜索</Button>
+            <div>
+              <Button
+                className={clsx((!searchText.length && !resultList.length) ? classes.hidden : null)}
+                onClick={clearSearch}
+              >清除</Button>
+              <Button
+                className={classes.submitButton}
+                variant='contained'
+                type='submit'
+                color="primary"
+              >搜索</Button>
+            </div>
           </FormControl>
         </form>
         <List>
@@ -249,6 +274,9 @@ export default function Search(props) {
                 handleRightClick={handleRightClick}
               />
             })
+          }
+          {
+            !resultList.length && <div className={classes.empty}>无搜索结果。</div>
           }
         </List>
       </DialogContent>

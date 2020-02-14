@@ -4,7 +4,22 @@ import clsx from "clsx"
 import PropTypes from 'prop-types'
 import solarLunar from "solarlunar"
 import EntryIcon from '../EntryIcon'
-import {h0} from "../../utils"
+
+/**
+ * 获取一天的【0时0分0秒0毫秒】时间戳
+ * @param timestamp
+ * @returns {number}
+ */
+export function h0(timestamp = Date.now()) {
+  const target = new Date(timestamp)
+
+  target.setHours(0)
+  target.setMinutes(0)
+  target.setSeconds(0)
+  target.setMilliseconds(0)
+
+  return target.getTime()
+}
 
 /**
  * 日历头
@@ -159,19 +174,19 @@ function CalendarBody(props) {
             {'today': isToday},
           )}
           onClick={() => {
-            !isSelected && onSelect(new Date(year, month - 1, day))
+            day && !isSelected && onSelect(new Date(year, month - 1, day))
           }}
         >
           <div className="calendar-day-item">
-            <div className="calendar-day-item-date">
-              {day}
-            </div>
             <div className="calendar-day-item-lunar">
               {
                 lunarData && (
-                  lunarData.term || (lunarData.monthCn + lunarData.dayCn)
+                  lunarData.term || lunarData.dayCn
                 )
               }
+            </div>
+            <div className="calendar-day-item-date">
+              {day}
             </div>
           </div>
           <div className="calendar-day-entries">

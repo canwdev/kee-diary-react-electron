@@ -1,256 +1,260 @@
+import React, {memo, useMemo, useState} from 'react'
+import './Calendar.css'
+import clsx from "clsx"
+import PropTypes from 'prop-types'
+import solarLunar from "solarlunar"
+import EntryIcon from '../EntryIcon'
+import {h0} from "../../utils"
+
 /**
- * 由这个项目魔改而来：
- * https://github.com/LingyuCoder/react-lunar-calendar
+ * 日历头
  */
+function CalendarHeader(props) {
+  const {
+    date,
+    onNavChange,
+    onSelect,
+  } = props
 
-import React from "react"
-import './calendar.css'
-import solarLunar from 'solarlunar';
-import EntryIcon from "../EntryIcon"
+  const goNextMonth = (next = true) => {
+    const newDate = new Date(date.getTime())
 
-class CalendarHeader extends React.Component {
-  handleChangeMonth = (prev = false) => {
-    var date = this.props.date;
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-
-    if (!prev) {
-      month++;
-      if (month === 13) {
-        month = 1;
-        year++;
-      }
+    if (next) {
+      newDate.setMonth(date.getMonth() + 1)
     } else {
-      month--;
-      if (month === 0) {
-        month = 12;
-        year--;
+      newDate.setMonth(date.getMonth() - 1)
+    }
+    onNavChange(newDate)
+  }
+
+  const goToday = () => {
+    onNavChange(new Date())
+    onSelect(new Date())
+  }
+
+  return (
+    <div className="calendar-header">
+      <div
+        onClick={() => goNextMonth(false)}
+        className="calendar-header-nav __go"
+      >◀
+      </div>
+      <div
+        className="calendar-header-nav"
+        onClick={goToday}
+      >
+        <span>{date.getFullYear()} 年 {date.getMonth() + 1} 月</span>
+      </div>
+      <div
+        onClick={() => goNextMonth()}
+        className="calendar-header-nav __go"
+      >▶
+      </div>
+    </div>
+  )
+}
+
+CalendarHeader.propTypes = {
+  date: PropTypes.object.isRequired,
+  onNavChange: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired
+}
+
+/**
+ * 星期
+ */
+const CalendarWeeks = memo(function CalendarWeeks() {
+  return (
+    <div className="calendar-body-week">
+      {
+        ['日', '一', '二', '三', '四', '五', '六'].map((name, index) => {
+
+          return (
+            <div
+              className={clsx('calendar-day center',
+                {weekend: index === 0 || index === 6})
+              }
+              key={name + index}
+            >{name}</div>
+          )
+        })
       }
-    }
+    </div>
+  )
+})
 
-    this.props.onNavChange(new Date(year, month - 1));
-  }
 
-  handleGoToday = () => {
-    this.props.onNavChange(new Date())
-    this.props.onSelectedChange(new Date())
-  }
-
-  render() {
-    var date = this.props.date;
-    return (
-      <div className="calendar-header">
-        <div onClick={() => {
-          this.handleChangeMonth(true)
-        }} className="calendar-header-nav __go">◀
-        </div>
-        <div className="calendar-header-nav" onClick={this.handleGoToday}>
-          <span>{date.getFullYear()} 年 {date.getMonth() + 1} 月</span>
-        </div>
-        <div onClick={() => {
-          this.handleChangeMonth()
-        }} className="calendar-header-nav __go">▶
-        </div>
-      </div>
-    );
-  }
+// 获取某个月有多少天
+const getMonthLength = (date) => {
+  const nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  nextMonth.setHours(nextMonth.getHours() - 1);
+  return nextMonth.getDate();
 }
 
+// 生成日历数组
+const generateCalendarTable = (date) => {
+  let monthLength = getMonthLength(date);
+  let firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay() // 这个月的1号是星期几
 
-class CalendarHead extends React.Component {
-  render() {
-    var nodes = ['日', '一', '二', '三', '四', '五', '六'].map((text, index) => {
-      var className = "calendar-day center" + (index === 0 || index === 6 ? ' weekend' : '');
+  let table = [[]];
+
+  // 补齐月份开头空白，星期日为0，星期一到六为 1~6
+  table[0] = new Array(firstDay).fill(null)
+
+  let day, row;
+  for (let i = 0; i < monthLength; i++) {
+    day = i + firstDay;
+    row = Math.floor(day / 7);
+
+    table[row] = table[row] || [];
+    table[row].push(i + 1);
+  }
+
+  const lastIndex = table.length - 1
+  // 补齐月末空白
+  table[lastIndex] = table[lastIndex].concat(new Array(7 - table[lastIndex].length).fill(null))
+  return table;
+}
+
+/**
+ * 日历本体
+ */
+function CalendarBody(props) {
+  const {
+    calendarData, // entries 数据 {2020: {1: {10: [entry1, entry2]}}}
+    onEntryItemRightClick,
+    selectedDate,
+    date,
+    onSelect
+  } = props
+
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+
+  let table = useMemo(() => {
+    return generateCalendarTable(date)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date])
+
+  let rows = table.map((row, rowIndex) => {
+
+    let days = row.map((day, index) => {
+      const dayH0 = h0(new Date(date.getTime()).setDate(day))
+
+      let isSelected = dayH0 === h0(selectedDate)
+      let isWeekend = index === 0 || index === 6
+      let isToday = dayH0 === h0()
+
+      let lunarData = day ?
+        solarLunar.solar2lunar(year, month, day) : null;
+
       return (
-        <div className={className} key={text + index}>
-          {text}
-        </div>
-      );
-    });
-    return (
-      <div className="calendar-body-week">
-        {nodes}
-      </div>
-    );
-  }
-}
-
-class CalendarBody extends React.Component {
-  // 获取某个月的第一天在第几格
-  getFirstDay(year, month) {
-    var firstDay = new Date(year, month - 1, 1);
-    return firstDay.getDay();
-  }
-
-  // 获取某个月有多少天
-  getMonthLen(year, month) {
-    var nextMonth = new Date(year, month, 1);
-    nextMonth.setHours(nextMonth.getHours() - 3);
-    return nextMonth.getDate();
-  }
-
-  // 生成日历数组
-  generateCalendarArrayTable(year, month) {
-    var monthLen = this.getMonthLen(year, month);
-    var firstDay = this.getFirstDay(year, month);
-    var list = [[]];
-    var i, cur, row;
-    // var col;
-    for (i = firstDay; i--;) {
-      list[0].push(null);
-    }
-    for (i = 1; i <= monthLen; i++) {
-      cur = i + firstDay - 1;
-      row = Math.floor(cur / 7);
-      // col = cur % 7;
-      list[row] = list[row] || [];
-      list[row].push(i);
-    }
-    var lastRow = list[row];
-    // var remain = 7 - list[row].length;
-    for (i = 7 - lastRow.length; i--;) {
-      lastRow.push(null);
-    }
-    return list;
-  }
-
-  // 点击某一日
-  onClickCallback(year, month, day) {
-    this.props.onSelectedChange(new Date(year, month - 1, day));
-  }
-
-  render() {
-    const calendarData = this.props.calendarData // entries 数据 {2020: {1: {10: [entry1, entry2]}}}
-
-    var date = this.props.date;
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-
-    var curDate = this.props.current;
-    var curYear = curDate.getFullYear();
-    var curMonth = curDate.getMonth() + 1;
-    var curDay = curDate.getDate();
-
-    var table = this.generateCalendarArrayTable(year, month);
-    var rows = table.map((row, rowIndex) => {
-      var days = row.map((day, index) => {
-        var isCur = (year === curYear) && (month === curMonth) && (day === curDay);
-        var isWeekend = index === 0 || index === 6;
-
-        var now = new Date()
-        var isToday = (day === now.getDate()) && (year === now.getFullYear()) && (month === now.getMonth() + 1)
-
-        var lunarData;
-        var pressCb = isCur ? null : () => {
-          this.onClickCallback(year, month, day);
-        };
-        var className = "calendar-day";
-        if (isCur) className += ' cur';
-        if (isWeekend) className += ' weekend';
-        if (isToday) className += ' today';
-        if (day) {
-          lunarData = solarLunar.solar2lunar(year, month, day);
-        }
-        return (
-          <div className={className} onClick={pressCb} key={day + index}>
-            <div className="calendar-day-item">
-              <div className="calendar-day-item-date">
-                {day}
-              </div>
-              <div className="calendar-day-item-lunar">
-                {
-                  lunarData && (
-                    lunarData.term || (lunarData.monthCn + lunarData.dayCn)
-                  )
-                }
-              </div>
+        <div
+          key={day + index}
+          className={clsx(
+            "calendar-day",
+            {'cur': isSelected},
+            {'weekend': isWeekend},
+            {'today': isToday},
+          )}
+          onClick={() => {
+            !isSelected && onSelect(new Date(year, month - 1, day))
+          }}
+        >
+          <div className="calendar-day-item">
+            <div className="calendar-day-item-date">
+              {day}
             </div>
-            <div className="calendar-day-entries">
+            <div className="calendar-day-item-lunar">
               {
-                calendarData[year] &&
-                calendarData[year][month] &&
-                calendarData[year][month][day] &&
-                (
-                  calendarData[year][month][day].map((entry, index) => {
-                    return (
-                      <span
-                        key={index}
-                        className="calendar-day-entry-item"
-                        onClick={(event) => {
-                          event.stopPropagation()
-                        }}
-                        onContextMenu={(event) => {
-                          this.props.handleEntryItemRightClick(event, entry)
-                        }}
-                      >
-
-                      <EntryIcon entry={entry} title={entry.fields.Title} small={true}/>
-                      </span>
-                    )
-                  })
+                lunarData && (
+                  lunarData.term || (lunarData.monthCn + lunarData.dayCn)
                 )
               }
             </div>
           </div>
-        );
-      });
-      return (
-        <div className="calendar-body-row" key={rowIndex}>{days}</div>
+          <div className="calendar-day-entries">
+            {
+              calendarData[year] &&
+              calendarData[year][month] &&
+              calendarData[year][month][day] &&
+              (
+                calendarData[year][month][day].map((entry, index) => {
+                  return (
+                    <span
+                      key={index}
+                      className="calendar-day-entry-item"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                      }}
+                      onContextMenu={(event) => {
+                        onEntryItemRightClick(event, entry)
+                      }}
+                    >
+                      <EntryIcon entry={entry} title={entry.fields.Title} small={true}/>
+                      </span>
+                  )
+                })
+              )
+            }
+          </div>
+        </div>
       );
     });
+
     return (
-      <div className="calendar-body-rows-wrap">
-        {rows}
+      <div className="calendar-body-row" key={rowIndex}>
+        {days}
       </div>
     );
-  }
+  });
+
+  return (
+    <div className="calendar-body-rows-wrap">
+      {rows}
+    </div>
+  )
 }
 
-class Calendar extends React.Component {
-  constructor(props) {
-    super(props);
-    var cur = new Date();
-    this.state = {
-      date: cur,
-      current: cur
-    };
-  }
+Calendar.propTypes = {
+  calendarData: PropTypes.object.isRequired,
+  onEntryItemRightClick: PropTypes.func.isRequired,
+  selectedDate: PropTypes.object.isRequired,
+  date: PropTypes.object.isRequired,
+  onSelect: PropTypes.func.isRequired,
+}
 
-  onNavChange = (date) => {
-    this.setState({
-      date: date
-    });
-  }
+export default function Calendar(props) {
+  const {
+    calendarData,
+    onEntryItemRightClick
+  } = props
 
-  onSelectedChange = (date) => {
-    this.setState({
-      current: date
-    });
-  }
+  const now = new Date()
+  const [date, setDate] = useState(now)
+  const [selectedDate, setSelectedDate] = useState(now)
 
-  render() {
-    var date = this.state.date;
-    var current = this.state.current;
-    return (
-      <div className="react-calendar">
-        <CalendarHeader
+  return (
+    <div className="react-calendar">
+      <CalendarHeader
+        date={date}
+        onNavChange={setDate}
+        onSelect={setSelectedDate}
+      />
+      <div className="calendar-body">
+        <CalendarWeeks/>
+        <CalendarBody
+          calendarData={calendarData}
+          onEntryItemRightClick={onEntryItemRightClick}
+          selectedDate={selectedDate}
           date={date}
-          onNavChange={this.onNavChange}
-          onSelectedChange={this.onSelectedChange}
-        />
-        <div className="calendar-body">
-          <CalendarHead/>
-          <CalendarBody
-            calendarData={this.props.calendarData}
-            handleEntryItemRightClick={this.props.onEntryItemRightClick}
-            current={current}
-            date={date}
-            onSelectedChange={this.onSelectedChange}/>
-        </div>
+          onSelect={setSelectedDate}/>
       </div>
-    );
-  }
+    </div>
+  )
 }
-
-export default Calendar
-
+Calendar.propTypes = {
+  calendarData: PropTypes.object,
+  onEntryItemRightClick: PropTypes.func
+}

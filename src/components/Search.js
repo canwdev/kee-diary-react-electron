@@ -276,7 +276,7 @@ export default function Search(props) {
             })
           }
           {
-            !resultList.length && <div className={classes.empty}>无搜索结果。</div>
+            !resultList.length && <div className={classes.empty}>无搜索结果</div>
           }
         </List>
       </DialogContent>

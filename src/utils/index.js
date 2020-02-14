@@ -19,10 +19,8 @@ export const localStorageUtil = {
 }
 
 export function formatDateLite(d) {
-  let date = d.toISOString().substr(0, 10)
-    , time = pad2Num(d.getHours()) + ':' + pad2Num(d.getMinutes())
-
-  return `${date} ${time}`
+  // let time = pad2Num(d.getHours()) + ':' + pad2Num(d.getMinutes())
+  return d.toISOString().substr(0, 10)
 }
 
 export function formatDate(date) {

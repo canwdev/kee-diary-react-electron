@@ -1,12 +1,18 @@
 import React, {useEffect} from 'react';
 import {HashRouter as Router, Route,} from "react-router-dom";
-
-import AppContainer from "./components/AppContainer"
-
 import router from './router'
 import {registerKeyShortcuts, unRegisterKeyShortcuts} from "./utils/key-shortcuts"
+import {makeStyles} from "@material-ui/core/styles"
+import AppContainer from "./components/AppContainer"
+
+const useStyles = makeStyles(theme => ({
+  pageContent: {
+    paddingTop: theme.spacing(1),
+  },
+}))
 
 function App() {
+  const classes = useStyles();
 
   useEffect(() => {
     registerKeyShortcuts()
@@ -19,7 +25,7 @@ function App() {
     <Router>
 
       <AppContainer router={router} match>
-        <div className="page-content">
+        <div className={classes.pageContent}>
           {
             router.map((item, index) => {
               return (

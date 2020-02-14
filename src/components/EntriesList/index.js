@@ -17,6 +17,7 @@ import {localStorageUtil} from "../../utils"
 import TableSortLabel from "@material-ui/core/TableSortLabel"
 import EntryContextMenu from "./EntryContextMenu"
 import {handleEnterEntry} from "../../utils/actions"
+import clsx from "clsx"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,8 +31,9 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'bold',
   },
   tableRow: {
+    transition: 'background .2s',
     "&:hover": {
-      backgroundColor: theme.palette.action.hover
+      background: theme.palette.action.hover
     }
   },
   tableCell: {
@@ -51,10 +53,10 @@ const useStyles = makeStyles(theme => ({
   pagination: {
     userSelect: 'none',
     position: 'sticky',
-    background: theme.palette.background.default,
-    bottom: -1,
-    borderTop: '1px solid ' + theme.palette.grey[300]
+    // background: theme.palette.background.default,
+    // bottom: -1,
   },
+
 
   visuallyHidden: {
     border: 0,
@@ -96,8 +98,8 @@ function desc(a, b, orderBy) {
 
 const headCells = [
   {id: 'title', width: 'auto', label: '标题'},
-  {id: 'creationTime', width: '20%', label: '创建时间'},
-  {id: 'lastModTime', width: '20%', label: '修改时间'}
+  {id: 'creationTime', width: '20%', label: '创建日期'},
+  {id: 'lastModTime', width: '20%', label: '修改日期'}
 ]
 const FLAG_SORT_ORDER = 'SETTINGS_SORT_ORDER'
 const FLAG_SORT_ORDER_BY = 'SETTINGS_SORT_BY'
@@ -251,7 +253,9 @@ export default function () {
           // size="small"
           // stickyHeader
         >
-          <TableHead>
+          <TableHead
+            className={!entries.length ? classes.visuallyHidden : null}
+          >
             <TableRow>
 
               <TableCell align="center" className={classes.tableHeadCellActions}>★</TableCell>
@@ -288,7 +292,7 @@ export default function () {
 
       </div>
       <TablePagination
-        className={classes.pagination}
+        className={clsx(classes.pagination, !entries.length ? classes.visuallyHidden : null)}
         rowsPerPageOptions={[5, 10, 15, 20, 30]}
         component="div"
         count={entries.length}
@@ -306,7 +310,7 @@ export default function () {
 
       {
         entries.length === 0 && (
-          <div className={classes.empty}>没有条目</div>
+          <div className={classes.empty}>空空如也，可从左侧右键菜单添加条目</div>
         )
       }
 

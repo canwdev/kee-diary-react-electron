@@ -11,6 +11,8 @@ import {selectorIsDarkMode, selectorPreview} from "../store/getters"
 import {markdownIt} from "../store"
 import {setPreview} from "../store/setters"
 import clsx from "clsx"
+import {formatDate} from "../utils"
+import {iconMap} from "../utils/icon-map"
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -22,6 +24,19 @@ const useStyles = makeStyles(theme => ({
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
+  },
+  entryInfo: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginBottom: '10px',
+    '&>span': {
+      border: '1px solid',
+      color: theme.palette.primary.main,
+      background: theme.palette.background.paper,
+      padding: '1px 4px',
+      borderRadius: '5px',
+      marginRight: '5px'
+    }
   }
 }))
 
@@ -30,19 +45,8 @@ export default function Preview() {
   const preview = useSelector(selectorPreview)
   const darkMode = useSelector(selectorIsDarkMode)
 
-  let entry = preview.entry || {
-    fields: {
-      Title: '',
-      Notes: '',
-    }
-  }
-
-  const {
-    fields: {
-      Title: title,
-      Notes: note
-    }
-  } = entry
+  const entry = preview.entry
+  // console.log(entry)
 
   const handleClose = () => {
     setPreview({
@@ -59,19 +63,38 @@ export default function Preview() {
       onClose={handleClose}
     >
       <DialogTitle disableTypography>
-        <Typography variant="h6">{title}</Typography>
+        <Typography variant="h6">{entry && entry.fields.Title}</Typography>
         <IconButton aria-label="close" onClick={handleClose} className={classes.closeButton}>
           <CloseIcon/>
         </IconButton>
       </DialogTitle>
-      <DialogContent
-        dividers={true}
-      >
-        <div
-          className={clsx('__view-detail-note', darkMode ? 'markdown-body-dark' : 'markdown-body')}
-          dangerouslySetInnerHTML={{__html: markdownIt.render(note)}}
-        />
-      </DialogContent>
+      {
+        entry && (
+          <DialogContent
+            dividers={true}
+          >
+            <div className={classes.entryInfo}>
+              <span>
+                <i
+                  style={{
+                    backgroundColor: entry.bgColor,
+                    color: entry.fgColor
+                  }}
+                  className={clsx(`fa fa-${iconMap[entry.icon]}`)}
+                />
+              </span>
+              <span>群组：{entry.parentGroup.name}</span>
+              <span>创建：{formatDate(entry.times.creationTime)}</span>
+              <span>修改：{formatDate(entry.times.creationTime)}</span>
+              {entry.fields.Password && (<span>Password：{entry.fields.Password}</span>)}
+            </div>
+            <div
+              className={clsx('__view-detail-note', darkMode ? 'markdown-body-dark' : 'markdown-body')}
+              dangerouslySetInnerHTML={{__html: markdownIt.render(entry.fields.Notes)}}
+            />
+          </DialogContent>
+        )
+      }
     </Dialog>
   )
 }

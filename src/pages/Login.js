@@ -20,6 +20,7 @@ import {loadKdbxDB, setGlobalDB, setSettings, setUnlocked} from "../store/setter
 import {selectorSettings} from "../store/getters"
 import {useSelector} from "react-redux"
 import {decryptByDES, encryptByDES} from "../utils/crypto"
+import LockIcon from "@material-ui/icons/Lock"
 
 function Copyright() {
   const pjson = require('../../package.json');
@@ -53,6 +54,11 @@ const useStyles = makeStyles(theme => ({
       color: theme.palette.text.primary
     },
   },
+  root: {
+    minHeight: '90vh',
+    display: 'flex',
+    alignItems: 'center'
+  },
   paper: {
     marginTop: theme.spacing(0),
     display: 'flex',
@@ -63,6 +69,13 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     width: 76,
     height: 76,
+    background: theme.palette.primary.main,
+    color: '#fff',
+    border: '5px solid',
+    boxShadow: theme.shadows[2]
+  },
+  avatarIcon: {
+    fontSize: '38px'
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -89,7 +102,7 @@ const useStyles = makeStyles(theme => ({
 export default function Login() {
   const classes = useStyles();
   const settings = useSelector(selectorSettings)
-  settings.password = useMemo(() => decryptByDES(settings.password), [settings])
+  settings.password = useMemo(() => decryptByDES(settings.password), [settings.password])
 
   const {handleSubmit, register, errors, setValue} = useForm({
     defaultValues: settings
@@ -139,129 +152,134 @@ export default function Login() {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <AutoRedirectLogin/>
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar} src={LogoImg}/>
-        <Typography component="h1" variant="h5">
-          打开 KDBX 数据库
-        </Typography>
+    <div className={classes.root}>
+      <Container component="main" maxWidth="xs">
+        <AutoRedirectLogin/>
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockIcon className={classes.avatarIcon}/>
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            打开 KDBX 数据库
+          </Typography>
 
-        <form
-          className={classes.form}
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <Box className={classes.lrBox}>
+          <form
+            className={classes.form}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <Box className={classes.lrBox}>
+              <TextField
+                name="dbPath"
+                inputRef={register({
+                  required: '请选择数据库文件'
+                })}
+                error={Boolean(errors.dbPath)}
+                helperText={
+                  errors.dbPath ? errors.dbPath.message : null
+                }
+                variant="outlined"
+                label="数据库文件 *"
+                InputLabelProps={{shrink: true}}
+                className={classes.inputFlex1}
+              />
+              <Button
+                title="选择数据库文件"
+                onClick={() => {
+                  handleChooseFile('dbPath', [{name: 'KeePass KDBX 文件', extensions: ['kdbx']}])
+                }}
+                variant="outlined"
+              >
+                <FolderOpenIcon/>
+              </Button>
+            </Box>
+
             <TextField
-              name="dbPath"
-              inputRef={register({
-                required: '请选择数据库文件'
-              })}
-              error={Boolean(errors.dbPath)}
-              helperText={
-                errors.dbPath ? errors.dbPath.message : null
-              }
-              variant="outlined"
-              label="数据库文件 *"
-              InputLabelProps={{shrink: true}}
-              className={classes.inputFlex1}
-            />
-            <Button
-              title="选择数据库文件"
-              onClick={() => {
-                handleChooseFile('dbPath', [{name: 'KeePass KDBX 文件', extensions: ['kdbx']}])
-              }}
-              variant="outlined"
-            >
-              <FolderOpenIcon/>
-            </Button>
-          </Box>
-
-          <TextField
-            name="password"
-            inputRef={register}
-            variant="outlined"
-            // required
-            autoFocus={true}
-            fullWidth
-            label="数据库密码"
-            type="password"
-            autoComplete="current-password"
-          />
-
-          <Box className={classes.lrBox}>
-            <TextField
-              name="keyPath"
+              name="password"
               inputRef={register}
               variant="outlined"
-              label="密钥文件 (可选)"
-              InputLabelProps={{shrink: true}}
-              // InputProps={{
-              //   readOnly: true,
-              // }}
-              className={classes.inputFlex1}
+              // required
+              autoFocus={true}
+              fullWidth
+              label="数据库密码"
+              type="password"
+              autoComplete="current-password"
+            />
+
+            <Box className={classes.lrBox}>
+              <TextField
+                name="keyPath"
+                inputRef={register}
+                variant="outlined"
+                label="密钥文件 (可选)"
+                InputLabelProps={{shrink: true}}
+                // InputProps={{
+                //   readOnly: true,
+                // }}
+                className={classes.inputFlex1}
+              />
+              <Button
+                title="选择密钥文件"
+                onClick={() => {
+                  handleChooseFile('keyPath', [
+                    {name: '所有文件', extensions: ['*']},
+                    {name: '密钥文件', extensions: ['key']},
+                  ])
+                }}
+                variant="outlined"
+              >
+                <FolderOpenIcon/>
+              </Button>
+            </Box>
+            <FormControlLabel
+              style={{marginLeft: 0,}}
+              control={
+                /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
+                <input className={classes.checkbox} type="checkbox" name="rememberPathChecked" ref={register}/>
+              }
+              label="记住密码"
             />
             <Button
-              title="选择密钥文件"
-              onClick={() => {
-                handleChooseFile('keyPath', [
-                  {name: '所有文件', extensions: ['*']},
-                  {name: '密钥文件', extensions: ['key']},
-                ])
-              }}
-              variant="outlined"
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
             >
-              <FolderOpenIcon/>
+              解锁
             </Button>
-          </Box>
-          <FormControlLabel
-            style={{marginLeft: 0,}}
-            control={
-              /*<Checkbox name="rememberPathChecked" inputRef={register} />*/
-              <input className={classes.checkbox} type="checkbox" name="rememberPathChecked" ref={register}/>
-            }
-            label="记住密码"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            解锁
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link
-                component="button"
-                type="button"
-                onClick={forgotPassword}
-                variant="body2"
-              >
-                忘记密码
-              </Link>
+            <Grid container>
+              <Grid item xs>
+                <Link
+                  component="button"
+                  type="button"
+                  onClick={forgotPassword}
+                  variant="body2"
+                >
+                  忘记密码
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link
+                  // href="https://keepass.info/"
+                  component="button"
+                  type="button"
+                  variant="body2"
+                  onClick={() => {
+                    window.api.openExternal('https://keepass.info/')
+                  }}
+                  title="请使用 KeePass 客户端创建数据库"
+                >
+                  创建数据库
+                </Link>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Link
-                // href="https://keepass.info/"
-                component="button"
-                type="button"
-                variant="body2"
-                onClick={() => {
-                  window.api.openExternal('https://keepass.info/')
-                }}
-              >
-                {"创建数据库"}
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-      <Box mt={5}>
-        <Copyright/>
-      </Box>
-    </Container>
+          </form>
+        </div>
+        <Box mt={5}>
+          <Copyright/>
+        </Box>
+      </Container>
+    </div>
   )
 
 }

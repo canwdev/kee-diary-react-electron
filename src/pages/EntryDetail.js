@@ -18,7 +18,8 @@ import EntryContextMenu from "../components/EntriesList/EntryContextMenu"
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(1),
-    fontFamily
+    fontFamily,
+    marginBottom: '100px'
   },
   box: {
     margin: theme.spacing(2),

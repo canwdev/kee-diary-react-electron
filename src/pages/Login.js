@@ -12,7 +12,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {makeStyles} from '@material-ui/core/styles';
-import LogoImg from '../assets/img/favicon.png'
+// import LogoImg from '../assets/img/favicon.png'
 import AutoRedirectLogin from "../components/AutoRedirectLogin"
 
 import useForm from 'react-hook-form';

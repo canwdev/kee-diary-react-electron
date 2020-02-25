@@ -132,6 +132,137 @@ const generateCalendarTable = (date) => {
 }
 
 /**
+ * Entry 单条条目
+ */
+const EntryItem = memo(function EntryItem(props) {
+  const {
+    entry,
+    onEntryItemRightClick
+  } = props
+
+  return <span
+    className="calendar-day-entry-item"
+    onClick={(event) => {
+      event.stopPropagation()
+    }}
+    onContextMenu={(event) => {
+      onEntryItemRightClick(event, entry)
+    }}
+  ><EntryIcon entry={entry} title={entry.fields.Title} small={true}/>
+  </span>
+})
+EntryItem.propTypes = {
+  entry: PropTypes.object.isRequired,
+  onEntryItemRightClick: PropTypes.func.isRequired,
+}
+
+/**
+ * 当日条目列表
+ */
+const CalendarEntries = memo(function CalendarEntries(props) {
+  const {
+    year,
+    month,
+    day,
+    calendarData,
+    onEntryItemRightClick
+  } = props
+
+  if (calendarData[year] &&
+    calendarData[year][month] &&
+    calendarData[year][month][day]) {
+
+    return calendarData[year][month][day].map((entry, index) => {
+      return <EntryItem
+        key={index}
+        entry={entry}
+        onEntryItemRightClick={onEntryItemRightClick}
+      />
+    })
+
+  }
+
+  return null
+})
+CalendarEntries.propTypes = {
+  year: PropTypes.number.isRequired,
+  month: PropTypes.number.isRequired,
+  day: PropTypes.number,
+  calendarData: PropTypes.object.isRequired,
+  onEntryItemRightClick: PropTypes.func.isRequired
+}
+
+
+/**
+ * CalendarDay
+ */
+const CalendarDay = memo(function CalendarDay(props) {
+
+  const {
+    year,
+    month,
+    day,
+    calendarData,
+    onEntryItemRightClick,
+    onSelect,
+    isSelected,
+    isWeekend,
+    isToday,
+  } = props
+
+  let lunarData = day ?
+    solarLunar.solar2lunar(year, month, day) : null;
+
+  return (
+    <div
+      className={clsx(
+        "calendar-day",
+        {'cur': isSelected},
+        {'weekend': isWeekend},
+        {'today': isToday},
+      )}
+      onClick={() => {
+        day && !isSelected && onSelect(new Date(year, month - 1, day))
+      }}
+    >
+      <div className="calendar-day-item">
+        <div className="calendar-day-item-lunar">
+          {
+            lunarData && (
+              lunarData.term || lunarData.dayCn
+            )
+          }
+        </div>
+        <div className="calendar-day-item-date">
+          {day}
+        </div>
+      </div>
+      <div className="calendar-day-entries">
+        <CalendarEntries
+          year={year}
+          month={month}
+          day={day}
+          calendarData={calendarData}
+          onEntryItemRightClick={onEntryItemRightClick}
+        />
+      </div>
+    </div>
+  );
+
+})
+CalendarDay.propTypes = {
+  year: PropTypes.number.isRequired,
+  month: PropTypes.number.isRequired,
+  day: PropTypes.number,
+  calendarData: PropTypes.object.isRequired,
+  onEntryItemRightClick: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  isWeekend: PropTypes.bool.isRequired,
+  isToday: PropTypes.bool.isRequired,
+}
+
+/**
  * 日历本体
  */
 function CalendarBody(props) {
@@ -152,78 +283,44 @@ function CalendarBody(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date])
 
-  let rows = table.map((row, rowIndex) => {
-
-    let days = row.map((day, index) => {
-      const dayH0 = h0(new Date(date.getTime()).setDate(day))
-
-      let isSelected = dayH0 === h0(selectedDate)
-      let isWeekend = index === 0 || index === 6
-      let isToday = dayH0 === h0()
-
-      let lunarData = day ?
-        solarLunar.solar2lunar(year, month, day) : null;
-
+  let rows = useMemo(() => {
+    return table.map((row, rowIndex) => {
       return (
-        <div
-          key={day + index}
-          className={clsx(
-            "calendar-day",
-            {'cur': isSelected},
-            {'weekend': isWeekend},
-            {'today': isToday},
-          )}
-          onClick={() => {
-            day && !isSelected && onSelect(new Date(year, month - 1, day))
-          }}
-        >
-          <div className="calendar-day-item">
-            <div className="calendar-day-item-lunar">
-              {
-                lunarData && (
-                  lunarData.term || lunarData.dayCn
-                )
-              }
-            </div>
-            <div className="calendar-day-item-date">
-              {day}
-            </div>
-          </div>
-          <div className="calendar-day-entries">
-            {
-              calendarData[year] &&
-              calendarData[year][month] &&
-              calendarData[year][month][day] &&
-              (
-                calendarData[year][month][day].map((entry, index) => {
-                  return (
-                    <span
-                      key={index}
-                      className="calendar-day-entry-item"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                      }}
-                      onContextMenu={(event) => {
-                        onEntryItemRightClick(event, entry)
-                      }}
-                    >
-                      <EntryIcon entry={entry} title={entry.fields.Title} small={true}/>
-                      </span>
-                  )
-                })
-              )
-            }
-          </div>
+        <div className="calendar-body-row" key={rowIndex}>
+          {
+            row.map((day, index) => {
+              const dayH0 = h0(new Date(date.getTime()).setDate(day))
+
+              return <CalendarDay
+                key={day + index}
+                selectedDate={selectedDate}
+                date={date}
+                year={year}
+                month={month}
+                day={day}
+                calendarData={calendarData}
+                onEntryItemRightClick={onEntryItemRightClick}
+                onSelect={onSelect}
+                isSelected={dayH0 === h0(selectedDate)}
+                isWeekend={index === 0 || index === 6}
+                isToday={dayH0 === h0()}
+              />
+            })
+          }
         </div>
       );
     });
 
-    return (
-      <div className="calendar-body-row" key={rowIndex}>
-        {days}
-      </div>
-    );
-  });
+  }, [
+    table,
+    calendarData,
+    year,
+    month,
+    date,
+    selectedDate,
+    onEntryItemRightClick,
+    onSelect
+  ])
 
   return (
     <div className="calendar-body-rows-wrap">
@@ -269,6 +366,7 @@ export default function Calendar(props) {
     </div>
   )
 }
+
 Calendar.propTypes = {
   calendarData: PropTypes.object,
   onEntryItemRightClick: PropTypes.func

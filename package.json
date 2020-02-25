@@ -1,7 +1,7 @@
 {
  "name": "kee-diary",
  "version": "0.2.1",
- "description": "A trusted journal editor that uses kdbx as a database encryption to store your journals.",
+ "description": "基于 KeePass、Electron 和 React.js 的日记编辑器",
  "author": {
   "name": "canwdev",
   "email": "c2097@live.com",
@@ -33,6 +33,7 @@
   "kdbxweb": "https://gitee.com/canwdev/kdbxweb.git",
   "lodash": "^4.17.15",
   "markdown-it": "^10.0.0",
+  "prop-types": "^15.7.2",
   "react": "^16.10.2",
   "react-color": "^2.17.3",
   "react-dom": "^16.10.2",
@@ -60,7 +61,5 @@
    "last 1 safari version"
   ]
  },
- "dependencies": {
-  "prop-types": "^15.7.2"
- }
+ "dependencies": {}
 }

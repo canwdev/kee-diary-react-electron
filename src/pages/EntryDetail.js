@@ -1,9 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, memo} from 'react';
+import PropTypes from 'prop-types'
 import {Redirect} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles"
 import {Box, Container, Input, Paper, TextareaAutosize} from "@material-ui/core"
 import clsx from "clsx"
-import {formatDate, pad2Num} from "../utils"
+import {formatDate, isValidDate, pad2Num} from "../utils"
 import {useSelector} from "react-redux"
 import {selectorCurrentEntry} from "../store/getters"
 import {setDbHasUnsavedChange} from "../store/setters"
@@ -59,6 +60,73 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
+const EditorTitle = memo(function EditorTitle(props) {
+  const {
+    entry,
+    title,
+    handleTitleChange,
+    handleRightClick
+  } = props
+  const classes = useStyles()
+
+  return (
+    <Box
+      className={clsx(classes.box, classes.inputWrap)}
+      onContextMenu={(event) => {
+        handleRightClick(event)
+      }}
+    >
+      <div className={classes.action}>
+        <EntryIcon
+          entry={entry}
+          title={"预览 (Ctrl+/)"}
+        />
+      </div>
+      <Input
+        placeholder="标题"
+        value={title}
+        onChange={handleTitleChange}
+        className={classes.titleInput}
+      />
+    </Box>
+  )
+})
+EditorTitle.propTypes = {
+  entry: PropTypes.object.isRequired,
+  title: PropTypes.string.isRequired,
+  handleTitleChange: PropTypes.func.isRequired,
+  handleRightClick: PropTypes.func.isRequired,
+}
+
+const EditorTime = memo(function EditorTime(props) {
+  const {
+    entry,
+    handleTimeChange
+  } = props
+  const classes = useStyles()
+
+  return (
+    <Box className={clsx(classes.box, classes.timeWrap)}>
+      <div>创建时间：<span
+        className={classes.time}
+        onClick={() => {
+          handleTimeChange('creationTime')
+        }}
+      >{formatDate(entry.times.creationTime)}</span></div>
+      <div>修改时间：<span
+        className={classes.time}
+        onClick={() => {
+          handleTimeChange('lastModTime')
+        }}
+      >{formatDate(entry.times.lastModTime)}</span></div>
+    </Box>
+  )
+})
+EditorTime.propTypes = {
+  entry: PropTypes.object.isRequired,
+  handleTimeChange: PropTypes.func.isRequired,
+}
+
 export default function () {
   const classes = useStyles()
   const unlocked = useSelector(state => state.unlocked);
@@ -80,7 +148,7 @@ export default function () {
   const {history} = useReactRouter();
 
   // 确保内容是新的
-  useEffect(()=>{
+  useEffect(() => {
     setTitle(entry.fields.Title)
     setNoteText(entry.fields.Notes)
   }, [entry.fields.Title, entry.fields.Notes])
@@ -91,24 +159,26 @@ export default function () {
     contextMenuRef.current.handleRightClick(event, entry)
   }
 
-  // 快捷键
-  const handleKey = (event) => {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      history.push('/view-list')
-    }
-    if (event.ctrlKey || event.metaKey) {
-      switch (String.fromCharCode(event.which).toLowerCase()) {
-        case '¿': // 符号："/"
-          event.preventDefault()
-          showDetailWindow(entry)
-          break;
-        default:
-          return
+
+  useEffect(() => {
+    // 快捷键
+    const handleKey = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        history.push('/view-list')
+      }
+      if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+          case '¿': // 符号："/"
+            event.preventDefault()
+            showDetailWindow(entry)
+            break;
+          default:
+            return
+        }
       }
     }
-  }
-  useEffect(() => {
+
     window.addEventListener('keydown', handleKey)
     return () => {
       window.removeEventListener('keydown', handleKey)
@@ -122,32 +192,40 @@ export default function () {
     setDbHasUnsavedChange()
   }
 
-  const handleTitleChange = (e) => {
-    entry.fields.Title = e.target.value
-    updateEntry()
-    setTitle(e.target.value)
-  }
-
   /**
    * 手动更新时间
    * @param timeType
    */
   const handleTimeChange = (timeType = 'creationTime') => {
-    let now = entry.times[timeType] || new Date()
-    let date = now.toISOString().substr(0, 10)
-      , time = pad2Num(now.getHours()) + ':' + pad2Num(now.getMinutes())
+    let d = entry.times[timeType] || new Date()
+    let date = `${d.getFullYear()}-${pad2Num(d.getMonth() + 1)}-${pad2Num(d.getDate())}`
+      , time = `${pad2Num(d.getHours())}:${pad2Num(d.getMinutes())}`
     // console.log(entry.times, {date, time})
 
     swal.fire({
-      title: '修改时间',
+      title: `修改 ${timeType}`,
       html: ReactDOM.render((
         <div>
-          <input type="date" defaultValue={date} onChange={(e) => {
-            date = e.target.value
-          }}/>
-          <input type="time" defaultValue={time} onChange={(e) => {
-            time = e.target.value
-          }}/>
+          <label htmlFor="setDate">
+            {'日期 '}
+            <input
+              id="setDate"
+              type="date"
+              defaultValue={date}
+              onChange={(e) => {
+                date = e.target.value
+              }}/>
+          </label>
+          <label htmlFor="setTime">
+            {' 时间 '}
+            <input
+              id="setTime"
+              type="time"
+              defaultValue={time}
+              onChange={(e) => {
+                time = e.target.value
+              }}/>
+          </label>
         </div>
       ), document.createElement('div')),
       showCancelButton: true,
@@ -157,11 +235,24 @@ export default function () {
       }
     }).then(res => {
       if (!res.dismiss && res.value) {
-        entry.times[timeType] = new Date(res.value.date + ' ' + res.value.time)
+        const date = new Date(res.value.date + ' ' + res.value.time)
+
+        if (!isValidDate(date)) {
+          swal.fire({icon: 'error', title: '日期时间格式错误'})
+          return
+        }
+
+        entry.times[timeType] = date
         setDbHasUnsavedChange()
         setUpdater(v => !v)
       }
     })
+  }
+
+  const handleTitleChange = (e) => {
+    entry.fields.Title = e.target.value
+    updateEntry()
+    setTitle(e.target.value)
   }
 
   const handleNoteTextChange = (e) => {
@@ -175,41 +266,17 @@ export default function () {
       {!unlocked ? <Redirect to="/"/> : null}
       <Paper className={classes.root}>
 
-        <Box
-          className={clsx(classes.box, classes.inputWrap)}
-          onContextMenu={(event) => {
-            handleRightClick(event)
-          }}
-        >
-          <div className={classes.action}>
+        <EditorTitle
+          entry={entry}
+          title={title}
+          handleTitleChange={handleTitleChange}
+          handleRightClick={handleRightClick}
+        />
 
-            <EntryIcon
-              entry={entry}
-              title={"预览 (Ctrl+/)"}
-            />
-          </div>
-          <Input
-            placeholder="标题"
-            value={title}
-            onChange={handleTitleChange}
-            className={classes.titleInput}
-          />
-        </Box>
-
-        <Box className={clsx(classes.box, classes.timeWrap)}>
-          <div>创建时间：<span
-            className={classes.time}
-            onClick={() => {
-              handleTimeChange('creationTime')
-            }}
-          >{formatDate(entry.times.creationTime)}</span></div>
-          <div>最近修改：<span
-            className={classes.time}
-            onClick={() => {
-              handleTimeChange('lastModTime')
-            }}
-          >{formatDate(entry.times.lastModTime)}</span></div>
-        </Box>
+        <EditorTime
+          entry={entry}
+          handleTimeChange={handleTimeChange}
+        />
 
         <Box className={classes.box}>
           <TextareaAutosize

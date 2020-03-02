@@ -37,6 +37,10 @@ export function pad2Num(num, len = 2) {
   return num.toString().padStart(len, '0')
 }
 
+export function isValidDate(date) {
+  return date instanceof Date && !isNaN(date.getTime())
+}
+
 /**
  * 递归遍历数据库 groups
  * usage: deepWalkGroup(db.groups)

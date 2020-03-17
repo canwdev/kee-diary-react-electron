@@ -6,7 +6,26 @@ import ColorPicker from "../components/ColorPicker"
 import {deepWalkGroup} from "./index"
 import {iconMap} from "./icon-map"
 import clsx from 'clsx'
-import {setCurrentEntry, setDbHasUnsavedChange, setPreview} from "../store/setters"
+import {
+  setCurrentEntry,
+  setDbHasUnsavedChange,
+  setGlobalDB,
+  setGroupListByDB,
+  setPreview,
+  setUnlocked
+} from "../store/setters"
+
+/**
+ * 处理解锁成功后的操作
+ * @param db 数据库实例
+ */
+export function handleUnlockSuccess(db) {
+  // console.log('数据库已解锁！', db)
+
+  setGlobalDB(db)
+  setGroupListByDB(db)
+  setUnlocked(true)
+}
 
 /**
  * 移动至群组

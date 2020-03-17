@@ -6,7 +6,7 @@ import {
   SET_IS_LIST_VIEW,
   SET_SETTINGS, SET_PREVIEW,
   SET_UNLOCKED,
-  SETTINGS_LOCALSTORAGE
+  SETTINGS_LOCALSTORAGE, SET_GROUP_LIST
 } from "./actionTypes"
 import {localStorageUtil} from "../utils"
 
@@ -28,6 +28,7 @@ const initialState = {
   },
   unlocked: false,
   dbHasUnsavedChange: false,
+  groupList: [],
   currentGroupUuid: null,
   currentEntry: null,
 }
@@ -79,6 +80,13 @@ export default (state = initialState, action) => {
     return {
       ...state,
       dbHasUnsavedChange: action.value
+    }
+  }
+
+  if (type === SET_GROUP_LIST) {
+    return {
+      ...state,
+      groupList: action.value
     }
   }
 

@@ -7,6 +7,7 @@ export const selectorIsDarkMode = state => state.isDarkMode
 export const selectorPreview = state => state.preview
 export const selectorUnlocked = state => state.unlocked
 export const selectorCurrentGroupUuid = state => state.currentGroupUuid
+export const selectorGroupList = state => state.groupList
 export const selectorCurrentEntry = state => state.currentEntry
 export const selectorDbHasUnsavedChange = state => state.dbHasUnsavedChange
 

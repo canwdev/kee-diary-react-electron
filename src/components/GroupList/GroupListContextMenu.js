@@ -13,10 +13,10 @@ import Typography from "@material-ui/core/Typography"
 import {makeStyles} from "@material-ui/core"
 import {menuIconWrap} from "../../assets/styles/commonStyles"
 import swal from "sweetalert2"
-import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange} from "../../store/setters"
+import {setCurrentEntry, setCurrentGroupUuid, setDbHasUnsavedChange, setGroupListByDB} from "../../store/setters"
 import {formatDate} from "../../utils"
 import useReactRouter from "use-react-router"
-import {confirmDeleteGroup, confirmMoveToGroupChooser, handleChangeIcon} from "../../utils/actions"
+import {confirmDeleteGroup, confirmMoveToGroupChooser, handleChangeIcon} from "../../utils/db-actions"
 import StarIcon from "@material-ui/icons/Star"
 
 const useStyles = makeStyles(theme => ({
@@ -92,6 +92,7 @@ export default forwardRef((props, refs) => {
     }).then((result) => {
       if (!result.dismiss && result.value) {
         const newGroup = db.createGroup(group, result.value)
+        setGroupListByDB(db)
         setDbHasUnsavedChange()
         setCurrentGroupUuid(newGroup.uuid)
       }
@@ -122,9 +123,9 @@ export default forwardRef((props, refs) => {
         const value = result.value
         if (value && value !== name) {
           group.name = value
+          setGroupListByDB(db)
           setDbHasUnsavedChange()
           setCurrentGroupUuid(group.uuid)
-          setUpdater(v => !v)
         }
       });
   }
@@ -132,18 +133,18 @@ export default forwardRef((props, refs) => {
   const handleMoveToGroup = (group) => {
     confirmMoveToGroupChooser(db).then(selectedGroup => {
       db.move(group, selectedGroup);
+      setGroupListByDB(db)
       setDbHasUnsavedChange()
       setCurrentGroupUuid(group.uuid)
-      setUpdater(v => !v)
     })
   }
 
   const handleDeleteGroup = (group) => {
     confirmDeleteGroup(group).then((result) => {
       db.remove(db.getGroup(group.uuid))
+      setGroupListByDB(db)
       setDbHasUnsavedChange()
       setCurrentGroupUuid(null)
-      setUpdater(v => !v)
     });
   }
 

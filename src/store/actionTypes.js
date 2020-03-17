@@ -5,5 +5,6 @@ export const SET_DB_HAS_UNSAVED_CHANGE = Symbol()
 export const SET_IS_DARK_MODE = 'SET_IS_DARK_MODE'
 export const SET_PREVIEW = Symbol()
 export const SET_UNLOCKED = Symbol()
+export const SET_GROUP_LIST = Symbol()
 export const SET_CURRENT_GROUP_UUID = Symbol()
 export const SET_CURRENT_ENTRY = Symbol()

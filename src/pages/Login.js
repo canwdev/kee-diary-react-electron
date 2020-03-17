@@ -16,11 +16,12 @@ import {makeStyles} from '@material-ui/core/styles';
 import AutoRedirectLogin from "../components/AutoRedirectLogin"
 
 import useForm from 'react-hook-form';
-import {loadKdbxDB, setGlobalDB, setSettings, setUnlocked} from "../store/setters"
+import {loadKdbxDB, setSettings} from "../store/setters"
 import {selectorSettings} from "../store/getters"
 import {useSelector} from "react-redux"
 import {decryptByDES, encryptByDES} from "../utils/crypto"
 import LockIcon from "@material-ui/icons/Lock"
+import {handleUnlockSuccess} from "../utils/db-actions"
 
 function Copyright() {
   const pjson = require('../../package.json');
@@ -114,9 +115,7 @@ export default function Login() {
 
   const onSubmit = values => {
     loadKdbxDB(values.dbPath, values.password, values.keyPath).then(db => {
-      // console.log('数据库已解锁！', db)
-      setGlobalDB(db)
-      setUnlocked(true)
+      handleUnlockSuccess(db)
 
       const newSettings = Object.assign(settings, JSON.parse(JSON.stringify(values)))
       if (!values.rememberPathChecked) {

@@ -8,9 +8,8 @@ import Collapse from '@material-ui/core/Collapse';
 // import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {setCurrentGroupUuid} from "../../store/setters"
-import {getGlobalDB, selectorCurrentGroupUuid, selectorIsDarkMode} from "../../store/getters"
+import {selectorCurrentGroupUuid, selectorGroupList, selectorIsDarkMode} from "../../store/getters"
 import {useSelector} from "react-redux"
-import {deepWalkGroup} from "../../utils"
 // import StarBorder from '@material-ui/icons/StarBorder';
 import GroupListContextMenu from "./GroupListContextMenu"
 import {menuIconWrap} from "../../assets/styles/commonStyles"
@@ -43,9 +42,7 @@ export default function GroupList() {
 
   const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
   const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
-
-  // 数据库加载
-  const db = getGlobalDB() || {}
+  const groupList = useSelector(selectorGroupList)
 
   // 右键菜单
   const contextMenuRef = useRef();
@@ -56,14 +53,9 @@ export default function GroupList() {
 
   };
 
-  const groupsFiltered = useMemo(() => {
-    return deepWalkGroup(db.groups)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, currentGroupUuid])
-
   useEffect(() => {
-    if (!currentGroupUuid && groupsFiltered && groupsFiltered[0]) { // 自动选择第一个群组
-      setCurrentGroupUuid(groupsFiltered[0].uuid)
+    if (!currentGroupUuid && groupList && groupList[0]) { // 自动选择第一个群组
+      setCurrentGroupUuid(groupList[0].uuid)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -124,9 +116,9 @@ export default function GroupList() {
   }
 
   const GroupListVDOM = useMemo(() => {
-    return generateGroupListVDOM(groupsFiltered)
+    return generateGroupListVDOM(groupList)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, currentGroupUuid, isDarkMode])
+  }, [updater, currentGroupUuid, isDarkMode, groupList])
 
   return (
     <>

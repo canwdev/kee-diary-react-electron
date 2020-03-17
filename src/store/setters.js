@@ -2,14 +2,16 @@ import {
   SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
+  SET_GROUP_LIST,
   SET_IS_DARK_MODE,
   SET_IS_LIST_VIEW,
-  SET_SETTINGS, SET_PREVIEW,
+  SET_PREVIEW,
+  SET_SETTINGS,
   SET_UNLOCKED,
   SETTINGS_LOCALSTORAGE
 } from "./actionTypes"
 import store, {globalVars} from "./index"
-import {localStorageUtil} from "../utils"
+import {deepWalkGroup, localStorageUtil} from "../utils"
 import kdbxweb from "kdbxweb"
 import {getDbHasUnsavedChange, getGlobalDB, getSettings} from "./getters"
 import swal from 'sweetalert2';
@@ -28,6 +30,14 @@ export function setIsListView(flag = true) {
 export function setIsDarkMode(flag = true) {
   localStorageUtil.setItem(SET_IS_DARK_MODE, flag)
   store.dispatch({type: SET_IS_DARK_MODE, value: flag})
+}
+
+export function setGroupListByDB(db) {
+  setGroupList(deepWalkGroup(db.groups))
+}
+
+export function setGroupList(list) {
+  store.dispatch({type: SET_GROUP_LIST, value: list})
 }
 
 export function setCurrentGroupUuid(uuid) {

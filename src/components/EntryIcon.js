@@ -1,4 +1,4 @@
-import {showDetailWindow} from "../utils/actions"
+import {showDetailWindow} from "../utils/db-actions"
 import clsx from "clsx"
 import {iconMap} from "../utils/icon-map"
 import IconButton from "@material-ui/core/IconButton"

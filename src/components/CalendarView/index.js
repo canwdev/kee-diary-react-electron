@@ -36,7 +36,7 @@ export default function () {
 
     let creationTime, year, month, day;
     // Recursive traverse，will be called for each entry or group
-    // 需要性能优化
+    // TODO: 需要性能优化，缓存到 store
     group.forEach((entry, group) => {
       if (entry) {
         creationTime = entry.times.creationTime

@@ -169,6 +169,8 @@ export function confirmDeleteEntries(numSelected) {
  * 显示 markdown编译后 预览窗口
  */
 export function showDetailWindow(entry) {
+  // TODO: md滚动跟随
+
   setPreview({
     show: true,
     entry

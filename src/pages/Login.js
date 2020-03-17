@@ -15,7 +15,7 @@ import {makeStyles} from '@material-ui/core/styles';
 // import LogoImg from '../assets/img/favicon.png'
 import AutoRedirectLogin from "../components/AutoRedirectLogin"
 
-import useForm from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {loadKdbxDB, setSettings} from "../store/setters"
 import {selectorSettings} from "../store/getters"
 import {useSelector} from "react-redux"

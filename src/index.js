@@ -9,8 +9,13 @@ import App from './App';
 import {Provider, useSelector} from 'react-redux'
 import store from "./store"
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
-import {deepOrange, brown, cyan, deepPurple} from '@material-ui/core/colors';
+import * as colors from '@material-ui/core/colors';
 import {selectorIsDarkMode} from "./store/getters"
+
+const {deepOrange, brown, cyan, deepPurple} = colors
+
+// TODO: 实现主题色切换
+// console.log(colors)
 
 if (module.hot) {
   module.hot.accept();

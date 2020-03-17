@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -104,7 +104,7 @@ export default function GroupList() {
             />
             {children.length !== 0 && <ExpandMoreIcon/>}
           </ListItem>
-          <Collapse in={true} >
+          <Collapse in={true}>
             {generateGroupListVDOM(children)}
           </Collapse>
         </List>

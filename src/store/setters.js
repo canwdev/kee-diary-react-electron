@@ -1,4 +1,5 @@
 import {
+  SET_CALENDAR_DATE,
   SET_CURRENT_ENTRY,
   SET_CURRENT_GROUP_UUID,
   SET_DB_HAS_UNSAVED_CHANGE,
@@ -164,4 +165,8 @@ function _saveKdbxDB() {
       reject('数据库实例不存在')
     }
   })
+}
+
+export function setCalendarDate(value) {
+  store.dispatch({type: SET_CALENDAR_DATE, value})
 }

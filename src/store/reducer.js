@@ -6,7 +6,7 @@ import {
   SET_IS_LIST_VIEW,
   SET_SETTINGS, SET_PREVIEW,
   SET_UNLOCKED,
-  SETTINGS_LOCALSTORAGE, SET_GROUP_LIST
+  SETTINGS_LOCALSTORAGE, SET_GROUP_LIST, SET_CALENDAR_DATE
 } from "./actionTypes"
 import {localStorageUtil} from "../utils"
 
@@ -31,6 +31,7 @@ const initialState = {
   groupList: [],
   currentGroupUuid: null,
   currentEntry: null,
+  calendarDate: new Date(),
 }
 export default (state = initialState, action) => {
   const type = action.type
@@ -101,6 +102,13 @@ export default (state = initialState, action) => {
     return {
       ...state,
       currentEntry: action.value
+    }
+  }
+
+  if (type === SET_CALENDAR_DATE) {
+    return {
+      ...state,
+      calendarDate: action.value
     }
   }
 

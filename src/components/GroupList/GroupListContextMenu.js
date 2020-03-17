@@ -31,9 +31,6 @@ export const MENU_ACTION_MOVE = 'MENU_ACTION_MOVE'
 export const MENU_ACTION_DELETE = 'MENU_ACTION_DELETE'
 
 export default forwardRef((props, refs) => {
-  const {
-    setUpdater,
-  } = props
   const classes = useStyles()
   const {history} = useReactRouter();
 
@@ -68,7 +65,7 @@ export default forwardRef((props, refs) => {
         return handleAddEntry(group)
       case MENU_ACTION_CHANGE_ICON:
         return handleChangeIcon(group).then(() => {
-          setUpdater(v => !v)
+          setGroupListByDB(db)
         })
       case MENU_ACTION_RENAME:
         return handleEditGroup(group)

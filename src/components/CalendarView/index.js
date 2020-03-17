@@ -33,28 +33,25 @@ export default function () {
   const data = {}
   if (db && groupUuid && groupUuid.id) {
     const group = db.getGroup(groupUuid)
-    if (group) {
-      for (let i = group.entries.length - 1; i >= 0; i--) {
-        const item = group.entries[i]
-        const creationTime = item.times.creationTime
-        const year = creationTime.getFullYear()
-        const month = creationTime.getMonth()+1
-        const day = creationTime.getDate()
 
-        if (!data[year]) {
-          data[year] = {}
-        }
+    let creationTime, year, month, day;
+    // Recursive traverse，will be called for each entry or group
+    // 需要性能优化
+    group.forEach((entry, group) => {
+      if (entry) {
+        creationTime = entry.times.creationTime
+        year = creationTime.getFullYear()
+        month = creationTime.getMonth() + 1
+        day = creationTime.getDate()
 
-        if (!data[year][month]) {
-          data[year][month] = {}
-        }
+        // 初始化
+        if (!data[year]) data[year] = {}
+        if (!data[year][month]) data[year][month] = {}
+        if (!data[year][month][day]) data[year][month][day] = []
 
-        if (!data[year][month][day]) {
-          data[year][month][day] = []
-        }
-        data[year][month][day].push(item)
+        data[year][month][day].push(entry)
       }
-    }
+    });
   }
 
   return (

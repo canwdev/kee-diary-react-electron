@@ -5,6 +5,7 @@ import IconButton from "@material-ui/core/IconButton"
 import React from "react"
 import {makeStyles} from "@material-ui/core"
 import Tooltip from "@material-ui/core/Tooltip"
+import Typography from "@material-ui/core/Typography"
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -24,10 +25,23 @@ const useStyles = makeStyles(theme => ({
 
 export default function (props) {
   const classes = useStyles()
-  const {entry, title = "", small = false, disabled=false} = props
+  const {
+    entry,
+    title = "",
+    titleExtra = "",
+    small = false,
+    disabled = false
+  } = props
+
+  // console.log(entry)
 
   return (
-    <Tooltip title={title}>
+    <Tooltip title={
+      <React.Fragment>
+        <em>{titleExtra}</em>
+        <Typography color="inherit">{title}</Typography>
+      </React.Fragment>
+    } arrow>
       <IconButton
         disabled={disabled}
         size="small"

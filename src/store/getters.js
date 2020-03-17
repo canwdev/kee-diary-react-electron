@@ -10,6 +10,7 @@ export const selectorCurrentGroupUuid = state => state.currentGroupUuid
 export const selectorGroupList = state => state.groupList
 export const selectorCurrentEntry = state => state.currentEntry
 export const selectorDbHasUnsavedChange = state => state.dbHasUnsavedChange
+export const selectorCalendarDate = state => state.calendarDate
 
 // getters
 export const getSettings = () => store.getState().settings

@@ -4,6 +4,9 @@ import clsx from "clsx"
 import PropTypes from 'prop-types'
 import solarLunar from "solarlunar"
 import EntryIcon from '../EntryIcon'
+import {useSelector} from "react-redux"
+import {selectorCalendarDate} from "../../store/getters"
+import {setCalendarDate} from "../../store/setters"
 
 /**
  * 获取一天的【0时0分0秒0毫秒】时间戳
@@ -148,7 +151,7 @@ const EntryItem = memo(function EntryItem(props) {
     onContextMenu={(event) => {
       onEntryItemRightClick(event, entry)
     }}
-  ><EntryIcon entry={entry} title={entry.fields.Title} small={true}/>
+  ><EntryIcon entry={entry} title={entry.fields.Title} titleExtra={entry.parentGroup.name} small={true}/>
   </span>
 })
 EntryItem.propTypes = {
@@ -344,14 +347,14 @@ export default function Calendar(props) {
   } = props
 
   const now = new Date()
-  const [date, setDate] = useState(now)
-  const [selectedDate, setSelectedDate] = useState(now)
+  const date = useSelector(selectorCalendarDate)
+  const [selectedDate, setSelectedDate] = useState(now) // 暂时没用
 
   return (
     <div className="react-calendar">
       <CalendarHeader
         date={date}
-        onNavChange={setDate}
+        onNavChange={setCalendarDate}
         onSelect={setSelectedDate}
       />
       <div className="calendar-body">

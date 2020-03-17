@@ -40,7 +40,6 @@ export default function GroupList() {
   const classes = useStyles();
   const isDarkMode = useSelector(selectorIsDarkMode)
 
-  const [updater, setUpdater] = useState(false) // 用于强制刷新组件状态
   const currentGroupUuid = useSelector(selectorCurrentGroupUuid)
   const groupList = useSelector(selectorGroupList)
 
@@ -105,7 +104,7 @@ export default function GroupList() {
             />
             {children.length !== 0 && <ExpandMoreIcon/>}
           </ListItem>
-          <Collapse in={true} timeout="auto" unmountOnExit>
+          <Collapse in={true} >
             {generateGroupListVDOM(children)}
           </Collapse>
         </List>
@@ -118,7 +117,7 @@ export default function GroupList() {
   const GroupListVDOM = useMemo(() => {
     return generateGroupListVDOM(groupList)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updater, currentGroupUuid, isDarkMode, groupList])
+  }, [currentGroupUuid, isDarkMode, groupList])
 
   return (
     <>
@@ -130,7 +129,6 @@ export default function GroupList() {
       </List>
       <GroupListContextMenu
         ref={contextMenuRef}
-        setUpdater={setUpdater}
       />
     </>
   );

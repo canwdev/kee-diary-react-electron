@@ -31,7 +31,7 @@
   "font-awesome": "^4.7.0",
   "foreman": "^3.0.1",
   "kdbxweb": "https://gitee.com/canwdev/kdbxweb.git",
-  "lodash": "^4.17.15",
+  "lodash": "^4.17.19",
   "markdown-it": "^10.0.0",
   "prop-types": "^15.7.2",
   "react": "^16.10.2",
